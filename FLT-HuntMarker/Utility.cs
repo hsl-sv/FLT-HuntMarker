@@ -14,6 +14,7 @@ namespace FLT_HuntMarker
 {
     class Utility
     {
+        // Make jpg to imagesource
         public static ImageSource ByteToImage(byte[] imageData)
         {
             BitmapImage biImg = new BitmapImage();
@@ -27,6 +28,7 @@ namespace FLT_HuntMarker
             return imgSrc;
         }
 
+        // Make ellipse
         public static Ellipse MakeDot(double X, double Y, double dotSize, DotType type)
         {
             Ellipse dot = new Ellipse();
@@ -44,6 +46,7 @@ namespace FLT_HuntMarker
             return dot;
         }
 
+        // Make textblock
         public static TextBlock MakeTextblock(double X, double Y, double fontSize, string text)
         {
             TextBlock tbx = new TextBlock();
@@ -68,7 +71,7 @@ namespace FLT_HuntMarker
             return tvName;
         }
 
-        // Remove content from CONFIG.LOGFILE
+        // Remove specific content from CONFIG.LOGFILE
         public static void RemoveLogContains(string content)
         {
             var linesToKeep = File.ReadLines(CONFIG.LOGFILE).Where(
