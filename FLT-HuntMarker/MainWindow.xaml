@@ -1,0 +1,100 @@
+﻿<Window x:Class="FLT_HuntMarker.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FLT_HuntMarker"
+        mc:Ignorable="d"
+        WindowStyle="ToolWindow"
+        Title="FFXIVHuntMarker" 
+        Width="600"
+        Height="500">
+    <Grid x:Name="gridMain">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="4*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0">
+            <Image x:Name="imageMap" Margin="0" />
+            <Canvas x:Name="canvas" Margin="0" Background="Transparent" 
+                    MouseLeftButtonUp="canvas_MouseLeftButtonUp" 
+                    MouseRightButtonUp="canvas_MouseRightButtonUp" />
+        </Grid>
+        <Grid Grid.Column="1" Margin="1">
+            <DockPanel>
+                <Button x:Name="buttonClear" DockPanel.Dock="Top" Height="40" Margin="5" 
+                        Content="Clear" Click="buttonClear_Click"/>
+                <Button DockPanel.Dock="Top" Height="40" Margin="5">
+
+                </Button>
+                <TreeView x:Name="treeview" DockPanel.Dock="Bottom" Margin="3" FontSize="10" 
+                          x:FieldModifier="public"
+                          ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                          ScrollViewer.HorizontalScrollBarVisibility="Hidden" SelectedItemChanged="treeview_SelectedItemChanged">
+                    <TreeView.ItemContainerStyle>
+                        <Style TargetType="TreeViewItem">
+                            <Setter Property="Padding" Value="0"/>
+                        </Style>
+                    </TreeView.ItemContainerStyle>
+                    
+                    <TreeViewItem x:Name="EW_Head" Header="EW" IsExpanded="True">
+                        <TreeViewItem x:Name="EW_LA" Header="Labyrinthos" />
+                        <TreeViewItem x:Name="EW_GA" Header="Garlemald" IsSelected="True" />
+                        <TreeViewItem x:Name="EW_TH" Header="Thavnair" />
+                        <TreeViewItem x:Name="EW_EL" Header="Elpis" />
+                        <TreeViewItem x:Name="EW_UL" Header="Ultima Thule" />
+                    </TreeViewItem>
+                    <TreeViewItem x:Name="ShB_Head" Header="ShB" IsExpanded="False">
+                        <TreeViewItem x:Name="ShB_LA" Header="Lakeland" />
+                        <TreeViewItem x:Name="ShB_KH" Header="Kholusia" />
+                        <TreeViewItem x:Name="ShB_AM" Header="Amh Araeng" />
+                        <TreeViewItem x:Name="ShB_IL" Header="Il Mheg" />
+                        <TreeViewItem x:Name="ShB_RA" Header="Rak'tika" />
+                        <TreeViewItem x:Name="ShB_TE" Header="Tempest" />
+                    </TreeViewItem>
+                    <TreeViewItem x:Name="SB_Head" Header="SB" IsExpanded="False">
+                        <TreeViewItem x:Name="SB_FR" Header="Fringes" />
+                        <TreeViewItem x:Name="SB_PE" Header="Peaks" />
+                        <TreeViewItem x:Name="SB_LO" Header="Lochs" />
+                        <TreeViewItem x:Name="SB_RU" Header="Ruby Sea" />
+                        <TreeViewItem x:Name="SB_YA" Header="Yanxia" />
+                        <TreeViewItem x:Name="SB_AZ" Header="Azim Steppe" />
+                    </TreeViewItem>
+                    <TreeViewItem x:Name="HW_Head" Header="HW" IsExpanded="False">
+                        <TreeViewItem x:Name="HW_CO" Header="W. Highland" />
+                        <TreeViewItem x:Name="HW_SE" Header="Sea of Clouds" />
+                        <TreeViewItem x:Name="HW_CH" Header="Churning Mists" />
+                        <TreeViewItem x:Name="HW_DF" Header="D. Forelands" />
+                        <TreeViewItem x:Name="HW_DH" Header="D. Hinterlands" />
+                        <TreeViewItem x:Name="HW_AZ" Header="Azys Lla" />
+                    </TreeViewItem>
+                    <TreeViewItem x:Name="ARR_Head" Header="ARR" IsExpanded="False">
+                        <TreeViewItem x:Name="ARR_CO" Header="C. Highland" />
+                        <TreeViewItem x:Name="ARR_MO" Header="Mor Dhona" />
+                        <TreeViewItem x:Name="ARR_LN_Head" Header="La Noscea" IsExpanded="False">
+                            <TreeViewItem x:Name="ARR_ML" Header="Middle" />
+                            <TreeViewItem x:Name="ARR_LL" Header="Lower" />
+                            <TreeViewItem x:Name="ARR_EL" Header="Eastern" />
+                            <TreeViewItem x:Name="ARR_WL" Header="Western" />
+                            <TreeViewItem x:Name="ARR_UL" Header="Upper" />
+                            <TreeViewItem x:Name="ARR_OL" Header="Outer" />
+                        </TreeViewItem>
+                        <TreeViewItem x:Name="ARR_SH_Head" Header="Shroud" IsExpanded="False">
+                            <TreeViewItem x:Name="ARR_CS" Header="Central" />
+                            <TreeViewItem x:Name="ARR_ES" Header="East" />
+                            <TreeViewItem x:Name="ARR_SS" Header="South" />
+                            <TreeViewItem x:Name="ARR_NS" Header="North" />
+                        </TreeViewItem>
+                        <TreeViewItem x:Name="ARR_TH_Head" Header="Thanalan" IsExpanded="False">
+                            <TreeViewItem x:Name="ARR_WT" Header="Western" />
+                            <TreeViewItem x:Name="ARR_CT" Header="Central" />
+                            <TreeViewItem x:Name="ARR_ET" Header="Eastern" />
+                            <TreeViewItem x:Name="ARR_ST" Header="Southern" />
+                            <TreeViewItem x:Name="ARR_NT" Header="Northern" />
+                        </TreeViewItem>
+                    </TreeViewItem>
+                </TreeView>
+            </DockPanel>
+        </Grid>
+    </Grid>
+</Window>

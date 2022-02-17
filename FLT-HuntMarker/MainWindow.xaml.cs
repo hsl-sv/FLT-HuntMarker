@@ -1,0 +1,436 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Shapes;
+
+namespace FLT_HuntMarker
+{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        public int UID = 0;
+        public List<string> objList = new();
+
+        public MainWindow()
+        {
+            InitializeComponent();
+
+            // Default map (Garlemald)
+            imageMap.Source = Utility.ByteToImage(Properties.Resources.Garlemald_data);
+            imageMap.Stretch = Stretch.Fill;
+
+            CheckUID();
+            UID++;
+
+            Loaded += MainWindow_Loaded;
+        }
+
+        private void CheckUID()
+        {
+            if (String.IsNullOrEmpty(System.IO.File.ReadAllText(CONFIG.LOGFILE)))
+            {
+                UID = 0;
+            }
+            else
+            {
+                var last = System.IO.File.ReadLines(CONFIG.LOGFILE).Last();
+
+                UID = int.Parse(last.Split(",")[0]);
+            }
+
+            return;
+        }
+
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                ParseLog();
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        // TODO: Need to check Each map
+        private void ParseLog()
+        {
+            var saved = System.IO.File.ReadLines(CONFIG.LOGFILE);
+
+            foreach (string saves in saved)
+            {
+                objList.Add(saves);
+
+                string[] contents = saves.Split(",");
+
+                int uid = int.Parse(contents[0]);
+                string mapid = contents[1];
+
+                if (mapid.Length is not (5 or 6))
+                {
+                    return;
+                }
+
+                double xx = double.Parse(contents[2]);
+                double yy = double.Parse(contents[3]);
+                string textbox = contents[4];
+
+                double xActual = canvas.ActualWidth;
+                double yActual = canvas.ActualHeight;
+
+                double dotSize = 10.0;
+                double xr = (xActual * xx / 100.0) - (dotSize / 2.0);
+                double yr = (yActual * yy / 100.0) - (dotSize / 2.0);
+
+                Ellipse dot = Utility.MakeDot(xr, yr, dotSize, DotType.Circle);
+                TextBlock tbx = Utility.MakeTextblock(xr, yr, 11, textbox);
+
+                dot.Name = CONFIG.OBJECT_PREFIX + uid.ToString();
+                tbx.Name = CONFIG.OBJECT_PREFIX + uid.ToString();
+
+                dot.MouseRightButtonUp += Dot_MouseRightButtonUp;
+
+                canvas.Children.Add(dot);
+                canvas.Children.Add(tbx);
+            }
+        }
+
+        // Redraw / Update dots based on current map
+        private void UpdateCanvas()
+        {
+            canvas.Children.Clear();
+            canvas.UpdateLayout();
+
+            for (int i = 0; i < objList.Count; i++)
+            {
+                string saves = objList[i];
+                string[] contents = saves.Split(",");
+                var tvi = treeview.SelectedItem;
+
+                if (contents[1] != (tvi as TreeViewItem).Name)
+                    continue;
+
+                double xx = double.Parse(contents[2]);
+                double yy = double.Parse(contents[3]);
+                string textbox = contents[4];
+
+                double xActual = canvas.ActualWidth;
+                double yActual = canvas.ActualHeight;
+
+                double dotSize = 10.0;
+                double xr = (xActual * xx / 100.0) - (dotSize / 2.0);
+                double yr = (yActual * yy / 100.0) - (dotSize / 2.0);
+
+                Ellipse dot = Utility.MakeDot(xr, yr, dotSize, DotType.Circle);
+                TextBlock tbx = Utility.MakeTextblock(xr, yr, 11, textbox);
+
+                dot.Name = CONFIG.OBJECT_PREFIX + contents[0];
+                tbx.Name = CONFIG.OBJECT_PREFIX + contents[0];
+
+                dot.MouseRightButtonUp += Dot_MouseRightButtonUp;
+
+                canvas.Children.Add(dot);
+                canvas.Children.Add(tbx);
+            }
+        }
+
+        private void treeview_CloseAll()
+        {
+            EW_Head.IsExpanded = false;
+            ShB_Head.IsExpanded = false;
+            SB_Head.IsExpanded = false;
+            HW_Head.IsExpanded = false;
+            ARR_Head.IsExpanded = false;
+            ARR_LN_Head.IsExpanded = false;
+            ARR_SH_Head.IsExpanded = false;
+            ARR_TH_Head.IsExpanded = false;
+
+            return;
+        }
+
+        private void treeview_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            TreeViewItem tvItem = (TreeViewItem)e.NewValue;
+
+            // Change map and...
+            switch (tvItem.Name)
+            {
+                case "EW_Head":
+                    treeview_CloseAll();
+                    EW_Head.IsExpanded = true;
+                    break;
+                case "ShB_Head":
+                    treeview_CloseAll();
+                    ShB_Head.IsExpanded = true;
+                    break;
+                case "SB_Head":
+                    treeview_CloseAll();
+                    SB_Head.IsExpanded = true;
+                    break;
+                case "HW_Head":
+                    treeview_CloseAll();
+                    HW_Head.IsExpanded = true;
+                    break;
+                case "ARR_Head":
+                    treeview_CloseAll();
+                    ARR_Head.IsExpanded = true;
+                    break;
+                case "ARR_LN_Head":
+                    if (!ARR_Head.IsExpanded)
+                        treeview_CloseAll();
+                    ARR_LN_Head.IsExpanded = true;
+                    break;
+                case "ARR_SH_Head":
+                    if (!ARR_Head.IsExpanded)
+                        treeview_CloseAll();
+                    ARR_SH_Head.IsExpanded = true;
+                    break;
+                case "ARR_TH_Head":
+                    if (!ARR_Head.IsExpanded)
+                        treeview_CloseAll();
+                    ARR_TH_Head.IsExpanded = true;
+                    break;
+
+                case "EW_LA":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Labyrinthos_data);
+                    break;
+                case "EW_GA":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Garlemald_data);
+                    break;
+                case "EW_TH":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Thavnair_data);
+                    break;
+                case "EW_EL":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Elpis_data);
+                    break;
+                case "EW_UL":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Ultima_Thule_data);
+                    break;
+
+                case "ShB_LA":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Lakeland_data);
+                    break;
+                case "ShB_KH":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Kholusia_data);
+                    break;
+                case "ShB_AM":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Amh_Araeng_data);
+                    break;
+                case "ShB_IL":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Il_Mheg_data);
+                    break;
+                case "ShB_RA":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.The_Rak_tika_Greatwood_data);
+                    break;
+                case "ShB_TE":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.The_Tempest_data);
+                    break;
+
+                case "SB_FR":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.The_Fringes_data);
+                    break;
+                case "SB_PE":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.The_Peaks_data);
+                    break;
+                case "SB_LO":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.The_Lochs_data);
+                    break;
+                case "SB_RU":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.The_Ruby_Sea_data);
+                    break;
+                case "SB_YA":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Yanxia_data);
+                    break;
+                case "SB_AZ":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.The_Azim_Steppe_data);
+                    break;
+
+                case "HW_CO":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Coerthas_Western_Highlands_data);
+                    break;
+                case "HW_SE":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.The_Sea_of_Clouds_data);
+                    break;
+                case "HW_CH":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.The_Churning_Mists_data);
+                    break;
+                case "HW_DF":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.The_Dravanian_Forelands_data);
+                    break;
+                case "HW_DH":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.The_Dravanian_Hinterlands_data);
+                    break;
+                case "HW_AZ":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Azys_Lla_data);
+                    break;
+
+                case "ARR_CO":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Coerthas_Central_Highlands_data);
+                    break;
+                case "ARR_MO":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Mor_Dhona_data);
+                    break;
+                case "ARR_ML":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Middle_La_Noscea_data);
+                    break;
+                case "ARR_LL":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Lower_La_Noscea_data);
+                    break;
+                case "ARR_EL":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Eastern_La_Noscea_data);
+                    break;
+                case "ARR_WL":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Western_La_Noscea_data);
+                    break;
+                case "ARR_UL":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Upper_La_Noscea_data);
+                    break;
+                case "ARR_OL":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Outer_La_Noscea_data);
+                    break;
+                case "ARR_CS":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Central_Shroud_data);
+                    break;
+                case "ARR_ES":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.East_Shroud_data);
+                    break;
+                case "ARR_SS":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.South_Shroud_data);
+                    break;
+                case "ARR_NS":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.North_Shroud_data);
+                    break;
+                case "ARR_WT":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Western_Thanalan_data);
+                    break;
+                case "ARR_CT":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Central_Thanalan_data);
+                    break;
+                case "ARR_ET":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Eastern_Thanalan_data);
+                    break;
+                case "ARR_ST":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Southern_Thanalan_data);
+                    break;
+                case "ARR_NT":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Northern_Thanalan_data);
+                    break;
+                default:
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Garlemald_data);
+                    break;
+            }
+
+            imageMap.Stretch = Stretch.Fill;
+
+            // Parse exist child objects from log file
+            UpdateCanvas();
+        }
+
+        // Left click means X mark + Timestamp
+        // Also make log for each map
+        private void canvas_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Point pos = e.GetPosition(null);
+            double x = pos.X;
+            double y = pos.Y;
+
+            double dotSize = 10.0;
+            double xr = x - (dotSize / 2.0);
+            double yr = y - (dotSize / 2.0);
+
+            var timestamp = DateTime.Now.ToString(CONFIG.TIMESTAMP_FORMAT);
+
+            // Create information for save
+            string currentMap = Utility.GetCurrentMap();
+            string xx = (x / canvas.ActualWidth * 100.0).ToString("0.0");
+            string yy = (y / canvas.ActualHeight * 100.0).ToString("0.0");
+
+            string log = UID.ToString() + "," + currentMap + "," + xx + "," + yy + "," + timestamp;
+            objList.Add(log);
+            log += Environment.NewLine;
+            System.IO.File.AppendAllText(CONFIG.LOGFILE, log);
+
+            // Update canvas
+            UpdateCanvas();
+
+            // Increase UID
+            UID++;
+
+            return;
+        }
+
+        // Right click exact dot position means delete dot and timestamp
+        private void Dot_MouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Ellipse dot = (Ellipse)sender;
+
+            for (int i = 0; i < canvas.Children.Count; i++)
+            {
+                Ellipse child = new();
+
+                if (canvas.Children[i] is Ellipse)
+                    child = (Ellipse)canvas.Children[i];
+                else
+                    continue;
+
+                if (dot.Name == child.Name)
+                {
+                    string[] objName = dot.Name.Split("_");
+                    int objUID = int.Parse(objName[1]);
+
+                    canvas.Children.RemoveAt(i + 1); // is timestamp (textblock)
+                    canvas.Children.RemoveAt(i); // is dot (ellipse)
+
+                    Utility.RemoveLogContains(objUID.ToString() + ",");
+
+                    for (int j = 0; j < objList.Count; j++)
+                    { 
+                        if (objList[j].Contains(objUID.ToString() + ","))
+                        {
+                            objList.RemoveAt(j);
+                        }
+                    }
+                }
+            }
+
+            return;
+        }
+
+        // TODO: Right click CANVAS means drop down menu
+        private void canvas_MouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Point pos = e.GetPosition(null);
+            double x = pos.X;
+            double y = pos.Y;
+        }
+
+        // Clear button means remove all canvas children (of current map)
+        private void buttonClear_Click(object sender, RoutedEventArgs e)
+        {
+            canvas.Children.Clear();
+            canvas.UpdateLayout();
+
+            // Rebuild objList
+            for (int i = 0; i < objList.Count; i++)
+            {
+                if (objList[i].Contains(Utility.GetCurrentMap()))
+                {
+                    objList.RemoveAt(i);
+                }
+            }
+
+            // Rebuild log file
+            Utility.RemoveLogContains(Utility.GetCurrentMap());
+
+            UpdateCanvas();
+
+            return;
+        }
+    }
+}

@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31729.503
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FLT-HuntMarker", "FLT-HuntMarker\FLT-HuntMarker.csproj", "{24FE299D-7555-4E96-90ED-774FA54A009A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{24FE299D-7555-4E96-90ED-774FA54A009A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24FE299D-7555-4E96-90ED-774FA54A009A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24FE299D-7555-4E96-90ED-774FA54A009A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24FE299D-7555-4E96-90ED-774FA54A009A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {220CDF24-2C57-48CB-B2F8-D299A607B0CB}
+	EndGlobalSection
+EndGlobal

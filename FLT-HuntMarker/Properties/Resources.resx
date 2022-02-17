@@ -1,0 +1,244 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Amh_Araeng_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\Amh_Araeng-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Azys_Lla_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\Azys_Lla-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Central_Shroud_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\Central_Shroud-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Central_Thanalan_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\Central_Thanalan-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Coerthas_Central_Highlands_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\Coerthas_Central_Highlands-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Coerthas_Western_Highlands_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\Coerthas_Western_Highlands-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Eastern_La_Noscea_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\Eastern_La_Noscea-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Eastern_Thanalan_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\Eastern_Thanalan-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="East_Shroud_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\East_Shroud-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Elpis_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\Elpis-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Garlemald_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\Garlemald-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Il_Mheg_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\Il_Mheg-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Kholusia_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\Kholusia-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Labyrinthos_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\Labyrinthos-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Lakeland_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\Lakeland-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Lower_La_Noscea_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\Lower_La_Noscea-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Mare_Lamentorum_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\Mare_Lamentorum-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Middle_La_Noscea_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\Middle_La_Noscea-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Mor_Dhona_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\Mor_Dhona-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Northern_Thanalan_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\Northern_Thanalan-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="North_Shroud_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\North_Shroud-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Outer_La_Noscea_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\Outer_La_Noscea-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Southern_Thanalan_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\Southern_Thanalan-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="South_Shroud_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\South_Shroud-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Thavnair_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\Thavnair-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="The_Azim_Steppe_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\The_Azim_Steppe-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="The_Churning_Mists_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\The_Churning_Mists-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="The_Dravanian_Forelands_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\The_Dravanian_Forelands-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="The_Dravanian_Hinterlands_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\The_Dravanian_Hinterlands-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="The_Fringes_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\The_Fringes-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="The_Lochs_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\The_Lochs-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="The_Peaks_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\The_Peaks-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="The_Rak_tika_Greatwood_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\The_Rak'tika_Greatwood-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="The_Ruby_Sea_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\The_Ruby_Sea-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="The_Sea_of_Clouds_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\The_Sea_of_Clouds-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="The_Tempest_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\The_Tempest-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Ultima_Thule_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\Ultima_Thule-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Upper_La_Noscea_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\Upper_La_Noscea-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Western_La_Noscea_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\Western_La_Noscea-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Western_Thanalan_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\Western_Thanalan-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Yanxia_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Maps\Yanxia-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+</root>
