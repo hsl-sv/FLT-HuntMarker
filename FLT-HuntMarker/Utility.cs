@@ -29,7 +29,7 @@ namespace FLT_HuntMarker
         }
 
         // Make ellipse
-        public static Ellipse MakeDot(double X, double Y, double dotSize, DotType type)
+        public static Ellipse MakeDot(double X, double Y, double dotSize, DotType type, string markType)
         {
             Ellipse dot = new Ellipse();
 
@@ -37,7 +37,15 @@ namespace FLT_HuntMarker
             {
                 dot.Stroke = new SolidColorBrush(Colors.Black);
                 dot.StrokeThickness = 2;
-                dot.Fill = new SolidColorBrush(Colors.Red);
+                dot.StrokeDashArray = new DoubleCollection() { 1 };
+
+                if (markType == "b")
+                    dot.Fill = CONFIG.COLOR_B;
+                else if (markType == "a")
+                    dot.Fill = CONFIG.COLOR_A;
+                else if (markType == "s")
+                    dot.Fill = CONFIG.COLOR_S;
+
                 dot.Height = dotSize;
                 dot.Width = dotSize;
                 dot.Margin = new Thickness(X, Y, 0, 0);
@@ -55,7 +63,7 @@ namespace FLT_HuntMarker
             tbx.FontSize = fontSize;
             tbx.TextAlignment = TextAlignment.Center;
             tbx.Background = new SolidColorBrush(Colors.White) { Opacity = 0.5 };
-            tbx.Margin = new Thickness(X - 25, Y + fontSize, 0, 0);
+            tbx.Margin = new Thickness(X - 25, Y + 20, 0, 0);
 
             return tbx;
         }

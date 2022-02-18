@@ -16,6 +16,7 @@ namespace FLT_HuntMarker
     {
         public int UID = 0;
         public List<string> objList = new();
+        public string markCurrent = "b";
 
         public MainWindow()
         {
@@ -115,15 +116,16 @@ namespace FLT_HuntMarker
                 double xx = double.Parse(contents[2]);
                 double yy = double.Parse(contents[3]);
                 string textbox = contents[4];
+                string markcur = contents[5];
 
                 double xActual = canvas.ActualWidth;
                 double yActual = canvas.ActualHeight;
 
-                double dotSize = 10.0;
+                double dotSize = 20.0;
                 double xr = (xActual * xx / 100.0) - (dotSize / 2.0);
                 double yr = (yActual * yy / 100.0) - (dotSize / 2.0);
 
-                Ellipse dot = Utility.MakeDot(xr, yr, dotSize, DotType.Circle);
+                Ellipse dot = Utility.MakeDot(xr, yr, dotSize, DotType.Circle, markcur);
                 TextBlock tbx = Utility.MakeTextblock(xr, yr, 11, textbox);
 
                 dot.Name = CONFIG.OBJECT_PREFIX + contents[0];
@@ -153,6 +155,7 @@ namespace FLT_HuntMarker
         private void treeview_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             TreeViewItem tvItem = (TreeViewItem)e.NewValue;
+            bool isHead = false;
 
             // Change map and...
             switch (tvItem.Name)
@@ -160,37 +163,45 @@ namespace FLT_HuntMarker
                 case "EW_Head":
                     treeview_CloseAll();
                     EW_Head.IsExpanded = true;
+                    isHead = true;
                     break;
                 case "ShB_Head":
                     treeview_CloseAll();
                     ShB_Head.IsExpanded = true;
+                    isHead = true;
                     break;
                 case "SB_Head":
                     treeview_CloseAll();
                     SB_Head.IsExpanded = true;
+                    isHead = true;
                     break;
                 case "HW_Head":
                     treeview_CloseAll();
                     HW_Head.IsExpanded = true;
+                    isHead = true;
                     break;
                 case "ARR_Head":
                     treeview_CloseAll();
                     ARR_Head.IsExpanded = true;
+                    isHead = true;
                     break;
                 case "ARR_LN_Head":
                     if (!ARR_Head.IsExpanded)
                         treeview_CloseAll();
                     ARR_LN_Head.IsExpanded = true;
+                    isHead = true;
                     break;
                 case "ARR_SH_Head":
                     if (!ARR_Head.IsExpanded)
                         treeview_CloseAll();
                     ARR_SH_Head.IsExpanded = true;
+                    isHead = true;
                     break;
                 case "ARR_TH_Head":
                     if (!ARR_Head.IsExpanded)
                         treeview_CloseAll();
                     ARR_TH_Head.IsExpanded = true;
+                    isHead = true;
                     break;
 
                 case "EW_LA":
@@ -325,7 +336,8 @@ namespace FLT_HuntMarker
             imageMap.Stretch = Stretch.Fill;
 
             // Parse exist child objects from log file
-            UpdateCanvas();
+            if (isHead is false)
+                UpdateCanvas();
         }
 
         // Left click means X mark + Timestamp
@@ -347,7 +359,7 @@ namespace FLT_HuntMarker
             string xx = (x / canvas.ActualWidth * 100.0).ToString("0.0");
             string yy = (y / canvas.ActualHeight * 100.0).ToString("0.0");
 
-            string log = UID.ToString() + "," + currentMap + "," + xx + "," + yy + "," + timestamp;
+            string log = UID.ToString() + "," + currentMap + "," + xx + "," + yy + "," + timestamp + "," + markCurrent;
             objList.Add(log);
             log += Environment.NewLine;
             System.IO.File.AppendAllText(CONFIG.LOGFILE, log);
@@ -409,15 +421,13 @@ namespace FLT_HuntMarker
         // Clear current button means remove all canvas children (of current map)
         private void buttonClear_Click(object sender, RoutedEventArgs e)
         {
-            canvas.Children.Clear();
-            canvas.UpdateLayout();
-
             // Rebuild objList
             for (int i = 0; i < objList.Count; i++)
             {
                 if (objList[i].Contains(Utility.GetCurrentMap()))
                 {
                     objList.RemoveAt(i);
+                    i--;
                 }
             }
 
@@ -450,15 +460,15 @@ namespace FLT_HuntMarker
         {
             if (radioButtonS.IsChecked is true)
             {
-                Debug.WriteLine("SSS");
+                markCurrent = "s";
             }
             else if (radioButtonA.IsChecked is true)
             {
-                Debug.WriteLine("AAA");
+                markCurrent = "a";
             }
             else if (radioButtonB.IsChecked is true)
             {
-                Debug.WriteLine("BBB");
+                markCurrent = "b";
             }
         }
     }

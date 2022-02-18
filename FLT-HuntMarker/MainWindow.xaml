@@ -23,9 +23,9 @@
         <Grid Grid.Column="1" Margin="1">
             <DockPanel>
                 <Button x:Name="buttonClear" DockPanel.Dock="Top" Height="40" Margin="5" 
-                        Content="Clear Current" Click="buttonClear_Click"/>
+                        Content="Clear Current" Click="buttonClear_Click" ClipToBounds="True"/>
                 <Button x:Name="buttonClearAll" DockPanel.Dock="Top" Height="40" Margin="5" 
-                        Content="Clear All" Click="buttonClearAll_Click" />
+                        Content="Clear All" Click="buttonClearAll_Click" ClipToBounds="True" />
 
                 <Grid DockPanel.Dock="Top" Margin="3">
                     <Grid.ColumnDefinitions>
@@ -33,12 +33,20 @@
                         <ColumnDefinition Width="1*"/>
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
-                    <RadioButton x:Name="radioButtonS" Content="S" Grid.Column="0"
-                             Style="{StaticResource {x:Type ToggleButton}}" Click="radioButton_Click" />
-                    <RadioButton x:Name="radioButtonA" Content="A" Grid.Column="1"
-                             Style="{StaticResource {x:Type ToggleButton}}" Click="radioButton_Click" />
-                    <RadioButton x:Name="radioButtonB" Content="B" Grid.Column="2"
-                             Style="{StaticResource {x:Type ToggleButton}}" Click="radioButton_Click" />
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="8"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+                    <Grid Background="Orange" Grid.Column="0" Grid.Row="0"/>
+                    <Grid Background="LightGreen" Grid.Column="1" Grid.Row="0"/>
+                    <Grid Background="LightBlue" Grid.Column="2" Grid.Row="0"/>
+                    <RadioButton x:Name="radioButtonS" Grid.Column="0" Content="S" Grid.Row="1"
+                                 Style="{StaticResource {x:Type ToggleButton}}" Click="radioButton_Click" />
+                    <RadioButton x:Name="radioButtonA" Grid.Column="1" Content="A" Grid.Row="1"
+                                 Style="{StaticResource {x:Type ToggleButton}}" Click="radioButton_Click" />
+                    <RadioButton x:Name="radioButtonB" Grid.Column="2" Content="B" Grid.Row="1"
+                                 IsChecked="True"
+                                 Style="{StaticResource {x:Type ToggleButton}}" Click="radioButton_Click" />
                 </Grid>
 
                 <TreeView x:Name="treeview" DockPanel.Dock="Bottom" Margin="3" FontSize="10" 
