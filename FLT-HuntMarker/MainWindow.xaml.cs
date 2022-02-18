@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,26 +25,36 @@ namespace FLT_HuntMarker
             imageMap.Source = Utility.ByteToImage(Properties.Resources.Garlemald_data);
             imageMap.Stretch = Stretch.Fill;
 
-            CheckUID();
-            UID++;
+            UID = SetUID();
 
             Loaded += MainWindow_Loaded;
         }
 
-        private void CheckUID()
+        // Return last uid
+        private int SetUID()
         {
+            int uc = 0;
+
             if (String.IsNullOrEmpty(System.IO.File.ReadAllText(CONFIG.LOGFILE)))
             {
-                UID = 0;
+                uc = 0;
             }
             else
             {
                 var last = System.IO.File.ReadLines(CONFIG.LOGFILE).Last();
 
-                UID = int.Parse(last.Split(",")[0]);
+                try
+                {
+                    uc = int.Parse(last.Split(",")[0]);
+                    uc++;
+                }
+                catch
+                {
+                    uc = 0;
+                }
             }
 
-            return;
+            return uc;
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -56,48 +67,33 @@ namespace FLT_HuntMarker
             {
                 Console.WriteLine(ex.Message);
             }
+
+            UpdateCanvas();
         }
 
-        // TODO: Need to check Each map
+        // Parse objList from CONFIG.LOGFILE
         private void ParseLog()
         {
             var saved = System.IO.File.ReadLines(CONFIG.LOGFILE);
 
             foreach (string saves in saved)
             {
-                objList.Add(saves);
 
                 string[] contents = saves.Split(",");
 
-                int uid = int.Parse(contents[0]);
+                if(!int.TryParse(contents[0], out int value))
+                {
+                    continue;
+                }
+
                 string mapid = contents[1];
 
                 if (mapid.Length is not (5 or 6))
                 {
-                    return;
+                    continue;
                 }
 
-                double xx = double.Parse(contents[2]);
-                double yy = double.Parse(contents[3]);
-                string textbox = contents[4];
-
-                double xActual = canvas.ActualWidth;
-                double yActual = canvas.ActualHeight;
-
-                double dotSize = 10.0;
-                double xr = (xActual * xx / 100.0) - (dotSize / 2.0);
-                double yr = (yActual * yy / 100.0) - (dotSize / 2.0);
-
-                Ellipse dot = Utility.MakeDot(xr, yr, dotSize, DotType.Circle);
-                TextBlock tbx = Utility.MakeTextblock(xr, yr, 11, textbox);
-
-                dot.Name = CONFIG.OBJECT_PREFIX + uid.ToString();
-                tbx.Name = CONFIG.OBJECT_PREFIX + uid.ToString();
-
-                dot.MouseRightButtonUp += Dot_MouseRightButtonUp;
-
-                canvas.Children.Add(dot);
-                canvas.Children.Add(tbx);
+                objList.Add(saves);
             }
         }
 
@@ -410,7 +406,7 @@ namespace FLT_HuntMarker
             double y = pos.Y;
         }
 
-        // Clear button means remove all canvas children (of current map)
+        // Clear current button means remove all canvas children (of current map)
         private void buttonClear_Click(object sender, RoutedEventArgs e)
         {
             canvas.Children.Clear();
@@ -431,6 +427,39 @@ namespace FLT_HuntMarker
             UpdateCanvas();
 
             return;
+        }
+
+        // ClearAll button means clear all
+        private void buttonClearAll_Click(object sender, RoutedEventArgs e)
+        {
+            if(MessageBox.Show("Clear All Markers?", "Question",
+                MessageBoxButton.OKCancel, MessageBoxImage.Warning) == MessageBoxResult.OK)
+            {
+                canvas.Children.Clear();
+                canvas.UpdateLayout();
+                objList.Clear();
+                System.IO.File.WriteAllText(CONFIG.LOGFILE, "");
+
+                UpdateCanvas();
+            }
+
+            return;
+        }
+
+        private void radioButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (radioButtonS.IsChecked is true)
+            {
+                Debug.WriteLine("SSS");
+            }
+            else if (radioButtonA.IsChecked is true)
+            {
+                Debug.WriteLine("AAA");
+            }
+            else if (radioButtonB.IsChecked is true)
+            {
+                Debug.WriteLine("BBB");
+            }
         }
     }
 }

@@ -23,10 +23,24 @@
         <Grid Grid.Column="1" Margin="1">
             <DockPanel>
                 <Button x:Name="buttonClear" DockPanel.Dock="Top" Height="40" Margin="5" 
-                        Content="Clear" Click="buttonClear_Click"/>
-                <Button DockPanel.Dock="Top" Height="40" Margin="5">
+                        Content="Clear Current" Click="buttonClear_Click"/>
+                <Button x:Name="buttonClearAll" DockPanel.Dock="Top" Height="40" Margin="5" 
+                        Content="Clear All" Click="buttonClearAll_Click" />
 
-                </Button>
+                <Grid DockPanel.Dock="Top" Margin="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <RadioButton x:Name="radioButtonS" Content="S" Grid.Column="0"
+                             Style="{StaticResource {x:Type ToggleButton}}" Click="radioButton_Click" />
+                    <RadioButton x:Name="radioButtonA" Content="A" Grid.Column="1"
+                             Style="{StaticResource {x:Type ToggleButton}}" Click="radioButton_Click" />
+                    <RadioButton x:Name="radioButtonB" Content="B" Grid.Column="2"
+                             Style="{StaticResource {x:Type ToggleButton}}" Click="radioButton_Click" />
+                </Grid>
+
                 <TreeView x:Name="treeview" DockPanel.Dock="Bottom" Margin="3" FontSize="10" 
                           x:FieldModifier="public"
                           ScrollViewer.VerticalScrollBarVisibility="Hidden"
