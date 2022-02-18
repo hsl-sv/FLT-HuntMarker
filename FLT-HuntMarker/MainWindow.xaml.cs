@@ -217,6 +217,9 @@ namespace FLT_HuntMarker
                 case "EW_TH":
                     imageMap.Source = Utility.ByteToImage(Properties.Resources.Thavnair_data);
                     break;
+                case "EW_MA":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Mare_Lamentorum_data);
+                    break;
                 case "EW_EL":
                     imageMap.Source = Utility.ByteToImage(Properties.Resources.Elpis_data);
                     break;

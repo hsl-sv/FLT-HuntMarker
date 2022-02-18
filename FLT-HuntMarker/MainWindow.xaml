@@ -62,8 +62,9 @@
                     
                     <TreeViewItem x:Name="EW_Head" Header="EW" IsExpanded="True">
                         <TreeViewItem x:Name="EW_LA" Header="Labyrinthos" />
-                        <TreeViewItem x:Name="EW_GA" Header="Garlemald" IsSelected="True" />
                         <TreeViewItem x:Name="EW_TH" Header="Thavnair" />
+                        <TreeViewItem x:Name="EW_GA" Header="Garlemald" IsSelected="True" />
+                        <TreeViewItem x:Name="EW_MA" Header="Moon" />
                         <TreeViewItem x:Name="EW_EL" Header="Elpis" />
                         <TreeViewItem x:Name="EW_UL" Header="Ultima Thule" />
                     </TreeViewItem>
