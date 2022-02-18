@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
@@ -70,6 +71,9 @@ namespace FLT_HuntMarker
             }
 
             UpdateCanvas();
+
+            HwndSource source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
+            source.AddHook(new HwndSourceHook(WndProc));
         }
 
         // Parse objList from CONFIG.LOGFILE
@@ -395,11 +399,11 @@ namespace FLT_HuntMarker
                     canvas.Children.RemoveAt(i + 1); // is timestamp (textblock)
                     canvas.Children.RemoveAt(i); // is dot (ellipse)
 
-                    Utility.RemoveLogContains(objUID.ToString() + ",");
+                    Utility.RemoveLogContains(objUID.ToString() + "," + Utility.GetCurrentMap());
 
                     for (int j = 0; j < objList.Count; j++)
                     { 
-                        if (objList[j].Contains(objUID.ToString() + ","))
+                        if (objList[j].Contains(objUID.ToString() + "," + Utility.GetCurrentMap()))
                         {
                             objList.RemoveAt(j);
                         }
@@ -471,5 +475,29 @@ namespace FLT_HuntMarker
                 markCurrent = "b";
             }
         }
+
+        // Redraw when window size changed
+        const int WM_SIZING = 0x214;
+        const int WM_EXITSIZEMOVE = 0x232;
+        private static bool WindowWasResized = false;
+
+        private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        {
+            if (msg == WM_SIZING)
+                if (WindowWasResized == false)
+                    WindowWasResized = true;
+
+            if (msg == WM_EXITSIZEMOVE)
+            {        
+                if (WindowWasResized == true)
+                {
+                    UpdateCanvas();
+                    WindowWasResized = false;
+                }
+            }
+
+            return IntPtr.Zero;
+        }
+
     }
 }

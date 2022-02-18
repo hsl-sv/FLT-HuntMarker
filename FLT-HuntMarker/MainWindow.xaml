@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:FLT_HuntMarker"
         mc:Ignorable="d"
         WindowStyle="ToolWindow"
-        Title="FFXIVHuntMarker" 
+        Title="FFXIVHuntMarker"
+        ResizeMode="CanMinimize"
         Width="600"
         Height="500">
     <Grid x:Name="gridMain">
