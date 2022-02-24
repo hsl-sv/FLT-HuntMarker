@@ -93,7 +93,7 @@ namespace FLT_HuntMarker
 
                 string mapid = contents[1];
 
-                if (mapid.Length is not (5 or 6))
+                if (mapid.Length is not (5 or 6 or 7))
                 {
                     continue;
                 }
@@ -208,24 +208,30 @@ namespace FLT_HuntMarker
                     isHead = true;
                     break;
 
-                case "EW_LA":
-                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Labyrinthos_data);
-                    break;
-                case "EW_GA":
-                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Garlemald_data);
-                    break;
-                case "EW_TH":
-                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Thavnair_data);
-                    break;
-                case "EW_MA":
-                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Mare_Lamentorum_data);
-                    break;
-                case "EW_EL":
-                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Elpis_data);
-                    break;
-                case "EW_UL":
-                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Ultima_Thule_data);
-                    break;
+                case "EW_LA1":
+                case "EW_LA2":
+                case "EW_LA3":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Labyrinthos_data); break;
+                case "EW_GA1":
+                case "EW_GA2":
+                case "EW_GA3":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Garlemald_data); break;
+                case "EW_TH1":
+                case "EW_TH2":
+                case "EW_TH3":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Thavnair_data); break;
+                case "EW_MA1":
+                case "EW_MA2":
+                case "EW_MA3":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Mare_Lamentorum_data); break;
+                case "EW_EL1":
+                case "EW_EL2":
+                case "EW_EL3":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Elpis_data); break;
+                case "EW_UL1":
+                case "EW_UL2":
+                case "EW_UL3":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Ultima_Thule_data); break;
 
                 case "ShB_LA":
                     imageMap.Source = Utility.ByteToImage(Properties.Resources.Lakeland_data);
