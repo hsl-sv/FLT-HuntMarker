@@ -51,7 +51,7 @@
                 </Grid>
 
                 <Button x:Name="buttonHuntCounter" DockPanel.Dock="Top" Height="30" Margin="5" 
-                        Content="Hunt Counter" ClipToBounds="True" />
+                        Content="Hunt Counter" ClipToBounds="True" Click="buttonHuntCounter_Click" />
 
                 <TreeView x:Name="treeview" DockPanel.Dock="Bottom" Margin="3" FontSize="10" 
                           x:FieldModifier="public"

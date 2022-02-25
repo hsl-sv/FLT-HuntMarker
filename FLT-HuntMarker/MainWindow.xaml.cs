@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
@@ -19,7 +21,11 @@ namespace FLT_HuntMarker
         public List<string> objList = new();
         public string markCurrent = "b";
 
-        private HuntCounter huntCounter;
+        public HuntCounter huntCounter;
+        public List<Mob> CurrentTrain;
+        private string CurrentTrainName { get; set; }
+        public ObservableCollection<Mob> CurrentNearbyMobs { get; }
+        public Player CurrentPlayer { get; set; }
 
         public MainWindow()
         {
@@ -30,6 +36,7 @@ namespace FLT_HuntMarker
             imageMap.Stretch = Stretch.Fill;
 
             UID = SetUID();
+            huntCounter = new HuntCounter();
 
             Loaded += MainWindow_Loaded;
         }
@@ -510,5 +517,38 @@ namespace FLT_HuntMarker
             return IntPtr.Zero;
         }
 
+        private void SetupHuntCounter()
+        {
+            var processExists = huntCounter.Setup();
+
+            while (!processExists)
+            {
+                Console.WriteLine("Process not found... Trying again?");
+                Trace.WriteLine("Process not found... Trying again..?");
+                processExists = huntCounter.Setup();
+                Thread.Sleep(100);
+            }
+            Console.WriteLine("Process found!");
+            Trace.WriteLine("Process found!");
+        }
+
+        private void buttonHuntCounter_Click(object sender, RoutedEventArgs e)
+        {
+            SetupHuntCounter();
+
+            SearchNearbyMobs();
+        }
+
+        public void SearchNearbyMobs()
+        {
+            var tempNearbyList = new ObservableCollection<Mob>();
+
+            var actors = huntCounter.GetMobs();
+
+            if (actors == null)
+            {
+                return;
+            }
+        }
     }
 }
