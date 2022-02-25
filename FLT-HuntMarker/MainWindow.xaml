@@ -23,9 +23,9 @@
         </Grid>
         <Grid Grid.Column="1" Margin="1">
             <DockPanel>
-                <Button x:Name="buttonClear" DockPanel.Dock="Top" Height="40" Margin="5" 
+                <Button x:Name="buttonClear" DockPanel.Dock="Top" Height="30" Margin="5" 
                         Content="Clear Current" Click="buttonClear_Click" ClipToBounds="True"/>
-                <Button x:Name="buttonClearAll" DockPanel.Dock="Top" Height="40" Margin="5" 
+                <Button x:Name="buttonClearAll" DockPanel.Dock="Top" Height="30" Margin="5" 
                         Content="Clear All" Click="buttonClearAll_Click" ClipToBounds="True" />
 
                 <Grid DockPanel.Dock="Top" Margin="3">
@@ -49,6 +49,9 @@
                                  IsChecked="True"
                                  Style="{StaticResource {x:Type ToggleButton}}" Click="radioButton_Click" />
                 </Grid>
+
+                <Button x:Name="buttonHuntCounter" DockPanel.Dock="Top" Height="30" Margin="5" 
+                        Content="Hunt Counter" ClipToBounds="True" />
 
                 <TreeView x:Name="treeview" DockPanel.Dock="Bottom" Margin="3" FontSize="10" 
                           x:FieldModifier="public"

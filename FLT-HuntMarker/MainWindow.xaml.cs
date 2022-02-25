@@ -19,6 +19,8 @@ namespace FLT_HuntMarker
         public List<string> objList = new();
         public string markCurrent = "b";
 
+        private HuntCounter huntCounter;
+
         public MainWindow()
         {
             InitializeComponent();
