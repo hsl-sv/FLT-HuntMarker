@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace FLT_HuntMarker
 {
@@ -20,12 +21,17 @@ namespace FLT_HuntMarker
         public int UID = 0;
         public List<string> objList = new();
         public string markCurrent = "b";
+        
+        public static bool isClosing = false;
+        public static bool isFF14Hooked = false;
+        public static bool isHuntThreadWorking = false;
+        private ObservableCollection<Mob> nearbyCollection = new();
+        private ObservableCollection<Mob> trackedCollection = new();
+        
+        Thread t;
+        Thread huntThread;
 
         public HuntCounter huntCounter;
-        public List<Mob> CurrentTrain;
-        private string CurrentTrainName { get; set; }
-        public ObservableCollection<Mob> CurrentNearbyMobs { get; }
-        public Player CurrentPlayer { get; set; }
 
         public MainWindow()
         {
@@ -83,6 +89,9 @@ namespace FLT_HuntMarker
 
             HwndSource source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
             source.AddHook(new HwndSourceHook(WndProc));
+
+            t = new Thread(new ThreadStart(SetupHuntCounter));
+            t.Start();
         }
 
         // Parse objList from CONFIG.LOGFILE
@@ -517,37 +526,185 @@ namespace FLT_HuntMarker
             return IntPtr.Zero;
         }
 
+
         private void SetupHuntCounter()
         {
             var processExists = huntCounter.Setup();
 
             while (!processExists)
             {
-                Console.WriteLine("Process not found... Trying again?");
-                Trace.WriteLine("Process not found... Trying again..?");
+                if (isClosing == true)
+                    return;
+
+                Console.WriteLine("Process not found... Trying again");
+                Trace.WriteLine("Process not found... Trying again");
+
                 processExists = huntCounter.Setup();
-                Thread.Sleep(100);
+
+                Thread.Sleep(1000);
             }
+
+            isFF14Hooked = true;
+
             Console.WriteLine("Process found!");
             Trace.WriteLine("Process found!");
         }
 
         private void buttonHuntCounter_Click(object sender, RoutedEventArgs e)
         {
-            SetupHuntCounter();
+            if (isFF14Hooked)
+            {
+                try
+                {
+                    if (!isHuntThreadWorking)
+                    {
+                        huntThread = new Thread(new ThreadStart(HuntTrackThread));
+                        huntThread.Start();
+                    }
 
-            SearchNearbyMobs();
+                    SearchNearbyMobs();
+                }
+                catch (Exception)
+                {
+                    // TODO: Is it work?
+                    t.Start();
+                    isFF14Hooked = false;
+                }
+            }
+            else
+            {
+                Console.WriteLine("FF14 Cannot Found");
+                Trace.WriteLine("FF14 Cannot Found");
+            }
         }
 
         public void SearchNearbyMobs()
         {
-            var tempNearbyList = new ObservableCollection<Mob>();
-
             var actors = huntCounter.GetMobs();
 
             if (actors == null)
             {
                 return;
+            }
+
+            nearbyCollection.Clear();
+            listviewHuntCounter.Items.Clear();
+
+            foreach (var actor in actors)
+            {
+                var mob = new Mob
+                {
+                    Name = actor.Value.Name,
+                    Key = actor.Key,
+                    HP = actor.Value.HPCurrent,
+                    IsTracking = false,
+                    Coordinates = new Coords(Utility.ConvertPos(actor.Value.X), Utility.ConvertPos(actor.Value.Y)),
+                };
+
+                nearbyCollection.Add(mob);
+            }
+
+            foreach (var mob in nearbyCollection)
+            {
+                string item = mob.Name;
+                bool skip = false;
+                item += "_" + mob.Coordinates.X.ToString("0.0") + "_" + mob.Coordinates.Y.ToString("0.0");
+
+                foreach (var listitem in listviewHuntCounter.Items)
+                {
+                    if (listitem.ToString().Contains(mob.Name))
+                    {
+                        skip = true;
+                    }
+                }
+
+                if (!skip)
+                    listviewHuntCounter.Items.Add(item);
+            }
+
+            listviewHuntCounter_SetList();
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            isClosing = true;
+        }
+
+        // It will not be fired before SearchNearbyMobs()
+        private void listviewHuntCounter_SetList()
+        {
+            ListView lv = listviewHuntCounter;
+
+            trackedCollection.Clear();
+
+            foreach (var item in lv.Items)
+            {
+                string mobName = item.ToString().Split("_")[0];
+
+                if (!trackedCollection.Any(m => m.Name == mobName))
+                {
+                    trackedCollection.Add(new Mob(mobName, 0));
+                }
+            }
+        }
+
+        private void HuntTrackThread()
+        {
+            ObservableCollection<uint> diedBefore = new();
+
+            isHuntThreadWorking = true;
+
+            while(!isClosing)
+            {
+                var actors = huntCounter.GetMobs();
+
+                if (actors == null)
+                {
+                    
+                }
+                else
+                {
+                    foreach (var actor in actors)
+                    {
+                        var mob = new Mob
+                        {
+                            Name = actor.Value.Name,
+                            Key = actor.Key,
+                            HP = actor.Value.HPCurrent,
+                            IsTracking = false,
+                            Coordinates = new Coords(Utility.ConvertPos(actor.Value.X), Utility.ConvertPos(actor.Value.Y)),
+                        };
+
+                        // Every spawnd mob has different key
+                        if (mob.HP == 0 && !diedBefore.Contains(mob.Key))
+                        {
+                            diedBefore.Add(mob.Key);
+
+                            foreach (var tc in trackedCollection)
+                            {
+                                if (mob.Name == tc.Name)
+                                {
+                                    tc.Count++;
+                                }
+                            }
+                        
+                            Trace.WriteLine("dead -> " + mob.Key.ToString());
+                        }
+                    }
+                }
+
+                Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
+                {
+                    listviewHuntCounterNumber.Items.Clear();
+
+                    foreach (var tc in trackedCollection)
+                    {
+                        listviewHuntCounterNumber.Items.Add(tc.Count.ToString());
+                    }
+
+                }));
+
+                Thread.Sleep(1000);
             }
         }
     }

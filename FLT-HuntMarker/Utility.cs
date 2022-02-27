@@ -92,5 +92,11 @@ namespace FLT_HuntMarker
 
             return;
         }
+
+        // Convert position
+        public static double ConvertPos(double num)
+        {
+            return ((Math.Floor((21.48 + (Convert.ToDouble(num) / 50)) * 100)) / 100);
+        }
     }
 }

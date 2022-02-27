@@ -87,14 +87,21 @@ namespace FLT_HuntMarker
 
         public ConcurrentDictionary<uint, ActorItem> GetMobs()
         {
-            if (MemoryHandler.Reader.CanGetActors())
+            try
             {
-                var actors = _reader.GetActors();
-                return actors.CurrentMonsters;
+                if (MemoryHandler.Reader.CanGetActors())
+                {
+                    var actors = _reader.GetActors();
+                    return actors.CurrentMonsters;
+                }
+                else
+                {
+                    Console.WriteLine("Can't get actors");
+                    return null;
+                }
             }
-            else
+            catch
             {
-                Console.WriteLine("Can't get actors");
                 return null;
             }
         }

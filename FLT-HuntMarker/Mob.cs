@@ -28,11 +28,14 @@ namespace FLT_HuntMarker
         public event EventHandler<Coords> CoordsChanged;
         public event PropertyChangedEventHandler PropertyChanged;
         public string Name { get; set; }
+        public uint Key { get; set; }
         public int ModelID { get; set; }
+        public int Count { get; set; }
         public string Rank { get; set; }
         public double HP { get; set; }
         public int MapTerritory { get; set; }
         public string MapImagePath { get; set; }
+        public bool IsTracking { get; set; }
         public new double HPPercent
         {
             get => _hPPercent;
@@ -60,18 +63,19 @@ namespace FLT_HuntMarker
 
         }
 
-        public Mob(string name, int modelId, string rank)
+        public Mob(string name, int count)
         {
             Name = name;
-            ModelID = modelId;
-            Rank = rank;
+            Count = count;
         }
 
-        public Mob(string name, string rank, int mapTerritory)
+        public Mob(string name, double hp, uint id, bool trackStatus, Coords coordinates)
         {
             Name = name;
-            Rank = rank;
-            MapTerritory = mapTerritory;
+            HP = hp;
+            Key = id;
+            IsTracking = trackStatus;
+            Coordinates = coordinates;
         }
 
         public Mob(Coords coordinates, string name, int modelId, string rank, double hp, int mapTerritory)
