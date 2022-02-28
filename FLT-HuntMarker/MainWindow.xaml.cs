@@ -623,6 +623,11 @@ namespace FLT_HuntMarker
             }
 
             listviewHuntCounter_SetList();
+
+            Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
+            {
+                buttonHuntCounter.Content = "Reset Counter";
+            }));
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -696,7 +701,7 @@ namespace FLT_HuntMarker
                 Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
                 {
                     listviewHuntCounterNumber.Items.Clear();
-
+                    
                     foreach (var tc in trackedCollection)
                     {
                         listviewHuntCounterNumber.Items.Add(tc.Count.ToString());
