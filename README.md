@@ -1,3 +1,3 @@
 # FLT-HuntMarker
 
-For check occupied position and specify spawn location
+For check accounted position, specify spawn location for train, S spawn counter
