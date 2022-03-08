@@ -23,6 +23,7 @@ namespace FLT_HuntMarker
         {
             // DX11
             Process[] processes = Process.GetProcessesByName("ffxiv_dx11");
+
             if (processes.Length > 0)
             {
 
@@ -50,13 +51,22 @@ namespace FLT_HuntMarker
                     ProcessModel = processModel
                 };
 
-                MemoryHandler = SharlayanMemoryManager.Instance.AddHandler(configuration);
-                MemoryHandler = SharlayanMemoryManager.Instance.GetHandler(processModel.ProcessID);
-                _reader = MemoryHandler.Reader;
+                try
+                {
+                    MemoryHandler = SharlayanMemoryManager.Instance.AddHandler(configuration);
+                    MemoryHandler = SharlayanMemoryManager.Instance.GetHandler(processModel.ProcessID);
+                    _reader = MemoryHandler.Reader;
+
+                }
+                catch (Exception e)
+                {
+                    Trace.WriteLine("Unable to add handlers... Maybe game has been updated?");
+
+                    return false;
+                }
 
                 Console.WriteLine(processModel.ProcessID);
 
-                //wait a mo' for things to load
                 Thread.Sleep(1000);
 
                 return true;
@@ -77,10 +87,6 @@ namespace FLT_HuntMarker
             }
             else
             {
-                Console.WriteLine("actions " + _reader.CanGetActions());
-                Console.WriteLine("actors " + _reader.CanGetActors());
-                Console.WriteLine("chat log " + _reader.CanGetChatLog());
-                Console.WriteLine("can't get actors");
                 return null;
             }
         }
@@ -96,7 +102,6 @@ namespace FLT_HuntMarker
                 }
                 else
                 {
-                    Console.WriteLine("Can't get actors");
                     return null;
                 }
             }

@@ -38,11 +38,19 @@
                       IsEnabled="False" />
             
             <DockPanel Grid.Column="0">
+                <DockPanel DockPanel.Dock="Top">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
 
-                <Button x:Name="buttonClear" DockPanel.Dock="Top" Height="30" Margin="5" 
-                        Content="Clear Current" Click="buttonClear_Click" ClipToBounds="True"/>
-                <Button x:Name="buttonClearAll" DockPanel.Dock="Top" Height="30" Margin="5" 
+                        <Button x:Name="buttonClear" Grid.Column="0" Height="30" Margin="5,5,0,5" 
+                        Content="Clear Map" Click="buttonClear_Click" ClipToBounds="True"/>
+                        <Button x:Name="buttonClearAll"  Grid.Column="1" Height="30" Margin="0,5,5,5" 
                         Content="Clear All" Click="buttonClearAll_Click" ClipToBounds="True" />
+                    </Grid>
+                </DockPanel>
 
                 <Grid DockPanel.Dock="Top" Margin="3">
                     <Grid.ColumnDefinitions>
@@ -66,8 +74,30 @@
                                  Style="{StaticResource {x:Type ToggleButton}}" Click="radioButton_Click" />
                 </Grid>
 
-                <Button x:Name="buttonHuntCounter" DockPanel.Dock="Top" Height="30" Margin="5" 
+                <Grid DockPanel.Dock="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <Button x:Name="buttonHuntCounter" Height="25" 
+                            Margin="5,5,5,2" Grid.Column="0" Grid.ColumnSpan="2" VerticalContentAlignment="Center"
                         Content="Hunt Counter" ClipToBounds="True" Click="buttonHuntCounter_Click" />
+
+                    <Button x:Name="buttonHuntCounterAdd" Height="25" 
+                            Margin="5,2,5,5" Grid.Column="0" Grid.Row="1" VerticalContentAlignment="Center"
+                        Content="Append" ClipToBounds="True" Click="buttonHuntCounter_Click" />
+
+                    <CheckBox x:Name="checkboxCounterDisplay" VerticalAlignment="Center" VerticalContentAlignment="Center"
+                              Grid.Column="1" Grid.Row="1"
+                              Content="Display" Click="checkboxCounterDisplay_Click">
+                        
+                    </CheckBox>
+                </Grid>
 
                 <TreeView x:Name="treeview" DockPanel.Dock="Bottom" Margin="3" FontSize="10" 
                           x:FieldModifier="public"

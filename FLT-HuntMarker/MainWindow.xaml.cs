@@ -25,13 +25,15 @@ namespace FLT_HuntMarker
         public static bool isClosing = false;
         public static bool isFF14Hooked = false;
         public static bool isHuntThreadWorking = false;
-        private ObservableCollection<Mob> nearbyCollection = new();
-        private ObservableCollection<Mob> trackedCollection = new();
+        public static bool isDisplayChecked = false;
+        public static ObservableCollection<Mob> nearbyCollection = new();
+        public static ObservableCollection<Mob> trackedCollection = new();
         
         Thread t;
         Thread huntThread;
 
         public HuntCounter huntCounter;
+        private PopupDisplay DisplayWindow;
 
         public MainWindow()
         {
@@ -179,7 +181,7 @@ namespace FLT_HuntMarker
             TreeViewItem tvItem = (TreeViewItem)e.NewValue;
             bool isHead = false;
 
-            // Change map and...
+            // Dirty but easy
             switch (tvItem.Name)
             {
                 case "EW_Head":
@@ -503,7 +505,7 @@ namespace FLT_HuntMarker
             }
         }
 
-        // Redraw when window size changed
+        // Redraw when window size change finished
         const int WM_SIZING = 0x214;
         const int WM_EXITSIZEMOVE = 0x232;
         private static bool WindowWasResized = false;
@@ -526,32 +528,45 @@ namespace FLT_HuntMarker
             return IntPtr.Zero;
         }
 
-
+        // Search process
         private void SetupHuntCounter()
         {
-            var processExists = huntCounter.Setup();
+            bool processExists = false;
+            short retryCounter = 0;
 
             while (!processExists)
             {
-                if (isClosing == true)
+                if (isClosing)
                     return;
 
-                Console.WriteLine("Process not found... Trying again");
-                Trace.WriteLine("Process not found... Trying again");
+                if (retryCounter > 5)
+                    break;
 
                 processExists = huntCounter.Setup();
+                retryCounter++;
 
-                Thread.Sleep(1000);
+                Thread.Sleep(3000);
             }
 
-            isFF14Hooked = true;
-
-            Console.WriteLine("Process found!");
-            Trace.WriteLine("Process found!");
+            if (retryCounter > 5)
+            {
+                Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
+                {
+                    buttonHuntCounter.IsEnabled = false;
+                    buttonHuntCounterAdd.IsEnabled = false;
+                    checkboxCounterDisplay.IsEnabled = false;
+                    this.Title = "FFXIVHuntMarker (Standalone Mode)";
+                }));
+            }
         }
 
         private void buttonHuntCounter_Click(object sender, RoutedEventArgs e)
         {
+            bool append = false;
+
+            if ((sender as Button).Name == buttonHuntCounterAdd.Name)
+                append = true;
+
             if (isFF14Hooked)
             {
                 try
@@ -562,7 +577,7 @@ namespace FLT_HuntMarker
                         huntThread.Start();
                     }
 
-                    SearchNearbyMobs();
+                    SearchNearbyMobs(append);
                 }
                 catch (Exception)
                 {
@@ -578,7 +593,8 @@ namespace FLT_HuntMarker
             }
         }
 
-        public void SearchNearbyMobs()
+        // Gather nearby Mobs and add to list
+        public void SearchNearbyMobs(bool append)
         {
             var actors = huntCounter.GetMobs();
 
@@ -587,8 +603,12 @@ namespace FLT_HuntMarker
                 return;
             }
 
-            nearbyCollection.Clear();
-            listviewHuntCounter.Items.Clear();
+            // Keep collection if append is true
+            if (!append)
+            {
+                nearbyCollection.Clear();
+                listviewHuntCounter.Items.Clear();
+            }
 
             foreach (var actor in actors)
             {
@@ -622,7 +642,7 @@ namespace FLT_HuntMarker
                     listviewHuntCounter.Items.Add(item);
             }
 
-            listviewHuntCounter_SetList();
+            listviewHuntCounter_SetList(append);
 
             Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
             {
@@ -630,17 +650,22 @@ namespace FLT_HuntMarker
             }));
         }
 
+        // Exit signal
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             isClosing = true;
+
+            if (DisplayWindow != null)
+                DisplayWindow.Close();
         }
 
         // It will not be fired before SearchNearbyMobs()
-        private void listviewHuntCounter_SetList()
+        private void listviewHuntCounter_SetList(bool append)
         {
             ListView lv = listviewHuntCounter;
 
-            trackedCollection.Clear();
+            if (!append)
+                trackedCollection.Clear();
 
             foreach (var item in lv.Items)
             {
@@ -653,6 +678,7 @@ namespace FLT_HuntMarker
             }
         }
 
+        // Tracking thread
         private void HuntTrackThread()
         {
             ObservableCollection<uint> diedBefore = new();
@@ -710,6 +736,29 @@ namespace FLT_HuntMarker
                 }));
 
                 Thread.Sleep(1000);
+            }
+        }
+
+        private void checkboxCounterDisplay_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as CheckBox).IsChecked == true)
+                isDisplayChecked = true;
+            else
+                isDisplayChecked = false;
+
+            if (DisplayWindow == null && isDisplayChecked)
+            {
+                DisplayWindow = new PopupDisplay();
+                DisplayWindow.Closed += (a, b) => {
+                    checkboxCounterDisplay.IsChecked = false;
+                    isDisplayChecked = false;
+                    DisplayWindow = null;
+                    };
+                DisplayWindow.Show();
+            }
+            else
+            {
+                DisplayWindow.Close();
             }
         }
     }
