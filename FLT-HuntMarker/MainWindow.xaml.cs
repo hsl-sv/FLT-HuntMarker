@@ -558,6 +558,10 @@ namespace FLT_HuntMarker
                     this.Title = "FFXIVHuntMarker (Standalone Mode)";
                 }));
             }
+            else
+            {
+                isFF14Hooked = true;
+            }
         }
 
         private void buttonHuntCounter_Click(object sender, RoutedEventArgs e)

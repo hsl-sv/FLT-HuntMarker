@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Sharlayan" Version="7.0.1" />
+    <ProjectReference Include="..\sharlayan\Sharlayan.csproj" />
   </ItemGroup>
 
   <ItemGroup>
