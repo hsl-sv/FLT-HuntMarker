@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:FLT_HuntMarker"
         mc:Ignorable="d"
         ResizeMode="NoResize"
-        WindowStyle="None" Opacity="0.5" AllowsTransparency="True"
+        WindowStyle="None" Opacity="0.7" AllowsTransparency="True"
         Title="Counter" Height="120" Width="80" ShowInTaskbar="False" Topmost="True">
     <Grid MouseLeftButtonDown="Grid_MouseLeftButtonDown" Background="Transparent">
         <ListView x:Name="listviewPopup" Background="Transparent" IsEnabled="False">

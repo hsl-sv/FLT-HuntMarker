@@ -602,6 +602,11 @@ namespace FLT_HuntMarker
         {
             var actors = huntCounter.GetMobs();
 
+            // TODO: about Map
+            (uint mapID, uint mapIndex, uint mapTerritory) = huntCounter.GetMap();
+
+            Trace.WriteLine(mapID.ToString() + "," + mapIndex.ToString() + "," + mapTerritory.ToString());
+
             if (actors == null)
             {
                 return;
@@ -699,6 +704,7 @@ namespace FLT_HuntMarker
                 }
                 else
                 {
+                    // TODO: somtimes it skip first 2 dead count
                     foreach (var actor in actors)
                     {
                         var mob = new Mob

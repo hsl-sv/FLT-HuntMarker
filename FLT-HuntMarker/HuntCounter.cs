@@ -110,5 +110,20 @@ namespace FLT_HuntMarker
                 return null;
             }
         }
+
+        public (uint mapID, uint mapIndex, uint mapTerritory) GetMap()
+        {
+            try
+            {
+
+                (uint mapID, uint mapIndex, uint mapTerritory) = _reader.GetMapInfo();
+                return (mapID, mapIndex, mapTerritory);
+                
+            }
+            catch
+            {
+                return (0, 0, 0);
+            }
+        }
     }
 }

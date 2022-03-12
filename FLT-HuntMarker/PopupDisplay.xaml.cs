@@ -39,17 +39,15 @@ namespace FLT_HuntMarker
 
                 Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
                 {
-                    //listviewPopup.Items.Clear();
-                    listviewPopup.Items.Add("Test");
+                    listviewPopup.Items.Clear();
 
                     foreach (var tc in MainWindow.trackedCollection)
                     {
                         listviewPopup.Items.Add(tc.Count.ToString());
                     }
-                }));
 
-                Console.WriteLine("disp thread is running");
-                Trace.WriteLine("disp thread is running");
+                    this.Height = 20 * listviewPopup.Items.Count + 10;
+                }));
 
                 Thread.Sleep(1000);
             }

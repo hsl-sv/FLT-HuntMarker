@@ -45,7 +45,7 @@ namespace Sharlayan {
             return (eventObjectTypeID, (Actor.EventObjectType) eventObjectTypeID);
         }
 
-        private (uint mapID, uint mapIndex, uint mapTerritory) GetMapInfo() {
+        public (uint mapID, uint mapIndex, uint mapTerritory) GetMapInfo() {
             uint mapID = 0;
             uint mapIndex = 0;
             uint mapTerritory = 0;
