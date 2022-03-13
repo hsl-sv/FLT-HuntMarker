@@ -717,7 +717,7 @@ namespace FLT_HuntMarker
                         };
 
                         // Every spawnd mob has different key
-                        if (mob.HP == 0 && !diedBefore.Contains(mob.Key))
+                        if (mob.HP <= 0 && !diedBefore.Contains(mob.Key))
                         {
                             diedBefore.Add(mob.Key);
 
