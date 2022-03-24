@@ -1,3 +1,4 @@
 # FLT-HuntMarker
 
-For check accounted position, specify spawn location for train, S spawn counter
+FF14 Utility
+For check accounted position, specify spawn location for tour/train, S spawn counter
