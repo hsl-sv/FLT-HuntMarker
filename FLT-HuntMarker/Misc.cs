@@ -10,6 +10,7 @@ namespace FLT_HuntMarker
     public enum DotType
     {
         Circle,
+        Flag,
     }
 
     class CONFIG
@@ -23,5 +24,6 @@ namespace FLT_HuntMarker
         public static SolidColorBrush COLOR_S = new(Colors.Orange) { Opacity = COLOR_OPACITY };
         public static SolidColorBrush COLOR_A = new(Colors.LightGreen) { Opacity = COLOR_OPACITY };
         public static SolidColorBrush COLOR_B = new(Colors.LightBlue) { Opacity = COLOR_OPACITY };
+        public static SolidColorBrush COLOR_AETHERYTE = new(Colors.MediumPurple) { Opacity = COLOR_OPACITY };
     }
 }

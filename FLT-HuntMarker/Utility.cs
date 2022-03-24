@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -45,9 +42,20 @@ namespace FLT_HuntMarker
                     dot.Fill = CONFIG.COLOR_A;
                 else if (markType == "s")
                     dot.Fill = CONFIG.COLOR_S;
+                else if (markType == "u")
+                    dot.Fill = CONFIG.COLOR_AETHERYTE;
 
                 dot.Height = dotSize;
                 dot.Width = dotSize;
+                dot.Margin = new Thickness(X, Y, 0, 0);
+            }
+            else if (type == DotType.Flag)
+            {
+                ImageSource imageFlag = Utility.ByteToImage(Properties.Resources.Player_Icon47);
+
+                dot.Fill = new ImageBrush(imageFlag);
+                dot.Height = dotSize * 1.2;
+                dot.Width = dotSize * 1.2;
                 dot.Margin = new Thickness(X, Y, 0, 0);
             }
 
@@ -96,7 +104,7 @@ namespace FLT_HuntMarker
         // Convert position
         public static double ConvertPos(double num)
         {
-            return ((Math.Floor((21.48 + (Convert.ToDouble(num) / 50)) * 100)) / 100);
+            return (Math.Floor((21.48 + (Convert.ToDouble(num) / 50)) * 100)) / 100;
         }
     }
 }

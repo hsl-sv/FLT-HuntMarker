@@ -9,7 +9,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Player_Icon47.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\sharlayan\Sharlayan.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Player_Icon47.png" />
   </ItemGroup>
 
   <ItemGroup>

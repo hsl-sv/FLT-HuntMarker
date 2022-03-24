@@ -149,7 +149,17 @@ namespace FLT_HuntMarker
                 double xr = (xActual * xx / 100.0) - (dotSize / 2.0);
                 double yr = (yActual * yy / 100.0) - (dotSize / 2.0);
 
-                Ellipse dot = Utility.MakeDot(xr, yr, dotSize, DotType.Circle, markcur);
+                Ellipse dot = new();
+
+                if (markcur == "u")
+                {
+                    dot = Utility.MakeDot(xr, yr, dotSize, DotType.Flag, markcur);
+                }
+                else
+                {
+                    dot = Utility.MakeDot(xr, yr, dotSize, DotType.Circle, markcur);
+                }
+                
                 TextBlock tbx = Utility.MakeTextblock(xr, yr, 11, textbox);
 
                 dot.Name = CONFIG.OBJECT_PREFIX + contents[0];
@@ -444,6 +454,7 @@ namespace FLT_HuntMarker
         }
 
         // TODO: Right click CANVAS means drop down menu
+        // Not really need atm
         private void canvas_MouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             Point pos = e.GetPosition(null);
@@ -503,22 +514,30 @@ namespace FLT_HuntMarker
             {
                 markCurrent = "b";
             }
+            else if (radioButtonAE.IsChecked is true)
+            {
+                markCurrent = "u";
+            }
         }
 
         // Redraw when window size change finished
-        const int WM_SIZING = 0x214;
-        const int WM_EXITSIZEMOVE = 0x232;
+        private const int WM_SIZING = 0x214;
+        private const int WM_EXITSIZEMOVE = 0x232;
         private static bool WindowWasResized = false;
 
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             if (msg == WM_SIZING)
+            {
                 if (WindowWasResized == false)
+                {
                     WindowWasResized = true;
+                }
+            }
 
             if (msg == WM_EXITSIZEMOVE)
             {        
-                if (WindowWasResized == true)
+                if (WindowWasResized)
                 {
                     UpdateCanvas();
                     WindowWasResized = false;
@@ -533,6 +552,14 @@ namespace FLT_HuntMarker
         {
             bool processExists = false;
             short retryCounter = 0;
+
+            Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
+            {
+                buttonHuntCounter.IsEnabled = false;
+                buttonHuntCounterAdd.IsEnabled = false;
+                checkboxCounterDisplay.IsEnabled = false;
+                this.Title = "FFXIVHuntMarker (Searching FF14...)";
+            }));
 
             while (!processExists)
             {
@@ -552,14 +579,19 @@ namespace FLT_HuntMarker
             {
                 Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
                 {
-                    buttonHuntCounter.IsEnabled = false;
-                    buttonHuntCounterAdd.IsEnabled = false;
-                    checkboxCounterDisplay.IsEnabled = false;
                     this.Title = "FFXIVHuntMarker (Standalone Mode)";
                 }));
             }
             else
             {
+                Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
+                {
+                    buttonHuntCounter.IsEnabled = true;
+                    buttonHuntCounterAdd.IsEnabled = true;
+                    checkboxCounterDisplay.IsEnabled = true;
+                    this.Title = "FFXIVHuntMarker";
+                }));
+
                 isFF14Hooked = true;
             }
         }
@@ -602,7 +634,7 @@ namespace FLT_HuntMarker
         {
             var actors = huntCounter.GetMobs();
 
-            // TODO: about Map
+            // TODO: about Map - can make automatically change but it is enough now
             (uint mapID, uint mapIndex, uint mapTerritory) = huntCounter.GetMap();
 
             Trace.WriteLine(mapID.ToString() + "," + mapIndex.ToString() + "," + mapTerritory.ToString());
@@ -704,7 +736,6 @@ namespace FLT_HuntMarker
                 }
                 else
                 {
-                    // TODO: somtimes it skip first 2 dead count
                     foreach (var actor in actors)
                     {
                         var mob = new Mob
@@ -770,6 +801,11 @@ namespace FLT_HuntMarker
             {
                 DisplayWindow.Close();
             }
+        }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            UpdateCanvas();
         }
     }
 }
