@@ -2,6 +2,8 @@
 
 FF14 Utility
 
+This software is created by my own purpose
+
 For check accounted position, specify spawn location for tour/train, S spawn counter
 
 
