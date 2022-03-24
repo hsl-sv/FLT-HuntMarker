@@ -119,126 +119,126 @@
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="Amh_Araeng_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\Amh_Araeng-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\Amh_Araeng-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Azys_Lla_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\Azys_Lla-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\Azys_Lla-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Central_Shroud_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\Central_Shroud-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\Central_Shroud-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Central_Thanalan_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\Central_Thanalan-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\Central_Thanalan-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Coerthas_Central_Highlands_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\Coerthas_Central_Highlands-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\Coerthas_Central_Highlands-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Coerthas_Western_Highlands_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\Coerthas_Western_Highlands-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\Coerthas_Western_Highlands-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Eastern_La_Noscea_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\Eastern_La_Noscea-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\Eastern_La_Noscea-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Eastern_Thanalan_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\Eastern_Thanalan-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\Eastern_Thanalan-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="East_Shroud_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\East_Shroud-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\East_Shroud-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Elpis_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\Elpis-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\Elpis-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Garlemald_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\Garlemald-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\Garlemald-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Il_Mheg_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\Il_Mheg-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\Il_Mheg-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Kholusia_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\Kholusia-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\Kholusia-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Labyrinthos_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\Labyrinthos-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\Labyrinthos-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Lakeland_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\Lakeland-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\Lakeland-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Lower_La_Noscea_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\Lower_La_Noscea-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\Lower_La_Noscea-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Mare_Lamentorum_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\Mare_Lamentorum-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\Mare_Lamentorum-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Middle_La_Noscea_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\Middle_La_Noscea-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\Middle_La_Noscea-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Mor_Dhona_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\Mor_Dhona-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\Mor_Dhona-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Northern_Thanalan_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\Northern_Thanalan-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\Northern_Thanalan-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="North_Shroud_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\North_Shroud-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\North_Shroud-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Outer_La_Noscea_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\Outer_La_Noscea-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\Outer_La_Noscea-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Southern_Thanalan_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\Southern_Thanalan-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\Southern_Thanalan-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="South_Shroud_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\South_Shroud-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\South_Shroud-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Thavnair_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\Thavnair-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\Thavnair-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="The_Azim_Steppe_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\The_Azim_Steppe-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\The_Azim_Steppe-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="The_Churning_Mists_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\The_Churning_Mists-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\The_Churning_Mists-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="The_Dravanian_Forelands_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\The_Dravanian_Forelands-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\The_Dravanian_Forelands-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="The_Dravanian_Hinterlands_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\The_Dravanian_Hinterlands-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\The_Dravanian_Hinterlands-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="The_Fringes_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\The_Fringes-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\The_Fringes-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="The_Lochs_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\The_Lochs-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\The_Lochs-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="The_Peaks_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\The_Peaks-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\The_Peaks-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="The_Rak_tika_Greatwood_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\The_Rak'tika_Greatwood-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\The_Rak'tika_Greatwood-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="The_Ruby_Sea_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\The_Ruby_Sea-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\The_Ruby_Sea-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="The_Sea_of_Clouds_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\The_Sea_of_Clouds-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\The_Sea_of_Clouds-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="The_Tempest_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\The_Tempest-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\The_Tempest-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Ultima_Thule_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\Ultima_Thule-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\Ultima_Thule-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Upper_La_Noscea_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\Upper_La_Noscea-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\Upper_La_Noscea-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Western_La_Noscea_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\Western_La_Noscea-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\Western_La_Noscea-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Western_Thanalan_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\Western_Thanalan-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\Western_Thanalan-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Yanxia_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Maps\Yanxia-data.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>..\Maps\Yanxia-data.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

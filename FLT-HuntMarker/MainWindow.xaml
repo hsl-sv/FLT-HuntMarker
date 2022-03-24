@@ -5,9 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FLT_HuntMarker"
         mc:Ignorable="d"
-        WindowStyle="ToolWindow"
         Title="FFXIVHuntMarker"
-        ResizeMode="CanMinimize"
         Width="900"
         Height="500" Closing="Window_Closing">
     <Grid x:Name="gridMain">
