@@ -736,6 +736,7 @@ namespace FLT_HuntMarker
                 }
                 else
                 {
+
                     foreach (var actor in actors)
                     {
                         var mob = new Mob
@@ -747,7 +748,7 @@ namespace FLT_HuntMarker
                             Coordinates = new Coords(Utility.ConvertPos(actor.Value.X), Utility.ConvertPos(actor.Value.Y)),
                         };
 
-                        // Every spawnd mob has different key
+                        // DEBUG: TODO: sometimes seems mob has different key when died
                         if (mob.HP <= 10000 && !diedBefore.Contains(mob.Key))
                         {
                             Trace.WriteLine("hp 10k -> " + mob.Key.ToString() + "(" + mob.Name + ")");
