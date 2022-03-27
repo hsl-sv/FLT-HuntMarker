@@ -748,6 +748,12 @@ namespace FLT_HuntMarker
                         };
 
                         // Every spawnd mob has different key
+                        if (mob.HP <= 10000 && !diedBefore.Contains(mob.Key))
+                        {
+                            Trace.WriteLine("hp 10k -> " + mob.Key.ToString() + "(" + mob.Name + ")");
+                        }
+
+                        // Every spawnd mob has different key
                         if (mob.HP <= 0 && !diedBefore.Contains(mob.Key))
                         {
                             diedBefore.Add(mob.Key);
@@ -760,7 +766,7 @@ namespace FLT_HuntMarker
                                 }
                             }
                         
-                            Trace.WriteLine("dead -> " + mob.Key.ToString());
+                            Trace.WriteLine("dead -> " + mob.Key.ToString() + "(" + mob.Name + ")");
                         }
                     }
                 }
