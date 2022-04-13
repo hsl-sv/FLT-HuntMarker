@@ -35,4 +35,8 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="latest_signatures\" />
+  </ItemGroup>
+
 </Project>
