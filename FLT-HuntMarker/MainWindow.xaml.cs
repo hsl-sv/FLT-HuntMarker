@@ -238,29 +238,19 @@ namespace FLT_HuntMarker
                     isHead = true;
                     break;
 
-                case "EW_LA1":
-                case "EW_LA2":
-                case "EW_LA3":
+                case "EW_LA":
                     imageMap.Source = Utility.ByteToImage(Properties.Resources.Labyrinthos_data); break;
-                case "EW_GA1":
-                case "EW_GA2":
-                case "EW_GA3":
+                case "EW_GA":
                     imageMap.Source = Utility.ByteToImage(Properties.Resources.Garlemald_data); break;
                 case "EW_TH1":
                 case "EW_TH2":
                 case "EW_TH3":
                     imageMap.Source = Utility.ByteToImage(Properties.Resources.Thavnair_data); break;
-                case "EW_MA1":
-                case "EW_MA2":
-                case "EW_MA3":
+                case "EW_MA":
                     imageMap.Source = Utility.ByteToImage(Properties.Resources.Mare_Lamentorum_data); break;
-                case "EW_EL1":
-                case "EW_EL2":
-                case "EW_EL3":
+                case "EW_EL":
                     imageMap.Source = Utility.ByteToImage(Properties.Resources.Elpis_data); break;
-                case "EW_UL1":
-                case "EW_UL2":
-                case "EW_UL3":
+                case "EW_UL":
                     imageMap.Source = Utility.ByteToImage(Properties.Resources.Ultima_Thule_data); break;
 
                 case "ShB_LA":
@@ -749,9 +739,10 @@ namespace FLT_HuntMarker
                         };
 
                         // DEBUG: TODO: sometimes seems mob has different key when died
-                        if (mob.HP <= 10000 && !diedBefore.Contains(mob.Key))
+                        if (mob.HP < 40000 || mob.HP <= 0)
                         {
-                            Trace.WriteLine("hp 10k -> " + mob.Key.ToString() + "(" + mob.Name + ")");
+                            if (mob.Name == "Thinker")
+                                Trace.WriteLine("this -> " + mob.Key.ToString() + "(" + mob.Name + ", " + mob.HP.ToString() + ")");
                         }
 
                         // Every spawnd mob has different key
