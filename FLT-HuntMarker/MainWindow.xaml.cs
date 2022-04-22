@@ -186,6 +186,7 @@ namespace FLT_HuntMarker
             return;
         }
 
+        #region Swap map code spam
         private void treeview_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             TreeViewItem tvItem = (TreeViewItem)e.NewValue;
@@ -372,6 +373,7 @@ namespace FLT_HuntMarker
             if (isHead is false)
                 UpdateCanvas();
         }
+        #endregion
 
         // Left click means X mark + Timestamp
         // Also make log for each map
@@ -490,6 +492,7 @@ namespace FLT_HuntMarker
             return;
         }
 
+        // Setting current type of Dot
         private void radioButton_Click(object sender, RoutedEventArgs e)
         {
             if (radioButtonS.IsChecked is true)
@@ -538,6 +541,7 @@ namespace FLT_HuntMarker
         }
 
         // Search process
+        // Try find FF14 5 times (15 seconds)
         private void SetupHuntCounter()
         {
             bool processExists = false;
@@ -586,6 +590,7 @@ namespace FLT_HuntMarker
             }
         }
 
+        // Hunt Counter button, start searching thread
         private void buttonHuntCounter_Click(object sender, RoutedEventArgs e)
         {
             bool append = false;
@@ -614,8 +619,8 @@ namespace FLT_HuntMarker
             }
             else
             {
-                Console.WriteLine("FF14 Cannot Found");
-                Trace.WriteLine("FF14 Cannot Found");
+                Console.WriteLine("FF14 Not Found");
+                Trace.WriteLine("FF14 Not Found");
             }
         }
 
@@ -690,6 +695,7 @@ namespace FLT_HuntMarker
                 DisplayWindow.Close();
         }
 
+        // Populate list with nearby mobs
         // It will not be fired before SearchNearbyMobs()
         private void listviewHuntCounter_SetList(bool append)
         {
@@ -722,43 +728,40 @@ namespace FLT_HuntMarker
 
                 if (actors == null)
                 {
-                    
+                    // pass
                 }
                 else
                 {
-
                     foreach (var actor in actors)
                     {
-                        var mob = new Mob
-                        {
-                            Name = actor.Value.Name,
-                            Key = actor.Key,
-                            HP = actor.Value.HPCurrent,
-                            IsTracking = false,
-                            Coordinates = new Coords(Utility.ConvertPos(actor.Value.X), Utility.ConvertPos(actor.Value.Y)),
-                        };
+                        double X = Utility.ConvertPos(actor.Value.X);
+                        double Y = Utility.ConvertPos(actor.Value.Y);
 
                         // DEBUG: TODO: sometimes seems mob has different key when died
-                        if (mob.HP < 40000 || mob.HP <= 0)
+                        // STILL NO IDEA LMAO
+                        if (actor.Value.HPCurrent < 33000)
                         {
-                            if (mob.Name == "Thinker")
-                                Trace.WriteLine("this -> " + mob.Key.ToString() + "(" + mob.Name + ", " + mob.HP.ToString() + ")");
+                            if (actor.Value.Name == "Asvattha" ||
+                                actor.Value.Name == "Picasa" ||
+                                actor.Value.Name == "Vajralangula")
+                                Trace.WriteLine("this -> " + actor.Key.ToString() + "(" + 
+                                    actor.Value.Name + ", " + actor.Value.HPCurrent.ToString() + ")");
                         }
 
                         // Every spawnd mob has different key
-                        if (mob.HP <= 0 && !diedBefore.Contains(mob.Key))
+                        if (actor.Value.HPCurrent <= 0 && !diedBefore.Contains(actor.Key))
                         {
-                            diedBefore.Add(mob.Key);
+                            diedBefore.Add(actor.Key);
 
                             foreach (var tc in trackedCollection)
                             {
-                                if (mob.Name == tc.Name)
+                                if (actor.Value.Name == tc.Name)
                                 {
                                     tc.Count++;
                                 }
                             }
                         
-                            Trace.WriteLine("dead -> " + mob.Key.ToString() + "(" + mob.Name + ")");
+                            Trace.WriteLine("dead -> " + actor.Key.ToString() + "(" + actor.Value.Name + ")");
                         }
                     }
                 }
@@ -778,6 +781,7 @@ namespace FLT_HuntMarker
             }
         }
 
+        // Show Hunt Counter display
         private void checkboxCounterDisplay_Click(object sender, RoutedEventArgs e)
         {
             if ((sender as CheckBox).IsChecked == true)
@@ -801,9 +805,31 @@ namespace FLT_HuntMarker
             }
         }
 
+        // Update canvas when windows size changed
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             UpdateCanvas();
+        }
+
+        // Remove right-clicked item
+        private void listviewHuntCounter_MouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            ListView lv = listviewHuntCounter;
+            ListView lvn = listviewHuntCounterNumber;
+            ListView lvc = sender as ListView;
+            var item = lvc.SelectedItem;
+
+            string selname = item.ToString().Split('_')[0];
+
+            for (int i = 0; i < lvc.Items.Count; i++)
+            {
+                if (lv.Items[i].ToString().Split('_')[0] == selname)
+                {
+                    trackedCollection.RemoveAt(i);
+                    lv.Items.RemoveAt(i);
+                    lvn.Items.RemoveAt(i);
+                }
+            }
         }
     }
 }

@@ -29,7 +29,7 @@
 
             <ListView x:Name="listviewHuntCounter" 
                       DockPanel.Dock="Right" Grid.Column="1" Margin="0,5,0,5" 
-                      SelectionMode="Multiple" />
+                      SelectionMode="Single" MouseRightButtonUp="listviewHuntCounter_MouseRightButtonUp" />
 
             <ListView x:Name="listviewHuntCounterNumber" 
                       DockPanel.Dock="Right" Grid.Column="2" Margin="0,5,5,5" 
