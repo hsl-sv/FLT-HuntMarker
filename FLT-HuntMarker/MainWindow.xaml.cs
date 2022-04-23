@@ -738,7 +738,7 @@ namespace FLT_HuntMarker
                         double Y = Utility.ConvertPos(actor.Value.Y);
 
                         // DEBUG: TODO: trying with long type
-                        // STILL NO IDEA LMAO
+                        // i guess have to change ObservationCollection to other
                         if (actor.Value.HPCurrent < 33000)
                         {
                             if (actor.Value.Name == "Asvattha" ||
