@@ -718,7 +718,7 @@ namespace FLT_HuntMarker
         // Tracking thread
         private void HuntTrackThread()
         {
-            ObservableCollection<uint> diedBefore = new();
+            ObservableCollection<long> diedBefore = new();
 
             isHuntThreadWorking = true;
 
@@ -737,21 +737,21 @@ namespace FLT_HuntMarker
                         double X = Utility.ConvertPos(actor.Value.X);
                         double Y = Utility.ConvertPos(actor.Value.Y);
 
-                        // DEBUG: TODO: sometimes seems mob has different key when died
+                        // DEBUG: TODO: trying with long type
                         // STILL NO IDEA LMAO
                         if (actor.Value.HPCurrent < 33000)
                         {
                             if (actor.Value.Name == "Asvattha" ||
-                                actor.Value.Name == "Picasa" ||
+                                actor.Value.Name == "Pisaca" ||
                                 actor.Value.Name == "Vajralangula")
                                 Trace.WriteLine("this -> " + actor.Key.ToString() + "(" + 
                                     actor.Value.Name + ", " + actor.Value.HPCurrent.ToString() + ")");
                         }
 
                         // Every spawnd mob has different key
-                        if (actor.Value.HPCurrent <= 0 && !diedBefore.Contains(actor.Key))
+                        if (actor.Value.HPCurrent <= 0 && !diedBefore.Contains((long)actor.Key))
                         {
-                            diedBefore.Add(actor.Key);
+                            diedBefore.Add((long)actor.Key);
 
                             foreach (var tc in trackedCollection)
                             {
