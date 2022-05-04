@@ -29,6 +29,8 @@ namespace FLT_HuntMarker
         public static ObservableCollection<Mob> nearbyCollection = new();
         public static ObservableCollection<Mob> trackedCollection = new();
         
+        public static Queue<uint> diedBefore = new();
+
         Thread t;
         Thread huntThread;
 
@@ -718,8 +720,8 @@ namespace FLT_HuntMarker
         // Tracking thread
         private void HuntTrackThread()
         {
-            ObservableCollection<long> diedBefore = new();
-
+            diedBefore.Clear();
+           
             isHuntThreadWorking = true;
 
             while(!isClosing)
@@ -737,21 +739,10 @@ namespace FLT_HuntMarker
                         double X = Utility.ConvertPos(actor.Value.X);
                         double Y = Utility.ConvertPos(actor.Value.Y);
 
-                        // DEBUG: TODO: trying with long type
-                        // i guess have to change ObservationCollection to other
-                        if (actor.Value.HPCurrent < 33000)
-                        {
-                            if (actor.Value.Name == "Asvattha" ||
-                                actor.Value.Name == "Pisaca" ||
-                                actor.Value.Name == "Vajralangula")
-                                Trace.WriteLine("this -> " + actor.Key.ToString() + "(" + 
-                                    actor.Value.Name + ", " + actor.Value.HPCurrent.ToString() + ")");
-                        }
-
                         // Every spawnd mob has different key
-                        if (actor.Value.HPCurrent <= 0 && !diedBefore.Contains((long)actor.Key))
+                        if (actor.Value.HPCurrent <= 0 && !diedBefore.Contains(actor.Key))
                         {
-                            diedBefore.Add((long)actor.Key);
+                            diedBefore.Enqueue(actor.Key);
 
                             foreach (var tc in trackedCollection)
                             {
@@ -762,6 +753,19 @@ namespace FLT_HuntMarker
                             }
                         
                             Trace.WriteLine("dead -> " + actor.Key.ToString() + "(" + actor.Value.Name + ")");
+
+                            // Auto dequeue
+                            new Thread(() =>
+                            {
+                                Thread.CurrentThread.IsBackground = true;
+                                if (diedBefore.Count > 0)
+                                {
+                                    // Disappearing time is 10s
+                                    Thread.Sleep(10000);
+                                    Trace.WriteLine("dequeue -> " + diedBefore.Peek().ToString());
+                                    diedBefore.Dequeue();
+                                }
+                            }).Start();
                         }
                     }
                 }
@@ -818,6 +822,11 @@ namespace FLT_HuntMarker
             ListView lvn = listviewHuntCounterNumber;
             ListView lvc = sender as ListView;
             var item = lvc.SelectedItem;
+
+            if (item is null)
+            {
+                return;
+            }
 
             string selname = item.ToString().Split('_')[0];
 
