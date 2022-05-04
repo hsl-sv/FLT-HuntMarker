@@ -761,7 +761,7 @@ namespace FLT_HuntMarker
                                 if (diedBefore.Count > 0)
                                 {
                                     // Disappearing time is 10s
-                                    Thread.Sleep(10000);
+                                    Thread.Sleep(13000);
                                     Trace.WriteLine("dequeue -> " + diedBefore.Peek().ToString());
                                     diedBefore.Dequeue();
                                 }
