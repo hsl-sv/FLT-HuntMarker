@@ -647,6 +647,10 @@ namespace FLT_HuntMarker
                 nearbyCollection.Clear();
                 listviewHuntCounter.Items.Clear();
             }
+            else
+            {
+                nearbyCollection.Clear();
+            }
 
             foreach (var actor in actors)
             {
