@@ -670,7 +670,7 @@ namespace FLT_HuntMarker
 
                 foreach (var listitem in listviewHuntCounter.Items)
                 {
-                    if (listitem.ToString().Contains(mob.Name))
+                    if (listitem.ToString().Split('_')[0] == mob.Name)
                     {
                         skip = true;
                     }
