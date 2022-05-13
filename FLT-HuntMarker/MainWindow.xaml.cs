@@ -823,7 +823,7 @@ namespace FLT_HuntMarker
         private void listviewHuntCounter_MouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             ListView lv = listviewHuntCounter;
-            ListView lvn = listviewHuntCounterNumber;
+            //ListView lvn = listviewHuntCounterNumber;
             ListView lvc = sender as ListView;
             var item = lvc.SelectedItem;
 
@@ -840,7 +840,7 @@ namespace FLT_HuntMarker
                 {
                     trackedCollection.RemoveAt(i);
                     lv.Items.RemoveAt(i);
-                    lvn.Items.RemoveAt(i);
+                    //lvn.Items.RemoveAt(i);
                 }
             }
         }

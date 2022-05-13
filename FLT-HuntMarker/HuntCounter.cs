@@ -2,9 +2,10 @@
 using Sharlayan.Core;
 using Sharlayan.Enums;
 using Sharlayan.Models;
-
+using Sharlayan.Utilities;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 
@@ -15,9 +16,9 @@ namespace FLT_HuntMarker
         public MemoryHandler MemoryHandler { get; set; }
         public bool CanGetProcess => _process != null;
         public bool ProcessHasExited => _process?.HasExited == null || _process.HasExited;
+
         private Reader _reader;
         private Process _process;
-
 
         public bool Setup()
         {
@@ -56,7 +57,6 @@ namespace FLT_HuntMarker
                     MemoryHandler = SharlayanMemoryManager.Instance.AddHandler(configuration);
                     MemoryHandler = SharlayanMemoryManager.Instance.GetHandler(processModel.ProcessID);
                     _reader = MemoryHandler.Reader;
-
                 }
                 catch (Exception e)
                 {
@@ -98,6 +98,7 @@ namespace FLT_HuntMarker
                 if (MemoryHandler.Reader.CanGetActors())
                 {
                     var actors = _reader.GetActors();
+
                     return actors.CurrentMonsters;
                 }
                 else
@@ -123,6 +124,35 @@ namespace FLT_HuntMarker
             catch
             {
                 return (0, 0, 0);
+            }
+        }
+
+        // Flag generator, test bed
+        public void FlagGenerator()
+        {
+            int _previousArrayIndex = 0;
+            int _previousOffset = 0;
+
+            Trace.WriteLine("Testing GetChatLog");
+
+            try
+            {
+                if (MemoryHandler.Reader.CanGetChatLog())
+                {
+                    Sharlayan.Models.ReadResults.ChatLogResult readResult = _reader.GetChatLog(
+                        _previousArrayIndex, _previousOffset);
+
+                    ConcurrentQueue<ChatLogItem> chatLogEntries = readResult.ChatLogItems;
+                    
+                    foreach (var item in chatLogEntries)
+                    {
+                        Trace.WriteLine(item.Message);
+                    }
+                }
+            }
+            catch
+            {
+                return;
             }
         }
     }

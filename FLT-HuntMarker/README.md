@@ -6,6 +6,8 @@ This software is created by my own purpose
 
 For check accounted position, specify spawn location for tour/train, S spawn counter
 
+This program uses Administrator permission.
+
 
 Map assets from https://github.com/RKI027/ffxiv-huntmaps
 
