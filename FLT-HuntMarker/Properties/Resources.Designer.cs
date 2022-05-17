@@ -293,6 +293,161 @@ namespace FLT_HuntMarker.Properties {
         }
         
         /// <summary>
+        ///   Forneus
+        ///Melt
+        ///Ghede Ti Malice
+        ///Girtab
+        ///Alectryon
+        ///Sabotender Bailarina
+        ///Maahes
+        ///Zanig&apos;oh
+        ///Dalvag&apos;s Final Flame
+        ///Vogaal Ja
+        ///Unktehi
+        ///Hellsclaw
+        ///Nahn
+        ///Marberry
+        ///Cornu
+        ///Marraco
+        ///Kurrea
+        ///Mirka
+        ///Lyuba
+        ///Pylraster
+        ///Lord of the Wyverns
+        ///Bune
+        ///Agathos
+        ///Slipkinx Steeljoints
+        ///Stolas
+        ///Enkelados
+        ///Sisiutl
+        ///Campacti
+        ///Stench Blossom
+        ///Orcus
+        ///Erle
+        ///Vochstein
+        ///Aqrabuamelu
+        ///Mahisha
+        ///Luminare
+        ///Funa Yurei
+        ///Oni Yumemi
+        ///Gajasura
+        ///Angada
+        ///Girimekhala
+        ///Sum
+        ///Nuckelavee
+        ///Nariphon
+        ///Li&apos;l Murderer
+        ///Huracan
+        ///Maliktender
+        ///Sugaar
+        ///The Mudm[나머지 문자열은 잘림]&quot;;과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string MobA {
+            get {
+                return ResourceManager.GetString("MobA", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   La Velue
+        ///Itzpapalotl
+        ///Domovoi
+        ///Vulpangue
+        ///Coquecigrue
+        ///Indomitable
+        ///Worm of the Well
+        ///Juggler Hecatom
+        ///Mindmaker
+        ///Pachamama
+        ///Deacon
+        ///Gilshs Aath Swiftclaw
+        ///Shadow-dweller Yamini
+        ///Ouzelum
+        ///Deidar
+        ///Gyorai Quickstrike
+        ///Guhuo Niao
+        ///Gauki Strongblade
+        ///Gwas-y-neidr
+        ///Buccaboo
+        ///Aswang
+        ///Kurma
+        ///Kiwa
+        ///Manes
+        ///Alteci
+        ///Kreutzet
+        ///Gnath Cometdrone
+        ///Thextera
+        ///Scitalis
+        ///The Scarecrow
+        ///Squonk
+        ///Sanu Vali of Dancing Wings
+        ///Pterygotus
+        ///False Gigantopithecus
+        ///Lycidas
+        ///Omni
+        ///Skogs Fru
+        ///Barbastelle
+        ///Dark Helmet
+        ///Bloody Mary
+        ///Myrad[나머지 문자열은 잘림]&quot;;과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string MobB {
+            get {
+                return ResourceManager.GetString("MobB", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Laideronnette
+        ///Wulgaru
+        ///Mindflayer
+        ///Thousand-cast Theda
+        ///Zona Seeker
+        ///Brontes
+        ///Lampalagua
+        ///Nunyunuwi
+        ///Minhocao
+        ///Croque-Mitaine
+        ///Croakadile
+        ///The Garlok
+        ///Bonnacon
+        ///Nandi
+        ///Chernobog
+        ///Safat
+        ///Agrippa the Mighty
+        ///Kaiser Behemoth
+        ///Senmurv
+        ///Gandarewa
+        ///The Pale Rider
+        ///Bird of Paradise
+        ///Leucrotta
+        ///Udumbara
+        ///Bone Crawler
+        ///Salt and Light
+        ///Okina
+        ///Gamma
+        ///Orghana
+        ///Tyger
+        ///Forgiven Pedantry
+        ///Tarchia
+        ///Aglaope
+        ///Ixtab
+        ///Gunitt
+        ///Burfurlur the Canny
+        ///Sphatika
+        ///Armstrong
+        ///Ruminator
+        ///Ophioneus
+        ///Narrow-rift
+        ///과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string MobS {
+            get {
+                return ResourceManager.GetString("MobS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   System.Byte[] 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
         internal static byte[] Mor_Dhona_data {

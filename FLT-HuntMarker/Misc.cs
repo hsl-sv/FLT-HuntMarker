@@ -19,7 +19,6 @@ namespace FLT_HuntMarker
         public const string OBJECT_PREFIX = "ID_";
         public const string LOGFILE = @"./Log.log";
         public const string TMPFILE = @"./Log.tmp";
-        public const string MOBFILE = @"./Mob.lst";
 
         public static double COLOR_OPACITY = 0.8;
         public static SolidColorBrush COLOR_S = new(Colors.Orange) { Opacity = COLOR_OPACITY };
