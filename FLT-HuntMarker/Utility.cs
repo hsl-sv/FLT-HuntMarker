@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -105,6 +106,19 @@ namespace FLT_HuntMarker
         public static double ConvertPos(double num)
         {
             return (Math.Floor((21.48 + (Convert.ToDouble(num) / 50)) * 100)) / 100;
+        }
+
+        // Check parameter name is in S/A/B list (English only)
+        public static bool CheckSpecialMob(string name)
+        {
+            if (MainWindow.mobDictionary.Contains(name))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

@@ -241,6 +241,58 @@ namespace FLT_HuntMarker.Properties {
         }
         
         /// <summary>
+        ///   Laideronnette
+        ///Wulgaru
+        ///Mindflayer
+        ///Thousand-cast Theda
+        ///Zona Seeker
+        ///Brontes
+        ///Lampalagua
+        ///Nunyunuwi
+        ///Minhocao
+        ///Croque-Mitaine
+        ///Croakadile
+        ///The Garlok
+        ///Bonnacon
+        ///Nandi
+        ///Chernobog
+        ///Safat
+        ///Agrippa the Mighty
+        ///Kaiser Behemoth
+        ///Senmurv
+        ///Gandarewa
+        ///The Pale Rider
+        ///Bird of Paradise
+        ///Leucrotta
+        ///Udumbara
+        ///Bone Crawler
+        ///Salt and Light
+        ///Okina
+        ///Gamma
+        ///Orghana
+        ///Tyger
+        ///Forgiven Pedantry
+        ///Tarchia
+        ///Aglaope
+        ///Ixtab
+        ///Gunitt
+        ///Burfurlur the Canny
+        ///Sphatika
+        ///Armstrong
+        ///Ruminator
+        ///Ophioneus
+        ///Narrow-rift
+        ///Forneus
+        ///Melt
+        ///Ghede Ti [나머지 문자열은 잘림]&quot;;과(와) 유사한 지역화된 문자열을 찾습니다.
+        /// </summary>
+        internal static string Mob {
+            get {
+                return ResourceManager.GetString("Mob", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   System.Byte[] 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
         internal static byte[] Mor_Dhona_data {

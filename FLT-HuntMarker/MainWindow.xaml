@@ -88,8 +88,8 @@
 
                 <Grid DockPanel.Dock="Top">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="5*"/>
+                        <ColumnDefinition Width="4*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="1*"/>
@@ -97,12 +97,16 @@
                     </Grid.RowDefinitions>
                     
                     <Button x:Name="buttonHuntCounter" Height="25" 
-                            Margin="5,5,5,2" Grid.Column="0" Grid.ColumnSpan="2" VerticalContentAlignment="Center"
-                        Content="Hunt Counter" ClipToBounds="True" Click="buttonHuntCounter_Click" />
+                            Margin="5,5,5,2" Grid.Column="0" Grid.ColumnSpan="1" VerticalContentAlignment="Center"
+                        Content="Parse" ClipToBounds="True" Click="buttonHuntCounter_Click" />
 
                     <Button x:Name="buttonHuntCounterAdd" Height="25" 
                             Margin="5,2,5,5" Grid.Column="0" Grid.Row="1" VerticalContentAlignment="Center"
                         Content="Append" ClipToBounds="True" Click="buttonHuntCounter_Click" />
+
+                    <CheckBox x:Name="checkboxScoutMode" VerticalAlignment="Center" VerticalContentAlignment="Center"
+                              Grid.Column="1" Grid.Row="0"
+                              Content="Scout" Click="checkboxScoutMode_Click" />
 
                     <CheckBox x:Name="checkboxCounterDisplay" VerticalAlignment="Center" VerticalContentAlignment="Center"
                               Grid.Column="1" Grid.Row="1"

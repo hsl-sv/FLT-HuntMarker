@@ -128,6 +128,7 @@ namespace FLT_HuntMarker
         }
 
         // Flag generator, test bed
+        // Make echo or flag in game needs manipulates memory, i guess, cannot go further
         public void FlagGenerator()
         {
             int _previousArrayIndex = 0;
@@ -143,7 +144,7 @@ namespace FLT_HuntMarker
                         _previousArrayIndex, _previousOffset);
 
                     ConcurrentQueue<ChatLogItem> chatLogEntries = readResult.ChatLogItems;
-                    
+
                     foreach (var item in chatLogEntries)
                     {
                         Trace.WriteLine(item.Message);

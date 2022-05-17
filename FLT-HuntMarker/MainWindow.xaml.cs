@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows;
@@ -26,9 +27,11 @@ namespace FLT_HuntMarker
         public static bool isFF14Hooked = false;
         public static bool isHuntThreadWorking = false;
         public static bool isDisplayChecked = false;
+        public static bool isScoutMode = false;
         public static ObservableCollection<Mob> nearbyCollection = new();
         public static ObservableCollection<Mob> trackedCollection = new();
-        
+
+        public static List<string> mobDictionary;
         public static Queue<uint> diedBefore = new();
 
         Thread t;
@@ -83,6 +86,8 @@ namespace FLT_HuntMarker
             try
             {
                 ParseLog();
+                var lstFile = Properties.Resources.Mob.Split("\r\n");
+                mobDictionary = new List<string>(lstFile);
             }
             catch(Exception ex)
             {
@@ -447,13 +452,10 @@ namespace FLT_HuntMarker
             return;
         }
 
-        // TODO: Right click CANVAS means drop down menu
-        // Not really need atm
+        // Right click, Not really need atm
         private void canvas_MouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            Point pos = e.GetPosition(null);
-            double x = pos.X;
-            double y = pos.Y;
+            return;
         }
 
         // Clear current button means remove all canvas children (of current map)
@@ -631,7 +633,7 @@ namespace FLT_HuntMarker
         {
             var actors = huntCounter.GetMobs();
 
-            // TODO: about Map - can make automatically change but it is enough now
+            // about Map - can make automatically change but it is enough now
             (uint mapID, uint mapIndex, uint mapTerritory) = huntCounter.GetMap();
 
             Trace.WriteLine(mapID.ToString() + "," + mapIndex.ToString() + "," + mapTerritory.ToString());
@@ -666,6 +668,7 @@ namespace FLT_HuntMarker
                 nearbyCollection.Add(mob);
             }
 
+            // TODO: Check S/A/B and set font color on Listview
             foreach (var mob in nearbyCollection)
             {
                 string item = mob.Name;
@@ -681,14 +684,23 @@ namespace FLT_HuntMarker
                 }
 
                 if (!skip)
+                {
+                    bool special = Utility.CheckSpecialMob(mob.Name);
+
+                    if (special)
+                    {
+                        // Implement font color change
+                    }
+
                     listviewHuntCounter.Items.Add(item);
+                }
             }
 
             listviewHuntCounter_SetList(append);
 
             Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
             {
-                buttonHuntCounter.Content = "Reset Counter";
+                buttonHuntCounter.Content = "Reload";
             }));
         }
 
@@ -813,6 +825,12 @@ namespace FLT_HuntMarker
             }
         }
 
+        // TODO: Scout mode (reload every seconds)
+        private void checkboxScoutMode_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         // Update canvas when windows size changed
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
@@ -823,7 +841,6 @@ namespace FLT_HuntMarker
         private void listviewHuntCounter_MouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             ListView lv = listviewHuntCounter;
-            //ListView lvn = listviewHuntCounterNumber;
             ListView lvc = sender as ListView;
             var item = lvc.SelectedItem;
 
@@ -840,7 +857,6 @@ namespace FLT_HuntMarker
                 {
                     trackedCollection.RemoveAt(i);
                     lv.Items.RemoveAt(i);
-                    //lvn.Items.RemoveAt(i);
                 }
             }
         }
