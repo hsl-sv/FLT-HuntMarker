@@ -109,15 +109,30 @@ namespace FLT_HuntMarker
         }
 
         // Check parameter name is in S/A/B list (English only)
-        public static bool CheckSpecialMob(string name)
+        public static string CheckSpecialMob(string name)
         {
-            if (MainWindow.mobDictionary.Contains(name))
+            var lstS = Properties.Resources.MobS.Split("\r\n");
+            List<string> mobS = new List<string>(lstS);
+            var lstA = Properties.Resources.MobA.Split("\r\n");
+            List<string> mobA = new List<string>(lstA);
+            var lstB = Properties.Resources.MobB.Split("\r\n");
+            List<string> mobB = new List<string>(lstB);
+
+            if (mobS.Contains(name))
             {
-                return true;
+                return "s";
+            }
+            else if (mobA.Contains(name))
+            {
+                return "a";
+            }
+            else if (mobB.Contains(name))
+            {
+                return "b";
             }
             else
             {
-                return false;
+                return "0";
             }
         }
     }

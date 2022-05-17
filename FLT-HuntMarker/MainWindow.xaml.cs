@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -31,7 +32,6 @@ namespace FLT_HuntMarker
         public static ObservableCollection<Mob> nearbyCollection = new();
         public static ObservableCollection<Mob> trackedCollection = new();
 
-        public static List<string> mobDictionary;
         public static Queue<uint> diedBefore = new();
 
         Thread t;
@@ -86,8 +86,6 @@ namespace FLT_HuntMarker
             try
             {
                 ParseLog();
-                var lstFile = Properties.Resources.Mob.Split("\r\n");
-                mobDictionary = new List<string>(lstFile);
             }
             catch(Exception ex)
             {
@@ -556,6 +554,7 @@ namespace FLT_HuntMarker
                 buttonHuntCounter.IsEnabled = false;
                 buttonHuntCounterAdd.IsEnabled = false;
                 checkboxCounterDisplay.IsEnabled = false;
+                checkboxScoutMode.IsEnabled = false;
                 this.Title = "FFXIVHuntMarker (Searching FF14...)";
             }));
 
@@ -587,6 +586,7 @@ namespace FLT_HuntMarker
                     buttonHuntCounter.IsEnabled = true;
                     buttonHuntCounterAdd.IsEnabled = true;
                     checkboxCounterDisplay.IsEnabled = true;
+                    checkboxScoutMode.IsEnabled = true;
                     this.Title = "FFXIVHuntMarker";
                 }));
 
@@ -610,15 +610,18 @@ namespace FLT_HuntMarker
                     {
                         huntThread = new Thread(new ThreadStart(HuntTrackThread));
                         huntThread.Start();
+                        isHuntThreadWorking = true;
                     }
 
                     SearchNearbyMobs(append);
                 }
                 catch (Exception)
                 {
-                    // TODO: Is it work?
-                    t.Start();
                     isFF14Hooked = false;
+                    isHuntThreadWorking = false;
+
+                    t = new Thread(new ThreadStart(SetupHuntCounter));
+                    t.Start();
                 }
             }
             else
@@ -648,6 +651,8 @@ namespace FLT_HuntMarker
             {
                 nearbyCollection.Clear();
                 listviewHuntCounter.Items.Clear();
+                listviewHuntCounterNumber.Items.Clear();
+                trackedCollection.Clear();
             }
             else
             {
@@ -675,24 +680,41 @@ namespace FLT_HuntMarker
                 bool skip = false;
                 item += "_" + mob.Coordinates.X.ToString("0.0") + "_" + mob.Coordinates.Y.ToString("0.0");
 
-                foreach (var listitem in listviewHuntCounter.Items)
-                {
-                    if (listitem.ToString().Split('_')[0] == mob.Name)
+                foreach (ListViewItem listitem in listviewHuntCounter.Items)
+                { 
+                    if (listitem is not null)
                     {
-                        skip = true;
+                        if (listitem.Content.ToString().Split('_')[0] == mob.Name)
+                        {
+                            skip = true;
+                        }
                     }
                 }
 
                 if (!skip)
                 {
-                    bool special = Utility.CheckSpecialMob(mob.Name);
+                    string special = Utility.CheckSpecialMob(mob.Name);
 
-                    if (special)
+                    if (special != "0")
                     {
-                        // Implement font color change
+                        ListViewItem lvitem = new ListViewItem();
+                        lvitem.Content = item;
+                        lvitem.FontWeight = FontWeights.Bold;
+                        lvitem.Background = Brushes.Yellow;
+                        if (special == "s")
+                            lvitem.Foreground = Brushes.Red;
+                        else if (special == "a")
+                            lvitem.Foreground = Brushes.DarkGreen;
+                        else if (special == "b")
+                            lvitem.Foreground = Brushes.Blue;
+                        listviewHuntCounter.Items.Add(lvitem);
                     }
-
-                    listviewHuntCounter.Items.Add(item);
+                    else
+                    {
+                        ListViewItem lvitem = new ListViewItem();
+                        lvitem.Content = item;
+                        listviewHuntCounter.Items.Add(lvitem);
+                    }
                 }
             }
 
@@ -719,12 +741,9 @@ namespace FLT_HuntMarker
         {
             ListView lv = listviewHuntCounter;
 
-            if (!append)
-                trackedCollection.Clear();
-
-            foreach (var item in lv.Items)
+            foreach (ListViewItem item in lv.Items)
             {
-                string mobName = item.ToString().Split("_")[0];
+                string mobName = item.Content.ToString().Split("_")[0];
 
                 if (!trackedCollection.Any(m => m.Name == mobName))
                 {
@@ -737,8 +756,6 @@ namespace FLT_HuntMarker
         private void HuntTrackThread()
         {
             diedBefore.Clear();
-           
-            isHuntThreadWorking = true;
 
             while(!isClosing)
             {
@@ -762,7 +779,9 @@ namespace FLT_HuntMarker
 
                             foreach (var tc in trackedCollection)
                             {
-                                if (actor.Value.Name == tc.Name)
+                                // KEKW
+                                if (actor.Value.Name == tc.Name ||
+                                    ("System.Windows.Controls.ListViewItem: " + actor.Value.Name == tc.Name))
                                 {
                                     tc.Count++;
                                 }
