@@ -411,12 +411,9 @@ namespace FLT_HuntMarker
             string yy = (y / canvas.ActualHeight * 100.0).ToString("0.0");
             string marktype = markCurrent;
 
-            if (customize != String.Empty)
+            if (customize == "s" || customize == "a" || customize == "b" || customize == "u")
             {
-                if (marktype == "s" || marktype == "a" || marktype == "b" || marktype == "u")
-                {
-                    marktype = customize;
-                }
+                marktype = customize;
             }
 
             string log = UID.ToString() + "," + currentMap + "," + xx + "," + yy + "," + timestamp + "," + marktype;
