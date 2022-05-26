@@ -135,5 +135,97 @@ namespace FLT_HuntMarker
                 return "0";
             }
         }
+
+        // Retreive map string for canvas with mapid
+        public static string GetCurrentFF14Map(uint mapid, uint instance)
+        {
+            switch (mapid)
+            {
+                case 134:
+                    return "ARR_ML";
+                case 135:
+                    return "ARR_LL";
+                case 137:
+                    return "ARR_EL";
+                case 138:
+                    return "ARR_WL";
+                case 139:
+                    return "ARR_UL";
+                case 140:
+                    return "ARR_WT";
+                case 141:
+                    return "ARR_CT";
+                case 145:
+                    return "ARR_ET";
+                case 146:
+                    return "ARR_ST";
+                case 147:
+                    return "ARR_NT";
+                case 148:
+                    return "ARR_CS";
+                case 152:
+                    return "ARR_ES";
+                case 153:
+                    return "ARR_SS";
+                case 154:
+                    return "ARR_NS";
+                case 155:
+                    return "ARR_CO";
+                case 156:
+                    return "ARR_MO";
+                case 180:
+                    return "ARR_OL";
+                case 397:
+                    return "HW_CO";
+                case 401:
+                    return "HW_SE";
+                case 400:
+                    return "HW_CH";
+                case 398:
+                    return "HW_DF";
+                case 399:
+                    return "HW_DH";
+                case 402:
+                    return "HW_AZ";
+                case 612:
+                    return "SB_FR";
+                case 620:
+                    return "SB_PE";
+                case 621:
+                    return "SB_LO";
+                case 613:
+                    return "SB_RU";
+                case 614:
+                    return "SB_YA";
+                case 622:
+                    return "SB_AZ";
+                case 813:
+                    return "ShB_LA";
+                case 814:
+                    return "ShB_KH";
+                case 815:
+                    return "ShB_AM";
+                case 816:
+                    return "ShB_IL";
+                case 817:
+                    return "ShB_RA";
+                case 818:
+                    return "ShB_TE";
+                case 956:
+                    return "EW_LA";
+                case 957:
+                    return "EW_TH1";
+                case 958:
+                    return "EW_GA";
+                case 959:
+                    return "EW_MA";
+                case 961:
+                    return "EW_EL";
+                case 960:
+                    return "EW_UL";
+                default:
+                    return "EW_GA";
+            }
+        }
     }
 }

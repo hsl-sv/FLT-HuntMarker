@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -23,7 +22,7 @@ namespace FLT_HuntMarker
         public int UID = 0;
         public List<string> objList = new();
         public string markCurrent = "b";
-        
+
         public static bool isClosing = false;
         public static bool isFF14Hooked = false;
         public static bool isHuntThreadWorking = false;
@@ -87,7 +86,7 @@ namespace FLT_HuntMarker
             {
                 ParseLog();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
@@ -111,7 +110,7 @@ namespace FLT_HuntMarker
 
                 string[] contents = saves.Split(",");
 
-                if(!int.TryParse(contents[0], out int value))
+                if (!int.TryParse(contents[0], out int value))
                 {
                     continue;
                 }
@@ -164,7 +163,7 @@ namespace FLT_HuntMarker
                 {
                     dot = Utility.MakeDot(xr, yr, dotSize, DotType.Circle, markcur);
                 }
-                
+
                 TextBlock tbx = Utility.MakeTextblock(xr, yr, 11, textbox);
 
                 dot.Name = CONFIG.OBJECT_PREFIX + contents[0];
@@ -195,10 +194,18 @@ namespace FLT_HuntMarker
         private void treeview_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             TreeViewItem tvItem = (TreeViewItem)e.NewValue;
+
+            SetCanvasMap(tvItem.Name);
+
+            return;
+        }
+
+        private void SetCanvasMap(string mapName)
+        {
             bool isHead = false;
 
             // Dirty but easy
-            switch (tvItem.Name)
+            switch (mapName)
             {
                 case "EW_Head":
                     treeview_CloseAll();
@@ -380,17 +387,21 @@ namespace FLT_HuntMarker
         }
         #endregion
 
-        // Left click means X mark + Timestamp
-        // Also make log for each map
+        // Left click for Mark
         private void canvas_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             Point pos = e.GetPosition(null);
-            double x = pos.X;
-            double y = pos.Y;
 
-            double dotSize = 10.0;
-            double xr = x - (dotSize / 2.0);
-            double yr = y - (dotSize / 2.0);
+            Mark(pos.X, pos.Y, String.Empty);
+
+            return;
+        }
+
+        // X mark + Timestamp, also make log for each map
+        private void Mark(double X, double Y, string customize)
+        {
+            double x = X;
+            double y = Y;
 
             var timestamp = DateTime.Now.ToString(CONFIG.TIMESTAMP_FORMAT);
 
@@ -398,8 +409,17 @@ namespace FLT_HuntMarker
             string currentMap = Utility.GetCurrentMap();
             string xx = (x / canvas.ActualWidth * 100.0).ToString("0.0");
             string yy = (y / canvas.ActualHeight * 100.0).ToString("0.0");
+            string marktype = markCurrent;
 
-            string log = UID.ToString() + "," + currentMap + "," + xx + "," + yy + "," + timestamp + "," + markCurrent;
+            if (customize != String.Empty)
+            {
+                if (marktype == "s" || marktype == "a" || marktype == "b" || marktype == "u")
+                {
+                    marktype = customize;
+                }
+            }
+
+            string log = UID.ToString() + "," + currentMap + "," + xx + "," + yy + "," + timestamp + "," + marktype;
             objList.Add(log);
             log += Environment.NewLine;
             System.IO.File.AppendAllText(CONFIG.LOGFILE, log);
@@ -438,7 +458,7 @@ namespace FLT_HuntMarker
                     Utility.RemoveLogContains(objUID.ToString() + "," + Utility.GetCurrentMap());
 
                     for (int j = 0; j < objList.Count; j++)
-                    { 
+                    {
                         if (objList[j].Contains(objUID.ToString() + "," + Utility.GetCurrentMap()))
                         {
                             objList.RemoveAt(j);
@@ -480,7 +500,7 @@ namespace FLT_HuntMarker
         // ClearAll button means clear all
         private void buttonClearAll_Click(object sender, RoutedEventArgs e)
         {
-            if(MessageBox.Show("Clear All Markers?", "Question",
+            if (MessageBox.Show("Clear All Markers?", "Question",
                 MessageBoxButton.OKCancel, MessageBoxImage.Warning) == MessageBoxResult.OK)
             {
                 canvas.Children.Clear();
@@ -531,7 +551,7 @@ namespace FLT_HuntMarker
             }
 
             if (msg == WM_EXITSIZEMOVE)
-            {        
+            {
                 if (WindowWasResized)
                 {
                     UpdateCanvas();
@@ -608,9 +628,9 @@ namespace FLT_HuntMarker
                 {
                     if (!isHuntThreadWorking)
                     {
+                        isHuntThreadWorking = true;
                         huntThread = new Thread(new ThreadStart(HuntTrackThread));
                         huntThread.Start();
-                        isHuntThreadWorking = true;
                     }
 
                     SearchNearbyMobs(append);
@@ -636,10 +656,13 @@ namespace FLT_HuntMarker
         {
             var actors = huntCounter.GetMobs();
 
-            // about Map - can make automatically change but it is enough now
+            // Get current map
             (uint mapID, uint mapIndex, uint mapTerritory) = huntCounter.GetMap();
 
-            Trace.WriteLine(mapID.ToString() + "," + mapIndex.ToString() + "," + mapTerritory.ToString());
+            // TODO: Check how instance works
+            string current = Utility.GetCurrentFF14Map(mapID, mapIndex);
+            Trace.WriteLine("MapName : " + current + ", mapID: " + mapID.ToString() +
+                ", mapIndex: " + mapIndex.ToString() + ", mapTerriroty: " + mapTerritory.ToString());
 
             if (actors == null)
             {
@@ -673,7 +696,6 @@ namespace FLT_HuntMarker
                 nearbyCollection.Add(mob);
             }
 
-            // TODO: Check S/A/B and set font color on Listview
             foreach (var mob in nearbyCollection)
             {
                 string item = mob.Name;
@@ -681,7 +703,7 @@ namespace FLT_HuntMarker
                 item += "_" + mob.Coordinates.X.ToString("0.0") + "_" + mob.Coordinates.Y.ToString("0.0");
 
                 foreach (ListViewItem listitem in listviewHuntCounter.Items)
-                { 
+                {
                     if (listitem is not null)
                     {
                         if (listitem.Content.ToString().Split('_')[0] == mob.Name)
@@ -700,14 +722,23 @@ namespace FLT_HuntMarker
                         ListViewItem lvitem = new ListViewItem();
                         lvitem.Content = item;
                         lvitem.FontWeight = FontWeights.Bold;
-                        lvitem.Background = Brushes.Yellow;
+                        lvitem.Background = CONFIG.COLOR_TEXT_BG;
                         if (special == "s")
-                            lvitem.Foreground = Brushes.Red;
+                            lvitem.Foreground = CONFIG.COLOR_S_TEXT;
                         else if (special == "a")
-                            lvitem.Foreground = Brushes.DarkGreen;
+                            lvitem.Foreground = CONFIG.COLOR_A_TEXT;
                         else if (special == "b")
-                            lvitem.Foreground = Brushes.Blue;
+                            lvitem.Foreground = CONFIG.COLOR_B_TEXT;
                         listviewHuntCounter.Items.Add(lvitem);
+
+                        // TODO: implement after Automatic map changed implemented
+                        //Mark(mob.Coordinates.X / 42.96 * canvas.ActualWidth,
+                        //    mob.Coordinates.Y / 42.96 * canvas.ActualWidth,
+                        //    special);
+
+                        //string current = Utility.GetCurrentFF14Map(mapID, mapIndex);
+                        //Trace.WriteLine("MapName : " + current + ", mapID: " + mapID.ToString() + 
+                        //    ", mapIndex: " + mapIndex.ToString() + ", mapTerriroty: " + mapTerritory.ToString())
                     }
                     else
                     {
@@ -730,6 +761,7 @@ namespace FLT_HuntMarker
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             isClosing = true;
+            isScoutMode = false;
 
             if (DisplayWindow != null)
                 DisplayWindow.Close();
@@ -757,7 +789,7 @@ namespace FLT_HuntMarker
         {
             diedBefore.Clear();
 
-            while(!isClosing)
+            while (!isClosing)
             {
                 var actors = huntCounter.GetMobs();
 
@@ -786,7 +818,7 @@ namespace FLT_HuntMarker
                                     tc.Count++;
                                 }
                             }
-                        
+
                             Trace.WriteLine("dead -> " + actor.Key.ToString() + "(" + actor.Value.Name + ")");
 
                             // Auto dequeue
@@ -808,7 +840,7 @@ namespace FLT_HuntMarker
                 Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
                 {
                     listviewHuntCounterNumber.Items.Clear();
-                    
+
                     foreach (var tc in trackedCollection)
                     {
                         listviewHuntCounterNumber.Items.Add(tc.Count.ToString());
@@ -831,11 +863,12 @@ namespace FLT_HuntMarker
             if (DisplayWindow == null && isDisplayChecked)
             {
                 DisplayWindow = new PopupDisplay();
-                DisplayWindow.Closed += (a, b) => {
+                DisplayWindow.Closed += (a, b) =>
+                {
                     checkboxCounterDisplay.IsChecked = false;
                     isDisplayChecked = false;
                     DisplayWindow = null;
-                    };
+                };
                 DisplayWindow.Show();
             }
             else
@@ -844,10 +877,32 @@ namespace FLT_HuntMarker
             }
         }
 
-        // TODO: Scout mode (reload every seconds)
+        // TODO: Scout mode (need test)
         private void checkboxScoutMode_Click(object sender, RoutedEventArgs e)
         {
+            if ((sender as CheckBox).IsChecked == true)
+            {
+                isScoutMode = true;
+            }
+            else
+            {
+                isScoutMode = false;
+            }
 
+            new Thread(() =>
+            {
+                // Padding
+                Thread.Sleep(1000);
+                Thread.CurrentThread.IsBackground = true;
+
+                while (isScoutMode)
+                {
+                    buttonHuntCounter_Click(null, null);
+                    Thread.Sleep(1000);
+                }
+            }).Start();
+
+            return;
         }
 
         // Update canvas when windows size changed
