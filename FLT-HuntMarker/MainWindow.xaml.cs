@@ -28,6 +28,7 @@ namespace FLT_HuntMarker
         public static bool isHuntThreadWorking = false;
         public static bool isDisplayChecked = false;
         public static bool isScoutMode = false;
+        public static string currentMap = "EW_GA";
         public static ObservableCollection<Mob> nearbyCollection = new();
         public static ObservableCollection<Mob> trackedCollection = new();
 
@@ -603,7 +604,7 @@ namespace FLT_HuntMarker
                     buttonHuntCounter.IsEnabled = true;
                     buttonHuntCounterAdd.IsEnabled = true;
                     checkboxCounterDisplay.IsEnabled = true;
-                    checkboxScoutMode.IsEnabled = true;
+                    checkboxScoutMode.IsEnabled = false;
                     this.Title = "FFXIVHuntMarker";
                 }));
 
@@ -615,9 +616,11 @@ namespace FLT_HuntMarker
         private void buttonHuntCounter_Click(object sender, RoutedEventArgs e)
         {
             bool append = false;
-
-            if ((sender as Button).Name == buttonHuntCounterAdd.Name)
-                append = true;
+            if (sender != null)
+            {
+                if ((sender as Button).Name == buttonHuntCounterAdd.Name)
+                    append = true;
+            }
 
             if (isFF14Hooked)
             {
@@ -628,6 +631,11 @@ namespace FLT_HuntMarker
                         isHuntThreadWorking = true;
                         huntThread = new Thread(new ThreadStart(HuntTrackThread));
                         huntThread.Start();
+
+                        Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
+                        {
+                            checkboxScoutMode.IsEnabled = true;
+                        }));
                     }
 
                     SearchNearbyMobs(append);
@@ -657,9 +665,9 @@ namespace FLT_HuntMarker
             (uint mapID, uint mapIndex, uint mapTerritory) = huntCounter.GetMap();
 
             // TODO: Check how instance works
-            string current = Utility.GetCurrentFF14Map(mapID, mapIndex);
-            Trace.WriteLine("MapName : " + current + ", mapID: " + mapID.ToString() +
-                ", mapIndex: " + mapIndex.ToString() + ", mapTerriroty: " + mapTerritory.ToString());
+            //string current = Utility.GetCurrentFF14Map(mapID, mapIndex);
+            //Trace.WriteLine("MapName : " + current + ", mapID: " + mapID.ToString() +
+            //    ", mapIndex: " + mapIndex.ToString() + ", mapTerriroty: " + mapTerritory.ToString());
 
             if (actors == null)
             {
@@ -729,12 +737,15 @@ namespace FLT_HuntMarker
                         listviewHuntCounter.Items.Add(lvitem);
 
                         // TODO: implement after Automatic map changed implemented
-                        //Mark(mob.Coordinates.X / 42.96 * canvas.ActualWidth,
-                        //    mob.Coordinates.Y / 42.96 * canvas.ActualWidth,
-                        //    special);
+                        string current = Utility.GetCurrentFF14Map(mapTerritory, mapIndex);
+                        currentMap = current;
+                        SetCanvasMap(current);
 
-                        //string current = Utility.GetCurrentFF14Map(mapID, mapIndex);
-                        //Trace.WriteLine("MapName : " + current + ", mapID: " + mapID.ToString() + 
+                        Mark(mob.Coordinates.X / 42.96 * canvas.ActualWidth,
+                            mob.Coordinates.Y / 42.96 * canvas.ActualHeight,
+                            special);
+
+                        //race.WriteLine("MapName : " + current + ", mapID: " + mapID.ToString() + 
                         //    ", mapIndex: " + mapIndex.ToString() + ", mapTerriroty: " + mapTerritory.ToString())
                     }
                     else
@@ -793,6 +804,13 @@ namespace FLT_HuntMarker
                 if (actors == null)
                 {
                     // pass
+                }
+                else if (isScoutMode)
+                {
+                    Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
+                    {
+                        SearchNearbyMobs(false);
+                    }));
                 }
                 else
                 {
@@ -886,6 +904,7 @@ namespace FLT_HuntMarker
                 isScoutMode = false;
             }
 
+            /*
             new Thread(() =>
             {
                 // Padding
@@ -898,6 +917,7 @@ namespace FLT_HuntMarker
                     Thread.Sleep(1000);
                 }
             }).Start();
+            */
 
             return;
         }
