@@ -399,6 +399,7 @@ namespace FLT_HuntMarker
         }
 
         // X mark + Timestamp, also make log for each map
+        // TODO: skip mark if detect nearby mark
         private void Mark(double X, double Y, string customize)
         {
             double x = X;
@@ -407,17 +408,19 @@ namespace FLT_HuntMarker
             var timestamp = DateTime.Now.ToString(CONFIG.TIMESTAMP_FORMAT);
 
             // Create information for save
-            string currentMap = Utility.GetCurrentMap();
+            string currentCanvasMap = Utility.GetCurrentMap();
             string xx = (x / canvas.ActualWidth * 100.0).ToString("0.0");
             string yy = (y / canvas.ActualHeight * 100.0).ToString("0.0");
             string marktype = markCurrent;
 
+            // is from Scout mode
             if (customize == "s" || customize == "a" || customize == "b" || customize == "u")
             {
                 marktype = customize;
+                currentCanvasMap = currentMap;
             }
 
-            string log = UID.ToString() + "," + currentMap + "," + xx + "," + yy + "," + timestamp + "," + marktype;
+            string log = UID.ToString() + "," + currentCanvasMap + "," + xx + "," + yy + "," + timestamp + "," + marktype;
             objList.Add(log);
             log += Environment.NewLine;
             System.IO.File.AppendAllText(CONFIG.LOGFILE, log);
@@ -736,7 +739,6 @@ namespace FLT_HuntMarker
                             lvitem.Foreground = CONFIG.COLOR_B_TEXT;
                         listviewHuntCounter.Items.Add(lvitem);
 
-                        // TODO: implement after Automatic map changed implemented
                         string current = Utility.GetCurrentFF14Map(mapTerritory, mapIndex);
                         currentMap = current;
                         SetCanvasMap(current);
@@ -745,7 +747,7 @@ namespace FLT_HuntMarker
                             mob.Coordinates.Y / 42.96 * canvas.ActualHeight,
                             special);
 
-                        //race.WriteLine("MapName : " + current + ", mapID: " + mapID.ToString() + 
+                        //Trace.WriteLine("MapName : " + current + ", mapID: " + mapID.ToString() + 
                         //    ", mapIndex: " + mapIndex.ToString() + ", mapTerriroty: " + mapTerritory.ToString())
                     }
                     else
