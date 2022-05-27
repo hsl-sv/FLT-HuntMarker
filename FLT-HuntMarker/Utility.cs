@@ -85,9 +85,7 @@ namespace FLT_HuntMarker
             var tv = (window as MainWindow).treeview.SelectedItem;
             string tvName = (tv as TreeViewItem).Name;
 
-            MainWindow.currentMap = tvName;
-
-            return MainWindow.currentMap;
+            return tvName;
         }
 
         // Remove specific content from CONFIG.LOGFILE

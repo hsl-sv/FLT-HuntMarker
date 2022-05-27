@@ -417,7 +417,17 @@ namespace FLT_HuntMarker
             if (customize == "s" || customize == "a" || customize == "b" || customize == "u")
             {
                 marktype = customize;
+
+                if (currentCanvasMap != currentMap)
+                {
+                    object mapTvi = FindName(currentMap);
+                    (mapTvi as TreeViewItem).IsSelected = true;
+                    object mapTviFormer = FindName(currentCanvasMap);
+                    (mapTviFormer as TreeViewItem).IsSelected = false;
+                }
+
                 currentCanvasMap = currentMap;
+
             }
 
             string log = UID.ToString() + "," + currentCanvasMap + "," + xx + "," + yy + "," + timestamp + "," + marktype;
