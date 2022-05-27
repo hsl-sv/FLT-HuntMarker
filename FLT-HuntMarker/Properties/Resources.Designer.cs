@@ -439,7 +439,8 @@ namespace FLT_HuntMarker.Properties {
         ///Ruminator
         ///Ophioneus
         ///Narrow-rift
-        ///과(와) 유사한 지역화된 문자열을 찾습니다.
+        ///Ker
+        ///Forgiven Rebellion과(와) 유사한 지역화된 문자열을 찾습니다.
         /// </summary>
         internal static string MobS {
             get {
