@@ -719,6 +719,7 @@ namespace FLT_HuntMarker
                 string item = mob.Name;
                 bool skip = false;
                 item += "_" + mob.Coordinates.X.ToString("0.0") + "_" + mob.Coordinates.Y.ToString("0.0");
+                double percentage = mob.HPPercent;
 
                 foreach (ListViewItem listitem in listviewHuntCounter.Items)
                 {
