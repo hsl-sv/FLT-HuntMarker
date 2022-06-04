@@ -250,7 +250,7 @@ namespace FLT_HuntMarker.Properties {
         ///Lampalagua
         ///Nunyunuwi
         ///Minhocao
-        ///Croque-Mitaine
+        ///Croque-mitaine
         ///Croakadile
         ///The Garlok
         ///Bonnacon
@@ -407,7 +407,7 @@ namespace FLT_HuntMarker.Properties {
         ///Lampalagua
         ///Nunyunuwi
         ///Minhocao
-        ///Croque-Mitaine
+        ///Croque-mitaine
         ///Croakadile
         ///The Garlok
         ///Bonnacon
