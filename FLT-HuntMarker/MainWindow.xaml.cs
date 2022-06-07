@@ -905,7 +905,7 @@ namespace FLT_HuntMarker
             }
         }
 
-        // TODO: Scout mode (need test)
+        // Scout mode, flow control in HuntTrackThread()
         private void checkboxScoutMode_Click(object sender, RoutedEventArgs e)
         {
             if ((sender as CheckBox).IsChecked == true)
@@ -916,21 +916,6 @@ namespace FLT_HuntMarker
             {
                 isScoutMode = false;
             }
-
-            /*
-            new Thread(() =>
-            {
-                // Padding
-                Thread.Sleep(1000);
-                Thread.CurrentThread.IsBackground = true;
-
-                while (isScoutMode)
-                {
-                    buttonHuntCounter_Click(null, null);
-                    Thread.Sleep(1000);
-                }
-            }).Start();
-            */
 
             return;
         }

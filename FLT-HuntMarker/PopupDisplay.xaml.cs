@@ -45,9 +45,16 @@ namespace FLT_HuntMarker
             }
         }
 
+        // Move window
         private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             DragMove();
+        }
+
+        // Close window
+        private void Grid_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            // Close window
         }
     }
 }
