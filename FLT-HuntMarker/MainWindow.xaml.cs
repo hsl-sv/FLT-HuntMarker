@@ -616,7 +616,7 @@ namespace FLT_HuntMarker
                 {
                     buttonHuntCounter.IsEnabled = true;
                     buttonHuntCounterAdd.IsEnabled = true;
-                    checkboxCounterDisplay.IsEnabled = true;
+                    checkboxCounterDisplay.IsEnabled = false;
                     checkboxScoutMode.IsEnabled = false;
                     this.Title = "FFXIVHuntMarker";
                 }));
@@ -647,6 +647,7 @@ namespace FLT_HuntMarker
 
                         Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
                         {
+                            checkboxCounterDisplay.IsEnabled = true;
                             checkboxScoutMode.IsEnabled = true;
                         }));
                     }
