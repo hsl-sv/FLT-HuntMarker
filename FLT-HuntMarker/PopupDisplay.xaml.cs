@@ -54,7 +54,7 @@ namespace FLT_HuntMarker
         // Close window
         private void Grid_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
-            // Close window
+            Close();
         }
     }
 }
