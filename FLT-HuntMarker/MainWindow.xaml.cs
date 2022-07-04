@@ -677,6 +677,7 @@ namespace FLT_HuntMarker
 
             // Get current map
             (uint mapID, uint mapIndex, uint mapTerritory) = huntCounter.GetMap();
+            string mapcur = Utility.GetCurrentFF14Map(mapTerritory, mapIndex);
 
             // TODO: Check how instance works
             //string current = Utility.GetCurrentFF14Map(mapID, mapIndex);
@@ -719,6 +720,7 @@ namespace FLT_HuntMarker
             {
                 string item = mob.Name;
                 bool skip = false;
+                bool occupied = false;
                 item += "_" + mob.Coordinates.X.ToString("0.0") + "_" + mob.Coordinates.Y.ToString("0.0");
                 double percentage = mob.HPPercent;
 
@@ -733,12 +735,50 @@ namespace FLT_HuntMarker
                     }
                 }
 
-                if (!skip)
+                // TODO: need debug in-game
+                // skip if nearby Dot there (duplicate check)
+                for (int i = 0; i < objList.Count; i++)
+                {
+                    string saves = objList[i];
+                    string[] contents = saves.Split(",");
+                    string mm = contents[1]; // Map
+
+                    if (mapcur != mm)
+                    {
+                        continue;
+                    }
+
+                    double xx = double.Parse(contents[2]); // XX
+                    double yy = double.Parse(contents[3]); // YY
+
+                    double dtl = Math.Sqrt(Math.Pow(xx - mob.Coordinates.X, 2) + Math.Pow(yy - mob.Coordinates.Y, 2));
+                    DateTime dt1 = DateTime.ParseExact(contents[4], CONFIG.TIMESTAMP_FORMAT, null);
+                    int dtd = Math.Abs((DateTime.Now - dt1).Days);
+
+                    // Check distance of current mob object and xy on objList AND
+                    // difference between objList and DateTime.Now
+                    if (dtl < CONFIG.PARAM_DUPLICATE_DISTANCE && dtd < CONFIG.PARAM_DUPLICATE_DAY)
+                    {
+                        occupied = true;
+                    }
+
+                    Trace.WriteLine("dtl : " + dtl.ToString() +
+                        ", xx: " + xx.ToString() +
+                        ", xxMob: " + mob.Coordinates.X.ToString() +
+                        ", yy: " + yy.ToString() +
+                        ", yyMob: " + mob.Coordinates.Y.ToString() +
+                        ", dtd: " + dtd.ToString() +
+                        ", dt1: " + dt1.ToString()
+                        );
+                }
+
+                if (!skip && !occupied)
                 {
                     string special = Utility.CheckSpecialMob(mob.Name);
 
                     if (special != "0")
                     {
+                        
                         ListViewItem lvitem = new ListViewItem();
                         lvitem.Content = item;
                         lvitem.FontWeight = FontWeights.Bold;
@@ -751,16 +791,12 @@ namespace FLT_HuntMarker
                             lvitem.Foreground = CONFIG.COLOR_B_TEXT;
                         listviewHuntCounter.Items.Add(lvitem);
 
-                        string current = Utility.GetCurrentFF14Map(mapTerritory, mapIndex);
-                        currentMap = current;
-                        SetCanvasMap(current);
+                        currentMap = mapcur;
+                        SetCanvasMap(mapcur);
 
                         Mark(mob.Coordinates.X / 42.96 * canvas.ActualWidth,
                             mob.Coordinates.Y / 42.96 * canvas.ActualHeight,
                             special);
-
-                        //Trace.WriteLine("MapName : " + current + ", mapID: " + mapID.ToString() + 
-                        //    ", mapIndex: " + mapIndex.ToString() + ", mapTerriroty: " + mapTerritory.ToString())
                     }
                     else
                     {
