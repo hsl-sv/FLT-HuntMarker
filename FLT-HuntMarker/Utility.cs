@@ -105,7 +105,8 @@ namespace FLT_HuntMarker
         // Convert position
         public static double ConvertPos(double num)
         {
-            return (Math.Floor((21.48 + (Convert.ToDouble(num) / 50)) * 100)) / 100;
+            //return (Math.Floor((21.48 + (Convert.ToDouble(num) / 50)) * 100)) / 100;
+            return Math.Floor(2.0 * Convert.ToDouble(num) + 2148.0) / 100;
         }
 
         // Check parameter name is in S/A/B list (English only)

@@ -150,22 +150,21 @@ namespace FLT_HuntMarker
                 double xActual = canvas.ActualWidth;
                 double yActual = canvas.ActualHeight;
 
-                double dotSize = 20.0;
-                double xr = (xActual * xx / 100.0) - (dotSize / 2.0);
-                double yr = (yActual * yy / 100.0) - (dotSize / 2.0);
+                double xr = (xActual * xx / 100.0) - (CONFIG.PARAM_DOT_SIZE / 2.0);
+                double yr = (yActual * yy / 100.0) - (CONFIG.PARAM_DOT_SIZE / 2.0);
 
                 Ellipse dot = new();
 
                 if (markcur == "u")
                 {
-                    dot = Utility.MakeDot(xr, yr, dotSize, DotType.Flag, markcur);
+                    dot = Utility.MakeDot(xr, yr, CONFIG.PARAM_DOT_SIZE, DotType.Flag, markcur);
                 }
                 else
                 {
-                    dot = Utility.MakeDot(xr, yr, dotSize, DotType.Circle, markcur);
+                    dot = Utility.MakeDot(xr, yr, CONFIG.PARAM_DOT_SIZE, DotType.Circle, markcur);
                 }
 
-                TextBlock tbx = Utility.MakeTextblock(xr, yr, 11, textbox);
+                TextBlock tbx = Utility.MakeTextblock(xr, yr, CONFIG.PARAM_FONT_SIZE, textbox);
 
                 dot.Name = CONFIG.OBJECT_PREFIX + contents[0];
                 tbx.Name = CONFIG.OBJECT_PREFIX + contents[0];
@@ -429,6 +428,8 @@ namespace FLT_HuntMarker
 
             }
 
+            // logskip used in SearchNearbyMobs() for duplicate check
+            // No need to log again if already marked (in condition)
             if (!logskip)
             {
                 string log = UID.ToString() + "," + currentCanvasMap + "," + xx + "," + yy + "," + timestamp + "," + marktype;
@@ -725,6 +726,11 @@ namespace FLT_HuntMarker
                 item += "_" + mob.Coordinates.X.ToString("0.0") + "_" + mob.Coordinates.Y.ToString("0.0");
                 double percentage = mob.HPPercent;
 
+                // Percentage on map
+                double x1 = mob.Coordinates.X / CONFIG.FF14_MAP_SIZE;
+                double y1 = mob.Coordinates.Y / CONFIG.FF14_MAP_SIZE;
+
+                // Check already listed Mob
                 foreach (ListViewItem listitem in listviewHuntCounter.Items)
                 {
                     if (listitem is not null)
@@ -736,8 +742,11 @@ namespace FLT_HuntMarker
                     }
                 }
 
+                // Add to list if new found Mob
                 if (!skip)
                 {
+                    // If S/A/B ranked -> List and Add Mark+Log ONCE
+                    // Else -> List only
                     string special = Utility.CheckSpecialMob(mob.Name);
 
                     if (special != "0")
@@ -759,47 +768,38 @@ namespace FLT_HuntMarker
                         SetCanvasMap(mapcur);
 
                         // skip if nearby Dot there (duplicate check)
-                        // TODO: Low IQ codes, Lengthy and redundant calculates
-                        // have to clean up
                         for (int i = 0; i < objList.Count; i++)
                         {
                             string saves = objList[i];
                             string[] contents = saves.Split(",");
                             string mm = contents[1]; // Map
 
+                            // Accept only same map
                             if (mapcur != mm)
                             {
                                 continue;
                             }
 
-                            double xx = double.Parse(contents[2]); // XX
-                            double yy = double.Parse(contents[3]); // YY
-                            double xx1 = mob.Coordinates.X / 42.96 * 100.0;
-                            double yy1 = mob.Coordinates.Y / 42.96 * 100.0;
-                            double dtl = Math.Sqrt(Math.Pow(xx - xx1, 2) + Math.Pow(yy - yy1, 2));
+                            double dtl = Math.Sqrt(
+                                Math.Pow(double.Parse(contents[2]) - (x1 * 100.0), 2) + 
+                                Math.Pow(double.Parse(contents[3]) - (y1 * 100.0), 2)
+                                );
+
                             DateTime dt1 = DateTime.ParseExact(contents[4], CONFIG.TIMESTAMP_FORMAT, null);
                             int dtd = Math.Abs((DateTime.Now - dt1).Hours);
 
                             // Check distance of current mob object and xy on objList AND
                             // difference between objList and DateTime.Now
-                            if (dtl < CONFIG.PARAM_DUPLICATE_DISTANCE && dtd < CONFIG.PARAM_DUPLICATE_PERIOD_HOUR)
+                            if (dtl < CONFIG.PARAM_DUPLICATE_DISTANCE && 
+                                dtd < CONFIG.PARAM_DUPLICATE_PERIOD_HOUR)
                             {
                                 occupied = true;
                             }
                         }
 
-                        if (!occupied)
-                        {
-                            Mark(mob.Coordinates.X / 42.96 * canvas.ActualWidth,
-                                mob.Coordinates.Y / 42.96 * canvas.ActualHeight,
-                                special, false);
-                        }
-                        else
-                        {
-                            Mark(mob.Coordinates.X / 42.96 * canvas.ActualWidth,
-                                mob.Coordinates.Y / 42.96 * canvas.ActualHeight,
-                                special, true);
-                        }
+                        Mark(x1 * canvas.ActualWidth,
+                             y1 * canvas.ActualHeight,
+                             special, occupied);
                     }
                     else
                     {

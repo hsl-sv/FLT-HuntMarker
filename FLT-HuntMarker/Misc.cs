@@ -20,6 +20,10 @@ namespace FLT_HuntMarker
         public const string LOGFILE = @"./Log.log";
         public const string TMPFILE = @"./Log.tmp";
 
+        public static double PARAM_DOT_SIZE = 20.0;
+        public static double PARAM_FONT_SIZE = 11.0;
+        public static double FF14_MAP_SIZE = 42.96; // Map size of X or Y
+
         public static double COLOR_OPACITY = 0.8;
         public static double PARAM_DUPLICATE_DISTANCE = 1.0;
         public static int PARAM_DUPLICATE_PERIOD_HOUR = 1;
