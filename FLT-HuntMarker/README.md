@@ -8,6 +8,10 @@ For check accounted position, specify spawn location for tour/train, S spawn cou
 
 This program uses Administrator permission.
 
+This software looks like
+
+![alt text](https://i.imgur.com/LTZhXlI.png) ...
+
 
 Map assets from https://github.com/RKI027/ffxiv-huntmaps
 
