@@ -59,6 +59,11 @@ namespace FLT_HuntMarker
         {
             int uc = 0;
 
+            if (!System.IO.File.Exists(CONFIG.LOGFILE))
+            {
+                System.IO.File.Create(CONFIG.LOGFILE);
+            }
+
             if (String.IsNullOrEmpty(System.IO.File.ReadAllText(CONFIG.LOGFILE)))
             {
                 uc = 0;
