@@ -6,7 +6,7 @@ This software is created by my own purpose
 
 For check accounted position, specify spawn location for tour/train, S spawn counter
 
-This program uses Administrator permission.
+This program uses Administrator permission and uses .NET 5.0 Desktop Runtime
 
 This software looks like
 
