@@ -260,9 +260,7 @@ namespace FLT_HuntMarker
                     imageMap.Source = Utility.ByteToImage(Properties.Resources.Labyrinthos_data); break;
                 case "EW_GA":
                     imageMap.Source = Utility.ByteToImage(Properties.Resources.Garlemald_data); break;
-                case "EW_TH1":
-                case "EW_TH2":
-                case "EW_TH3":
+                case "EW_TH":
                     imageMap.Source = Utility.ByteToImage(Properties.Resources.Thavnair_data); break;
                 case "EW_MA":
                     imageMap.Source = Utility.ByteToImage(Properties.Resources.Mare_Lamentorum_data); break;

@@ -215,7 +215,7 @@ namespace FLT_HuntMarker
                 case 956:
                     return "EW_LA";
                 case 957:
-                    return "EW_TH1";
+                    return "EW_TH";
                 case 958:
                     return "EW_GA";
                 case 959:
