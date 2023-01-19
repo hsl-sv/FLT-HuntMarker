@@ -716,8 +716,7 @@ namespace FLT_HuntMarker
                     Key = actor.Key,
                     HP = actor.Value.HPCurrent,
                     IsTracking = false,
-                    // It changed after 6.3, idk what happend
-                    Coordinates = new Coords(Utility.ConvertPos(actor.Value.X), Utility.ConvertPos(actor.Value.Z)),
+                    Coordinates = new Coords(Utility.ConvertPos(actor.Value.X), Utility.ConvertPos(actor.Value.Y)),
                 };
 
                 nearbyCollection.Add(mob);
@@ -874,7 +873,7 @@ namespace FLT_HuntMarker
                     foreach (var actor in actors)
                     {
                         double X = Utility.ConvertPos(actor.Value.X);
-                        double Y = Utility.ConvertPos(actor.Value.Z);
+                        double Y = Utility.ConvertPos(actor.Value.Y);
 
                         // Every spawnd mob has different key
                         if (actor.Value.HPCurrent <= 0 && !diedBefore.Contains(actor.Key))

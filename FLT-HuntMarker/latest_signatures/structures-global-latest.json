@@ -19,9 +19,9 @@
     "TargetFlags": 148,
 
     "X": 176,
-    "Y": 180,
-    "Z": 184,
-    "Rotation": 192,
+    "Y": 184,
+    "Z": 180,
+    "Heading": 192,
     "Scale": 196,
     "Height": 200,
     "HitBoxRadius": 208,

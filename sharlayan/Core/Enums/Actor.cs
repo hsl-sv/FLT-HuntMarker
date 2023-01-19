@@ -224,6 +224,10 @@ namespace Sharlayan.Core.Enums {
             GNB = 0x25,
 
             DNC = 0x26,
+
+            RPR = 0x27,
+
+            SGE = 0x28,
         }
 
         public enum Sex : byte {
