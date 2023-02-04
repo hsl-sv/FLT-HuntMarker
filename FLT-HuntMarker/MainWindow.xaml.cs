@@ -777,12 +777,6 @@ namespace FLT_HuntMarker
                             string[] contents = saves.Split(",");
                             string mm = contents[1]; // Map
 
-                            // Accept only same map
-                            if (mapcur != mm)
-                            {
-                                continue;
-                            }
-
                             double dtl = Math.Sqrt(
                                 Math.Pow(double.Parse(contents[2]) - (x1 * 100.0), 2) + 
                                 Math.Pow(double.Parse(contents[3]) - (y1 * 100.0), 2)
@@ -801,8 +795,8 @@ namespace FLT_HuntMarker
                         }
 
                         Mark(x1 * canvas.ActualWidth,
-                             y1 * canvas.ActualHeight,
-                             special, occupied);
+                                y1 * canvas.ActualHeight,
+                                special, occupied);
                     }
                     else
                     {
