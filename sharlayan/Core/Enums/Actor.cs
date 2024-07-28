@@ -1,6 +1,6 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
 // <copyright file="Actor.cs" company="SyndicatedLife">
-//   Copyright© 2007 - 2021 Ryan Wilson <syndicated.life@gmail.com> (https://syndicated.life/)
+//   Copyright© 2007 - 2022 Ryan Wilson <syndicated.life@gmail.com> (https://syndicated.life/)
 //   Licensed under the MIT license. See LICENSE.md in the solution root for full license information.
 // </copyright>
 // <summary>
@@ -228,6 +228,10 @@ namespace Sharlayan.Core.Enums {
             RPR = 0x27,
 
             SGE = 0x28,
+
+            VPR = 0x29,
+
+            PCT = 0x2A,
         }
 
         public enum Sex : byte {
