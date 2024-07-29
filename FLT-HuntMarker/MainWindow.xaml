@@ -124,11 +124,19 @@
                             <Setter Property="Padding" Value="0"/>
                         </Style>
                     </TreeView.ItemContainerStyle>
-                    
-                    <TreeViewItem x:Name="EW_Head" Header="EW" IsExpanded="True">
+
+                    <TreeViewItem x:Name="DT_Head" Header="DT" IsExpanded="True">
+                        <TreeViewItem x:Name="DT_UR" Header="Urqopacha" IsSelected="True" />
+                        <TreeViewItem x:Name="DT_KO" Header="Kozama'uka" />
+                        <TreeViewItem x:Name="DT_YT" Header="Yak Te'l" />
+                        <TreeViewItem x:Name="DT_SH" Header="Shaaloani" />
+                        <TreeViewItem x:Name="DT_HF" Header="Heritage Found" />
+                        <TreeViewItem x:Name="DT_LM" Header="Living Memory" />
+                    </TreeViewItem>
+                    <TreeViewItem x:Name="EW_Head" Header="EW" IsExpanded="False">
                         <TreeViewItem x:Name="EW_LA" Header="Labyrinthos" />
                         <TreeViewItem x:Name="EW_TH" Header="Thavnair" />
-                        <TreeViewItem x:Name="EW_GA" Header="Garlemald" IsSelected="True" />
+                        <TreeViewItem x:Name="EW_GA" Header="Garlemald" />
                         <TreeViewItem x:Name="EW_MA" Header="Moon" />
                         <TreeViewItem x:Name="EW_EL" Header="Elpis" />
                         <TreeViewItem x:Name="EW_UL" Header="Ultima Thule" />

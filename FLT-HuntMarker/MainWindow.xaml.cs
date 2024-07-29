@@ -28,7 +28,7 @@ namespace FLT_HuntMarker
         public static bool isHuntThreadWorking = false;
         public static bool isDisplayChecked = false;
         public static bool isScoutMode = false;
-        public static string currentMap = "EW_GA";
+        public static string currentMap = "DT_UR";
         public static ObservableCollection<Mob> nearbyCollection = new();
         public static ObservableCollection<Mob> trackedCollection = new();
 
@@ -44,8 +44,8 @@ namespace FLT_HuntMarker
         {
             InitializeComponent();
 
-            // Default map (Garlemald)
-            imageMap.Source = Utility.ByteToImage(Properties.Resources.Garlemald_data);
+            // Default map (Urqopacha)
+            imageMap.Source = Utility.ByteToImage(Properties.Resources.Urqopacha_data);
             imageMap.Stretch = Stretch.Fill;
 
             UID = SetUID();
@@ -183,6 +183,7 @@ namespace FLT_HuntMarker
 
         private void treeview_CloseAll()
         {
+            DT_Head.IsExpanded = false;
             EW_Head.IsExpanded = false;
             ShB_Head.IsExpanded = false;
             SB_Head.IsExpanded = false;
@@ -212,6 +213,11 @@ namespace FLT_HuntMarker
             // Dirty but easy
             switch (mapName)
             {
+                case "DT_Head":
+                    treeview_CloseAll();
+                    DT_Head.IsExpanded = true;
+                    isHead = true;
+                    break;
                 case "EW_Head":
                     treeview_CloseAll();
                     EW_Head.IsExpanded = true;
@@ -255,6 +261,19 @@ namespace FLT_HuntMarker
                     ARR_TH_Head.IsExpanded = true;
                     isHead = true;
                     break;
+
+                case "DT_UR":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Urqopacha_data); break;
+                case "DT_KO":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Kozama_uka_data); break;
+                case "DT_YT":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Yak_Te_l_data); break;
+                case "DT_SH":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Shaaloani_data); break;
+                case "DT_HF":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Heritage_Found_data); break;
+                case "DT_LM":
+                    imageMap.Source = Utility.ByteToImage(Properties.Resources.Living_Memory_data); break;
 
                 case "EW_LA":
                     imageMap.Source = Utility.ByteToImage(Properties.Resources.Labyrinthos_data); break;
@@ -868,6 +887,11 @@ namespace FLT_HuntMarker
                     {
                         double X = Utility.ConvertPos(actor.Value.X);
                         double Y = Utility.ConvertPos(actor.Value.Y);
+
+                        if (actor.Value.Name == "Bee Cloud")
+                        {
+                            int dddd = 0;
+                        }
 
                         // Every spawnd mob has different key
                         if (actor.Value.HPCurrent <= 0 && !diedBefore.Contains(actor.Key))

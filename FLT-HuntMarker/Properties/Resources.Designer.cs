@@ -19,7 +19,7 @@ namespace FLT_HuntMarker.Properties {
     // 클래스에서 자동으로 생성되었습니다.
     // 멤버를 추가하거나 제거하려면 .ResX 파일을 편집한 다음 /str 옵션을 사용하여 ResGen을
     // 다시 실행하거나 VS 프로젝트를 다시 빌드하십시오.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -173,6 +173,16 @@ namespace FLT_HuntMarker.Properties {
         /// <summary>
         ///   System.Byte[] 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
+        internal static byte[] Heritage_Found_data {
+            get {
+                object obj = ResourceManager.GetObject("Heritage_Found-data", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   System.Byte[] 형식의 지역화된 리소스를 찾습니다.
+        /// </summary>
         internal static byte[] Il_Mheg_data {
             get {
                 object obj = ResourceManager.GetObject("Il_Mheg_data", resourceCulture);
@@ -193,6 +203,16 @@ namespace FLT_HuntMarker.Properties {
         /// <summary>
         ///   System.Byte[] 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
+        internal static byte[] Kozama_uka_data {
+            get {
+                object obj = ResourceManager.GetObject("Kozama\'uka-data", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   System.Byte[] 형식의 지역화된 리소스를 찾습니다.
+        /// </summary>
         internal static byte[] Labyrinthos_data {
             get {
                 object obj = ResourceManager.GetObject("Labyrinthos_data", resourceCulture);
@@ -206,6 +226,16 @@ namespace FLT_HuntMarker.Properties {
         internal static byte[] Lakeland_data {
             get {
                 object obj = ResourceManager.GetObject("Lakeland_data", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   System.Byte[] 형식의 지역화된 리소스를 찾습니다.
+        /// </summary>
+        internal static byte[] Living_Memory_data {
+            get {
+                object obj = ResourceManager.GetObject("Living_Memory-data", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -501,6 +531,16 @@ namespace FLT_HuntMarker.Properties {
         /// <summary>
         ///   System.Byte[] 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
+        internal static byte[] Shaaloani_data {
+            get {
+                object obj = ResourceManager.GetObject("Shaaloani-data", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   System.Byte[] 형식의 지역화된 리소스를 찾습니다.
+        /// </summary>
         internal static byte[] South_Shroud_data {
             get {
                 object obj = ResourceManager.GetObject("South_Shroud_data", resourceCulture);
@@ -661,6 +701,16 @@ namespace FLT_HuntMarker.Properties {
         /// <summary>
         ///   System.Byte[] 형식의 지역화된 리소스를 찾습니다.
         /// </summary>
+        internal static byte[] Urqopacha_data {
+            get {
+                object obj = ResourceManager.GetObject("Urqopacha-data", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   System.Byte[] 형식의 지역화된 리소스를 찾습니다.
+        /// </summary>
         internal static byte[] Western_La_Noscea_data {
             get {
                 object obj = ResourceManager.GetObject("Western_La_Noscea_data", resourceCulture);
@@ -674,6 +724,16 @@ namespace FLT_HuntMarker.Properties {
         internal static byte[] Western_Thanalan_data {
             get {
                 object obj = ResourceManager.GetObject("Western_Thanalan_data", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   System.Byte[] 형식의 지역화된 리소스를 찾습니다.
+        /// </summary>
+        internal static byte[] Yak_Te_l_data {
+            get {
+                object obj = ResourceManager.GetObject("Yak_Te\'l-data", resourceCulture);
                 return ((byte[])(obj));
             }
         }
