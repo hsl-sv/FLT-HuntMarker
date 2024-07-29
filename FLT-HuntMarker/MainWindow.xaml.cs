@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -908,20 +909,24 @@ namespace FLT_HuntMarker
                                 }
                             }
 
-                            Trace.WriteLine("dead -> " + actor.Key.ToString() + "(" + actor.Value.Name + ")");
-
-                            // Auto dequeue
-                            new Thread(() =>
+                            // TODO: Currently disabled by unable to find HPCurrent info
+                            if (false)
                             {
-                                Thread.CurrentThread.IsBackground = true;
-                                if (diedBefore.Count > 0)
+                                Trace.WriteLine("dead -> " + actor.Key.ToString() + "(" + actor.Value.Name + ")");
+
+                                // Auto dequeue
+                                new Thread(() =>
                                 {
-                                    // Disappearing time is 10s
-                                    Thread.Sleep(13000);
-                                    Trace.WriteLine("dequeue -> " + diedBefore.Peek().ToString());
-                                    diedBefore.Dequeue();
-                                }
-                            }).Start();
+                                    Thread.CurrentThread.IsBackground = true;
+                                    if (diedBefore.Count > 0)
+                                    {
+                                        // Disappearing time is 10s
+                                        Thread.Sleep(13000);
+                                        Trace.WriteLine("dequeue -> " + diedBefore.Peek().ToString());
+                                        diedBefore.Dequeue();
+                                    }
+                                }).Start();
+                            }
                         }
                     }
                 }

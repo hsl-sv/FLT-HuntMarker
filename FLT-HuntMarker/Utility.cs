@@ -142,6 +142,18 @@ namespace FLT_HuntMarker
         {
             switch (mapid)
             {
+                case 1187:
+                    return "DT_UR";
+                case 1188:
+                    return "DT_KO";
+                case 1189:
+                    return "DT_YT";
+                case 1190:
+                    return "DT_SH";
+                case 1191:
+                    return "DT_HF";
+                case 1192:
+                    return "DT_LM";
                 case 134:
                     return "ARR_ML";
                 case 135:
@@ -225,7 +237,7 @@ namespace FLT_HuntMarker
                 case 960:
                     return "EW_UL";
                 default:
-                    return "EW_GA";
+                    return "DT_UR";
             }
         }
     }
