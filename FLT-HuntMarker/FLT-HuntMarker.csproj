@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows7.0</TargetFramework>
     <RootNamespace>FLT_HuntMarker</RootNamespace>
     <UseWPF>true</UseWPF>
     <AssemblyName>FFXIVHuntMarker</AssemblyName>
@@ -16,10 +16,6 @@
 
   <ItemGroup>
     <None Remove="Player_Icon47.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\sharlayan\Sharlayan.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,7 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="latest_signatures\" />
+    <PackageReference Include="Sharlayan" Version="9.0.18" />
   </ItemGroup>
 
 </Project>

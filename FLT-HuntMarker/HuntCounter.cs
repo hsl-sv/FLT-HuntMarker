@@ -7,6 +7,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 using System.Threading;
 
 namespace FLT_HuntMarker
@@ -27,35 +28,22 @@ namespace FLT_HuntMarker
 
             if (processes.Length > 0)
             {
-
-                // supported: Global, Chinese, Korean
-                GameRegion gameRegion = GameRegion.Global;
-
-                GameLanguage gameLanguage = GameLanguage.English;
-
-                // whether to always hit API on start to get the latest sigs based on patchVersion, or use the local json cache (if the file doesn't exist, API will be hit)
-                bool useLocalCache = true;
-
-                // patchVersion of game, or latest
-                string patchVersion = "latest";
                 _process = processes[0];
 
                 ProcessModel processModel = new ProcessModel
                 {
                     Process = _process
-
                 };
 
                 SharlayanConfiguration configuration = new SharlayanConfiguration
                 {
-                    GameLanguage = gameLanguage,
-                    ProcessModel = processModel
+                    ProcessModel = processModel,
+                    GameInstallPath = System.IO.Path.GetDirectoryName(_process.MainModule?.FileName)
                 };
 
                 try
                 {
                     MemoryHandler = SharlayanMemoryManager.Instance.AddHandler(configuration);
-                    MemoryHandler = SharlayanMemoryManager.Instance.GetHandler(processModel.ProcessID);
                     _reader = MemoryHandler.Reader;
                 }
                 catch (Exception e)
@@ -112,14 +100,31 @@ namespace FLT_HuntMarker
             }
         }
 
+        private MethodInfo _getMapInfoMethod = null;
+
         public (uint mapID, uint mapIndex, uint mapTerritory) GetMap()
         {
             try
             {
+                if (_getMapInfoMethod == null)
+                {
+                    _getMapInfoMethod = _reader.GetType().GetMethod(
+                        "GetMapInfo",
+                        BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public
+                    );
+                }
 
-                (uint mapID, uint mapIndex, uint mapTerritory) = _reader.GetMapInfo();
-                return (mapID, mapIndex, mapTerritory);
-                
+                if (_getMapInfoMethod != null)
+                {
+                    object result = _getMapInfoMethod.Invoke(_reader, null);
+
+                    if (result != null)
+                    {
+                        return ((uint, uint, uint))result;
+                    }
+                }
+
+                return (0, 0, 0);
             }
             catch
             {
