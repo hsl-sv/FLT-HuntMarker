@@ -41,6 +41,8 @@ namespace FLT_HuntMarker
         public HuntCounter huntCounter;
         private PopupDisplay DisplayWindow;
 
+        private DispatcherTimer playerTimer;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -143,12 +145,12 @@ namespace FLT_HuntMarker
                 double xr = (xActual * xx / 100.0) - (CONFIG.PARAM_DOT_SIZE / 2.0);
                 double yr = (yActual * yy / 100.0) - (CONFIG.PARAM_DOT_SIZE / 2.0);
 
-                // Overlapped dots are shifted right by half dot, timestamp goes one line down
+                // Overlapped dots are shifted right by one dot, timestamp goes one line down
                 Point origin = new(xr, yr);
                 int overlapped = drawn.Count(p => (p - origin).Length < CONFIG.PARAM_DOT_SIZE);
                 drawn.Add(origin);
 
-                xr += overlapped * CONFIG.PARAM_DOT_SIZE / 2.0;
+                xr += overlapped * CONFIG.PARAM_DOT_SIZE;
                 double yText = yr + overlapped * (CONFIG.PARAM_FONT_SIZE + 4.0);
 
                 Ellipse dot = new();
@@ -416,14 +418,17 @@ namespace FLT_HuntMarker
 
             // Parse exist child objects from log file
             if (isHead is false)
+            {
                 UpdateCanvas();
+                UpdatePlayer();
+            }
         }
         #endregion
 
         // Left click for Mark
         private void canvas_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            Point pos = e.GetPosition(null);
+            Point pos = e.GetPosition(canvas);
 
             Mark(pos.X, pos.Y, String.Empty, false, SelectedInstance);
 
@@ -449,13 +454,7 @@ namespace FLT_HuntMarker
             {
                 marktype = customize;
 
-                if (currentCanvasMap != currentMap)
-                {
-                    object mapTvi = FindName(currentMap);
-                    (mapTvi as TreeViewItem).IsSelected = true;
-                    object mapTviFormer = FindName(currentCanvasMap);
-                    (mapTviFormer as TreeViewItem).IsSelected = false;
-                }
+                SelectMap(currentMap);
 
                 currentCanvasMap = currentMap;
 
@@ -633,6 +632,14 @@ namespace FLT_HuntMarker
                     checkboxCounterDisplay.IsEnabled = false;
                     checkboxScoutMode.IsEnabled = false;
                     this.Title = "FFXIVHuntMarker";
+
+                    // Player position on map
+                    if (playerTimer == null)
+                    {
+                        playerTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(CONFIG.PARAM_PLAYER_INTERVAL_MS) };
+                        playerTimer.Tick += (s, e) => UpdatePlayer();
+                    }
+                    playerTimer.Start();
                 }));
 
                 isFF14Hooked = true;
@@ -684,16 +691,43 @@ namespace FLT_HuntMarker
             }
         }
 
+        // Select map on treeview, SetCanvasMap() follows by treeview_SelectedItemChanged
+        private void SelectMap(string mapName)
+        {
+            if (FindName(mapName) is not TreeViewItem item || item.IsSelected)
+                return;
+
+            treeview_CloseAll();
+
+            for (TreeViewItem parent = item.Parent as TreeViewItem; parent != null; parent = parent.Parent as TreeViewItem)
+                parent.IsExpanded = true;
+
+            item.IsSelected = true;
+        }
+
         // Gather nearby Mobs and add to list
         public void SearchNearbyMobs(bool append)
         {
-            var actors = huntCounter.GetMobs();
-
             // Get current map
             (uint mapID, uint mapIndex, uint mapTerritory) = huntCounter.GetMap();
             string mapcur = Utility.GetCurrentFF14Map(mapTerritory, mapIndex);
             uint instance = huntCounter.GetInstance();
-            comboInstance.SelectedIndex = (int)Math.Min(instance, (uint)(comboInstance.Items.Count - 1));
+
+            // Follow game map even if no S/A/B found
+            if (mapcur != null)
+            {
+                currentMap = mapcur;
+                SelectMap(mapcur);
+                comboInstance.SelectedIndex = (int)Math.Min(instance, (uint)(comboInstance.Items.Count - 1));
+            }
+
+            // Actor list keeps previous zone mobs for a while after moving, skip until settled
+            if (!huntCounter.IsZoneSettled(mapTerritory, instance))
+            {
+                return;
+            }
+
+            var actors = huntCounter.GetMobs();
 
             if (actors == null)
             {
@@ -757,7 +791,8 @@ namespace FLT_HuntMarker
                     // Else -> List only
                     string special = Utility.CheckSpecialMob(mob.Name);
 
-                    if (special != "0")
+                    // Mark only on known field map
+                    if (special != "0" && mapcur != null)
                     {
                         bool occupied = false;
                         ListViewItem lvitem = new ListViewItem();
@@ -771,9 +806,6 @@ namespace FLT_HuntMarker
                         else if (special == "b")
                             lvitem.Foreground = CONFIG.COLOR_B_TEXT;
                         listviewHuntCounter.Items.Add(lvitem);
-
-                        currentMap = mapcur;
-                        SetCanvasMap(mapcur);
 
                         // skip if nearby Dot there (duplicate check)
                         for (int i = 0; i < objList.Count; i++)
@@ -1002,6 +1034,65 @@ namespace FLT_HuntMarker
                     lv.Items.RemoveAt(i);
                 }
             }
+        }
+
+        private void sliderOpacity_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            // Needs AllowsTransparency="True" on window, otherwise WPF ignores it
+            Opacity = e.NewValue;
+        }
+
+        private void buttonMinimize_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        private void buttonMaximize_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+        }
+
+        private void buttonClose_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+
+        private void sliderOpacity_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            sliderOpacity.Value = 1.0;
+        }
+
+        private void checkboxTopmost_Click(object sender, RoutedEventArgs e)
+        {
+            Topmost = checkboxTopmost.IsChecked == true;
+        }
+
+        // Draw player ▲ on map, rotated to facing direction
+        private void UpdatePlayer()
+        {
+            if (!isFF14Hooked || playerMarker == null)
+                return;
+
+            var player = huntCounter.GetUser();
+            (uint mapID, uint mapIndex, uint mapTerritory) = huntCounter.GetMap();
+            string map = Utility.GetCurrentFF14Map(mapTerritory, mapIndex);
+
+            // Show only when viewing the map player is in
+            if (player == null || map == null || treeview.SelectedItem is not TreeViewItem tvi || tvi.Name != map)
+            {
+                playerMarker.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            double x = Utility.ConvertPos(player.X) / CONFIG.FF14_MAP_SIZE * canvasPlayer.ActualWidth;
+            double y = Utility.ConvertPos(player.Y) / CONFIG.FF14_MAP_SIZE * canvasPlayer.ActualHeight;
+
+            Canvas.SetLeft(playerMarker, x - playerMarker.Width / 2.0);
+            Canvas.SetTop(playerMarker, y - playerMarker.Height / 2.0);
+
+            // Heading is radian, 0 = south, counter-clockwise. ▲ points north at 0 degree.
+            playerRotate.Angle = 180.0 - player.Heading * 180.0 / Math.PI;
+            playerMarker.Visibility = Visibility.Visible;
         }
     }
 }

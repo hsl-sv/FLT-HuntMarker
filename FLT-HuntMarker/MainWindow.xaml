@@ -7,7 +7,32 @@
         mc:Ignorable="d"
         Title="FFXIVHuntMarker"
         Width="900"
-        Height="500" Closing="Window_Closing" SizeChanged="Window_SizeChanged">
+        Height="500" Closing="Window_Closing" SizeChanged="Window_SizeChanged"
+        WindowStyle="None" AllowsTransparency="True" ResizeMode="CanResize"
+        Background="White" BorderBrush="Gray" BorderThickness="1">
+    <!-- Window opacity needs AllowsTransparency, so title bar is drawn here -->
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="26" ResizeBorderThickness="5"
+                      GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
+    <DockPanel>
+    <Grid x:Name="gridTitle" DockPanel.Dock="Top" Height="26" Background="#FFF0F0F0">
+        <TextBlock Text="{Binding Title, RelativeSource={RelativeSource AncestorType=Window}}"
+                   VerticalAlignment="Center" Margin="8,0,0,0" />
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <StackPanel.Resources>
+                <Style TargetType="Button">
+                    <Setter Property="Width" Value="40" />
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="BorderThickness" Value="0" />
+                    <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
+                </Style>
+            </StackPanel.Resources>
+            <Button Content="―" Click="buttonMinimize_Click" />
+            <Button Content="☐" Click="buttonMaximize_Click" />
+            <Button Content="✕" Click="buttonClose_Click" />
+        </StackPanel>
+    </Grid>
     <Grid x:Name="gridMain">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="5*"/>
@@ -18,6 +43,17 @@
             <Canvas x:Name="canvas" Margin="0" Background="Transparent" 
                     MouseLeftButtonUp="canvas_MouseLeftButtonUp" 
                     MouseRightButtonUp="canvas_MouseRightButtonUp" />
+
+            <!-- Player position, kept apart from canvas which is cleared on redraw -->
+            <Canvas x:Name="canvasPlayer" Margin="0" IsHitTestVisible="False">
+                <Polygon x:Name="playerMarker" Points="8,0 15,15 1,15" Width="16" Height="16"
+                         Fill="Red" Stroke="Black" StrokeThickness="1"
+                         RenderTransformOrigin="0.5,0.5" Visibility="Collapsed">
+                    <Polygon.RenderTransform>
+                        <RotateTransform x:Name="playerRotate" Angle="0" />
+                    </Polygon.RenderTransform>
+                </Polygon>
+            </Canvas>
 
             <Border BorderThickness="1 1 1 1" CornerRadius="1" 
                     BorderBrush="Black" Background="Transparent" Height="20" Width="174" Margin="5"
@@ -97,6 +133,8 @@
                         <ComboBoxItem Content="4" />
                         <ComboBoxItem Content="5" />
                         <ComboBoxItem Content="6" />
+                        <ComboBoxItem Content="7" />
+                        <ComboBoxItem Content="8" />
                     </ComboBox>
                 </DockPanel>
 
@@ -128,6 +166,16 @@
                         
                     </CheckBox>
                 </Grid>
+
+                <DockPanel DockPanel.Dock="Top" Margin="5,2,5,0">
+                    <TextBlock Text="Opacity" VerticalAlignment="Center" Margin="0,0,5,0" />
+                    <Slider x:Name="sliderOpacity" Minimum="0.2" Maximum="1.0" Value="1.0"
+                            VerticalAlignment="Center" ToolTip="Window opacity (double click to reset)"
+                            ValueChanged="sliderOpacity_ValueChanged" MouseDoubleClick="sliderOpacity_MouseDoubleClick" />
+                </DockPanel>
+
+                <CheckBox x:Name="checkboxTopmost" DockPanel.Dock="Top" Margin="5,2,5,2"
+                          Content="Always On Top" Click="checkboxTopmost_Click" />
 
                 <TreeView x:Name="treeview" DockPanel.Dock="Bottom" Margin="3" FontSize="10" 
                           x:FieldModifier="public"
@@ -208,4 +256,5 @@
             </DockPanel>
         </Grid>
     </Grid>
+    </DockPanel>
 </Window>
