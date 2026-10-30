@@ -12,18 +12,24 @@ namespace FLT_HuntMarker
 {
     class Utility
     {
+        private static ImageSource playerIcon;
+
+        private static readonly Lazy<HashSet<string>> mobS = new(() => ToSet(Properties.Resources.MobS));
+        private static readonly Lazy<HashSet<string>> mobA = new(() => ToSet(Properties.Resources.MobA));
+        private static readonly Lazy<HashSet<string>> mobB = new(() => ToSet(Properties.Resources.MobB));
+
         // Make jpg to imagesource
         public static ImageSource ByteToImage(byte[] imageData)
         {
             BitmapImage biImg = new BitmapImage();
-            MemoryStream ms = new MemoryStream(imageData);
+            using MemoryStream ms = new MemoryStream(imageData);
             biImg.BeginInit();
+            biImg.CacheOption = BitmapCacheOption.OnLoad;
             biImg.StreamSource = ms;
             biImg.EndInit();
+            biImg.Freeze();
 
-            ImageSource imgSrc = biImg as ImageSource;
-
-            return imgSrc;
+            return biImg;
         }
 
         // Make ellipse
@@ -52,9 +58,9 @@ namespace FLT_HuntMarker
             }
             else if (type == DotType.Flag)
             {
-                ImageSource imageFlag = Utility.ByteToImage(Properties.Resources.Player_Icon47);
+                playerIcon ??= Utility.ByteToImage(Properties.Resources.Player_Icon47);
 
-                dot.Fill = new ImageBrush(imageFlag);
+                dot.Fill = new ImageBrush(playerIcon);
                 dot.Height = dotSize * 1.2;
                 dot.Width = dotSize * 1.2;
                 dot.Margin = new Thickness(X, Y, 0, 0);
@@ -77,6 +83,25 @@ namespace FLT_HuntMarker
             return tbx;
         }
 
+        // Make instance number label centered on dot
+        public static TextBlock MakeInstanceLabel(double X, double Y, double dotSize, uint instance)
+        {
+            TextBlock tbx = new TextBlock();
+
+            tbx.Text = instance.ToString();
+            tbx.FontSize = dotSize * 0.6;
+            tbx.FontWeight = FontWeights.Bold;
+            tbx.Width = dotSize;
+            tbx.Height = dotSize;
+            tbx.TextAlignment = TextAlignment.Center;
+            tbx.LineHeight = dotSize;
+            tbx.LineStackingStrategy = LineStackingStrategy.BlockLineHeight;
+            tbx.IsHitTestVisible = false; // Right click goes to the dot
+            tbx.Margin = new Thickness(X, Y, 0, 0);
+
+            return tbx;
+        }
+
         // Get Current map and return it as string
         public static string GetCurrentMap()
         {
@@ -88,11 +113,11 @@ namespace FLT_HuntMarker
             return tvName;
         }
 
-        // Remove specific content from CONFIG.LOGFILE
-        public static void RemoveLogContains(string content)
+        // Remove lines matching predicate from CONFIG.LOGFILE
+        public static void RemoveLogWhere(Func<string[], bool> predicate)
         {
-            var linesToKeep = File.ReadLines(CONFIG.LOGFILE).Where(
-                l => !l.Contains(content)
+            var linesToKeep = File.ReadAllLines(CONFIG.LOGFILE).Where(
+                l => !predicate(l.Split(","))
                 );
 
             File.WriteAllLines(CONFIG.TMPFILE, linesToKeep);
@@ -112,22 +137,15 @@ namespace FLT_HuntMarker
         // Check parameter name is in S/A/B list (English only)
         public static string CheckSpecialMob(string name)
         {
-            var lstS = Properties.Resources.MobS.Split("\r\n");
-            List<string> mobS = new List<string>(lstS);
-            var lstA = Properties.Resources.MobA.Split("\r\n");
-            List<string> mobA = new List<string>(lstA);
-            var lstB = Properties.Resources.MobB.Split("\r\n");
-            List<string> mobB = new List<string>(lstB);
-
-            if (mobS.Contains(name))
+            if (mobS.Value.Contains(name))
             {
                 return "s";
             }
-            else if (mobA.Contains(name))
+            else if (mobA.Value.Contains(name))
             {
                 return "a";
             }
-            else if (mobB.Contains(name))
+            else if (mobB.Value.Contains(name))
             {
                 return "b";
             }
@@ -135,6 +153,11 @@ namespace FLT_HuntMarker
             {
                 return "0";
             }
+        }
+
+        private static HashSet<string> ToSet(string list)
+        {
+            return new HashSet<string>(list.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries));
         }
 
         // Retreive map string for canvas with mapid

@@ -86,6 +86,20 @@
                     </RadioButton>
                 </Grid>
 
+                <DockPanel DockPanel.Dock="Top" Margin="5,0,5,2">
+                    <TextBlock Text="Instance" VerticalAlignment="Center" Margin="0,0,5,0" />
+                    <ComboBox x:Name="comboInstance" SelectedIndex="0"
+                              ToolTip="Instance for click mark (auto set on Parse)">
+                        <ComboBoxItem Content="-" />
+                        <ComboBoxItem Content="1" />
+                        <ComboBoxItem Content="2" />
+                        <ComboBoxItem Content="3" />
+                        <ComboBoxItem Content="4" />
+                        <ComboBoxItem Content="5" />
+                        <ComboBoxItem Content="6" />
+                    </ComboBox>
+                </DockPanel>
+
                 <Grid DockPanel.Dock="Top">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="5*"/>

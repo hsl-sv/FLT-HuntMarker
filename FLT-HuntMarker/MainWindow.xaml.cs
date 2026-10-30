@@ -49,42 +49,9 @@ namespace FLT_HuntMarker
             imageMap.Source = Utility.ByteToImage(Properties.Resources.Urqopacha_data);
             imageMap.Stretch = Stretch.Fill;
 
-            UID = SetUID();
             huntCounter = new HuntCounter();
 
             Loaded += MainWindow_Loaded;
-        }
-
-        // Return last uid
-        private int SetUID()
-        {
-            int uc = 0;
-
-            if (!System.IO.File.Exists(CONFIG.LOGFILE))
-            {
-                System.IO.File.Create(CONFIG.LOGFILE);
-            }
-
-            if (String.IsNullOrEmpty(System.IO.File.ReadAllText(CONFIG.LOGFILE)))
-            {
-                uc = 0;
-            }
-            else
-            {
-                var last = System.IO.File.ReadLines(CONFIG.LOGFILE).Last();
-
-                try
-                {
-                    uc = int.Parse(last.Split(",")[0]);
-                    uc++;
-                }
-                catch
-                {
-                    uc = 0;
-                }
-            }
-
-            return uc;
         }
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -107,20 +74,29 @@ namespace FLT_HuntMarker
             t.Start();
         }
 
-        // Parse objList from CONFIG.LOGFILE
+        // Parse objList and last UID from CONFIG.LOGFILE
+        // Log format : uid,map,x,y,timestamp,marktype[,instance]
         private void ParseLog()
         {
-            var saved = System.IO.File.ReadLines(CONFIG.LOGFILE);
+            if (!System.IO.File.Exists(CONFIG.LOGFILE))
+            {
+                System.IO.File.Create(CONFIG.LOGFILE).Dispose();
+                return;
+            }
+
+            var saved = System.IO.File.ReadAllLines(CONFIG.LOGFILE);
 
             foreach (string saves in saved)
             {
 
                 string[] contents = saves.Split(",");
 
-                if (!int.TryParse(contents[0], out int value))
+                if (contents.Length < 6 || !int.TryParse(contents[0], out int value))
                 {
                     continue;
                 }
+
+                UID = Math.Max(UID, value + 1);
 
                 string mapid = contents[1];
 
@@ -139,25 +115,41 @@ namespace FLT_HuntMarker
             canvas.Children.Clear();
             canvas.UpdateLayout();
 
+            if (treeview.SelectedItem is not TreeViewItem tvi)
+                return;
+
+            // Original positions of drawn dots, for overlap check
+            List<Point> drawn = new();
+            // Instance labels are added after all dots so they stay on top of overlapped dots
+            List<TextBlock> labels = new();
+
             for (int i = 0; i < objList.Count; i++)
             {
                 string saves = objList[i];
                 string[] contents = saves.Split(",");
-                var tvi = treeview.SelectedItem;
 
-                if (contents[1] != (tvi as TreeViewItem).Name)
+                if (contents[1] != tvi.Name)
                     continue;
 
                 double xx = double.Parse(contents[2]);
                 double yy = double.Parse(contents[3]);
                 string textbox = contents[4];
                 string markcur = contents[5];
+                uint instance = GetLogInstance(contents);
 
                 double xActual = canvas.ActualWidth;
                 double yActual = canvas.ActualHeight;
 
                 double xr = (xActual * xx / 100.0) - (CONFIG.PARAM_DOT_SIZE / 2.0);
                 double yr = (yActual * yy / 100.0) - (CONFIG.PARAM_DOT_SIZE / 2.0);
+
+                // Overlapped dots are shifted right by half dot, timestamp goes one line down
+                Point origin = new(xr, yr);
+                int overlapped = drawn.Count(p => (p - origin).Length < CONFIG.PARAM_DOT_SIZE);
+                drawn.Add(origin);
+
+                xr += overlapped * CONFIG.PARAM_DOT_SIZE / 2.0;
+                double yText = yr + overlapped * (CONFIG.PARAM_FONT_SIZE + 4.0);
 
                 Ellipse dot = new();
 
@@ -170,7 +162,7 @@ namespace FLT_HuntMarker
                     dot = Utility.MakeDot(xr, yr, CONFIG.PARAM_DOT_SIZE, DotType.Circle, markcur);
                 }
 
-                TextBlock tbx = Utility.MakeTextblock(xr, yr, CONFIG.PARAM_FONT_SIZE, textbox);
+                TextBlock tbx = Utility.MakeTextblock(xr, yText, CONFIG.PARAM_FONT_SIZE, textbox);
 
                 dot.Name = CONFIG.OBJECT_PREFIX + contents[0];
                 tbx.Name = CONFIG.OBJECT_PREFIX + contents[0];
@@ -179,8 +171,26 @@ namespace FLT_HuntMarker
 
                 canvas.Children.Add(dot);
                 canvas.Children.Add(tbx);
+
+                if (instance > 0 && markcur != "u")
+                    labels.Add(Utility.MakeInstanceLabel(xr, yr, CONFIG.PARAM_DOT_SIZE, instance));
             }
+
+            foreach (TextBlock label in labels)
+                canvas.Children.Add(label);
         }
+
+        // 7th column of log, 0 if old log or not instanced
+        private static uint GetLogInstance(string[] contents)
+        {
+            if (contents.Length > 6 && uint.TryParse(contents[6], out uint instance))
+                return instance;
+
+            return 0;
+        }
+
+        // Instance selected in combobox (0 = none)
+        private uint SelectedInstance => (uint)Math.Max(comboInstance.SelectedIndex, 0);
 
         private void treeview_CloseAll()
         {
@@ -415,13 +425,13 @@ namespace FLT_HuntMarker
         {
             Point pos = e.GetPosition(null);
 
-            Mark(pos.X, pos.Y, String.Empty, false);
+            Mark(pos.X, pos.Y, String.Empty, false, SelectedInstance);
 
             return;
         }
 
         // X mark + Timestamp, also make log for each map
-        private void Mark(double X, double Y, string customize, bool logskip)
+        private void Mark(double X, double Y, string customize, bool logskip, uint instance)
         {
             double x = X;
             double y = Y;
@@ -455,7 +465,7 @@ namespace FLT_HuntMarker
             // No need to log again if already marked (in condition)
             if (!logskip)
             {
-                string log = UID.ToString() + "," + currentCanvasMap + "," + xx + "," + yy + "," + timestamp + "," + marktype;
+                string log = UID.ToString() + "," + currentCanvasMap + "," + xx + "," + yy + "," + timestamp + "," + marktype + "," + instance.ToString();
                 objList.Add(log);
                 log += Environment.NewLine;
                 System.IO.File.AppendAllText(CONFIG.LOGFILE, log);
@@ -474,35 +484,16 @@ namespace FLT_HuntMarker
         private void Dot_MouseRightButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             Ellipse dot = (Ellipse)sender;
+            string objUID = dot.Name.Split("_")[1];
+            string map = Utility.GetCurrentMap();
 
-            for (int i = 0; i < canvas.Children.Count; i++)
-            {
-                Ellipse child = new();
+            Func<string[], bool> isTarget = c => c.Length > 1 && c[0] == objUID && c[1] == map;
 
-                if (canvas.Children[i] is Ellipse)
-                    child = (Ellipse)canvas.Children[i];
-                else
-                    continue;
+            Utility.RemoveLogWhere(isTarget);
+            objList.RemoveAll(l => isTarget(l.Split(",")));
 
-                if (dot.Name == child.Name)
-                {
-                    string[] objName = dot.Name.Split("_");
-                    int objUID = int.Parse(objName[1]);
-
-                    canvas.Children.RemoveAt(i + 1); // is timestamp (textblock)
-                    canvas.Children.RemoveAt(i); // is dot (ellipse)
-
-                    Utility.RemoveLogContains(objUID.ToString() + "," + Utility.GetCurrentMap());
-
-                    for (int j = 0; j < objList.Count; j++)
-                    {
-                        if (objList[j].Contains(objUID.ToString() + "," + Utility.GetCurrentMap()))
-                        {
-                            objList.RemoveAt(j);
-                        }
-                    }
-                }
-            }
+            // Redraw, overlapped dots may move back
+            UpdateCanvas();
 
             return;
         }
@@ -516,18 +507,14 @@ namespace FLT_HuntMarker
         // Clear current button means remove all canvas children (of current map)
         private void buttonClear_Click(object sender, RoutedEventArgs e)
         {
+            string map = Utility.GetCurrentMap();
+            Func<string[], bool> isTarget = c => c.Length > 1 && c[1] == map;
+
             // Rebuild objList
-            for (int i = 0; i < objList.Count; i++)
-            {
-                if (objList[i].Contains(Utility.GetCurrentMap()))
-                {
-                    objList.RemoveAt(i);
-                    i--;
-                }
-            }
+            objList.RemoveAll(l => isTarget(l.Split(",")));
 
             // Rebuild log file
-            Utility.RemoveLogContains(Utility.GetCurrentMap());
+            Utility.RemoveLogWhere(isTarget);
 
             UpdateCanvas();
 
@@ -626,7 +613,8 @@ namespace FLT_HuntMarker
                 processExists = huntCounter.Setup();
                 retryCounter++;
 
-                Thread.Sleep(3000);
+                if (!processExists)
+                    Thread.Sleep(3000);
             }
 
             if (retryCounter > 5)
@@ -704,11 +692,8 @@ namespace FLT_HuntMarker
             // Get current map
             (uint mapID, uint mapIndex, uint mapTerritory) = huntCounter.GetMap();
             string mapcur = Utility.GetCurrentFF14Map(mapTerritory, mapIndex);
-
-            // TODO: Check how instance works
-            //string current = Utility.GetCurrentFF14Map(mapID, mapIndex);
-            //Trace.WriteLine("MapName : " + current + ", mapID: " + mapID.ToString() +
-            //    ", mapIndex: " + mapIndex.ToString() + ", mapTerriroty: " + mapTerritory.ToString());
+            uint instance = huntCounter.GetInstance();
+            comboInstance.SelectedIndex = (int)Math.Min(instance, (uint)(comboInstance.Items.Count - 1));
 
             if (actors == null)
             {
@@ -797,6 +782,9 @@ namespace FLT_HuntMarker
                             string[] contents = saves.Split(",");
                             string mm = contents[1]; // Map
 
+                            if (mm != mapcur || GetLogInstance(contents) != instance)
+                                continue;
+
                             double dtl = Math.Sqrt(
                                 Math.Pow(double.Parse(contents[2]) - (x1 * 100.0), 2) + 
                                 Math.Pow(double.Parse(contents[3]) - (y1 * 100.0), 2)
@@ -816,7 +804,7 @@ namespace FLT_HuntMarker
 
                         Mark(x1 * canvas.ActualWidth,
                                 y1 * canvas.ActualHeight,
-                                special, occupied);
+                                special, occupied, instance);
                     }
                     else
                     {

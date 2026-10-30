@@ -7,8 +7,9 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
-using System.Threading;
+using System.Runtime.InteropServices;
 
 namespace FLT_HuntMarker
 {
@@ -53,9 +54,9 @@ namespace FLT_HuntMarker
                     return false;
                 }
 
-                Console.WriteLine(processModel.ProcessID);
+                LoadPublicInstanceSignature();
 
-                Thread.Sleep(1000);
+                Console.WriteLine(processModel.ProcessID);
 
                 return true;
             }
@@ -130,6 +131,97 @@ namespace FLT_HuntMarker
             {
                 return (0, 0, 0);
             }
+        }
+
+        private const string PUBLIC_INSTANCE_KEY = "FLT_PUBLIC_INSTANCE";
+        private const string FCS_UISTATE = "FFXIVClientStructs.FFXIV.Client.Game.UI.UIState";
+        private const string FCS_PUBLICINSTANCE = "FFXIVClientStructs.FFXIV.Client.Game.UI.PublicInstance";
+
+        // Sharlayan does not read UIState.PublicInstance.InstanceId, so scan it ourselves.
+        // Signature and offsets come from the FFXIVClientStructs types merged (internalized) into Sharlayan.dll,
+        // so they follow Sharlayan updates without hardcoding.
+        private void LoadPublicInstanceSignature()
+        {
+            try
+            {
+                Assembly asm = typeof(MemoryHandler).Assembly;
+                Type uiState = asm.GetType(FCS_UISTATE);
+                Type publicInstance = asm.GetType(FCS_PUBLICINSTANCE);
+
+                if (uiState == null || publicInstance == null)
+                {
+                    Trace.WriteLine("UIState / PublicInstance not found in Sharlayan");
+                    return;
+                }
+
+                // [StaticAddress(signature, relativeFollowOffset(s), isPointer)] on UIState.Instance()
+                Attribute staticAddress = uiState
+                    .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly)
+                    .SelectMany(m => m.GetCustomAttributes())
+                    .FirstOrDefault(a => a.GetType().Name == "StaticAddressAttribute");
+
+                if (staticAddress == null)
+                {
+                    Trace.WriteLine("StaticAddress of UIState not found");
+                    return;
+                }
+
+                Type attrType = staticAddress.GetType();
+                string pattern = (string)attrType.GetProperty("Signature").GetValue(staticAddress);
+                ushort[] follows = (ushort[])attrType.GetProperty("RelativeFollowOffsets").GetValue(staticAddress);
+                bool isPointer = (bool)attrType.GetProperty("IsPointer").GetValue(staticAddress);
+
+                long fieldOffset = GetFieldOffset(uiState, "PublicInstance") + GetFieldOffset(publicInstance, "InstanceId");
+
+                // Same conversion as Sharlayan's FFXIVClientStructsSignatureExtractor:
+                // scanner lands after the pattern, rewind to the RIP-relative operand, then follow it
+                string patternHex = pattern.Replace(" ", string.Empty).ToUpperInvariant();
+                List<long> path = new() { -(patternHex.Length / 2 - follows[0]) };
+                if (isPointer)
+                    path.Add(0);
+                path.Add(fieldOffset);
+
+                MemoryHandler.Scanner.LoadOffsets(new[]
+                {
+                    new Signature
+                    {
+                        Key = PUBLIC_INSTANCE_KEY,
+                        Value = patternHex,
+                        ASMSignature = true,
+                        PointerPath = path,
+                    }
+                });
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine("Unable to load PublicInstance signature : " + e.Message);
+            }
+        }
+
+        private static long GetFieldOffset(Type type, string fieldName)
+        {
+            FieldInfo field = type.GetField(fieldName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+            return field.GetCustomAttribute<FieldOffsetAttribute>().Value;
+        }
+
+        // Current public instance number (0 = area is not instanced)
+        public uint GetInstance()
+        {
+            try
+            {
+                if (MemoryHandler != null &&
+                    MemoryHandler.Scanner.Locations.TryGetValue(PUBLIC_INSTANCE_KEY, out MemoryLocation location))
+                {
+                    return MemoryHandler.GetUInt32(location);
+                }
+            }
+            catch
+            {
+                // pass
+            }
+
+            return 0;
         }
 
         // Flag generator, test bed
