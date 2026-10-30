@@ -10,7 +10,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
@@ -42,8 +41,6 @@ namespace FLT_HuntMarker
         public HuntCounter huntCounter;
         private PopupDisplay DisplayWindow;
 
-        // Map image before gamma
-        private BitmapSource mapSource;
         private DispatcherTimer playerTimer;
 
         public MainWindow()
@@ -51,8 +48,7 @@ namespace FLT_HuntMarker
             InitializeComponent();
 
             // Default map (Urqopacha)
-            mapSource = (BitmapSource)Utility.ByteToImage(Properties.Resources.Urqopacha_data);
-            ApplyMapGamma();
+            imageMap.Source = Utility.ByteToImage(Properties.Resources.Urqopacha_data);
             imageMap.Stretch = Stretch.Fill;
 
             huntCounter = new HuntCounter();
@@ -73,8 +69,14 @@ namespace FLT_HuntMarker
 
             UpdateCanvas();
 
-            HwndSource source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
+            IntPtr hwnd = new WindowInteropHelper(this).Handle;
+            HwndSource source = HwndSource.FromHwnd(hwnd);
             source.AddHook(new HwndSourceHook(WndProc));
+
+            // Layered window keeps title bar while allowing opacity (WPF Opacity needs AllowsTransparency)
+            NativeMethods.SetWindowLong(hwnd, NativeMethods.GWL_EXSTYLE,
+                NativeMethods.GetWindowLong(hwnd, NativeMethods.GWL_EXSTYLE) | NativeMethods.WS_EX_LAYERED);
+            ApplyWindowOpacity();
 
             t = new Thread(new ThreadStart(SetupHuntCounter));
             t.Start();
@@ -423,8 +425,6 @@ namespace FLT_HuntMarker
             // Parse exist child objects from log file
             if (isHead is false)
             {
-                mapSource = imageMap.Source as BitmapSource;
-                ApplyMapGamma();
                 UpdateCanvas();
                 UpdatePlayer();
             }
@@ -1042,23 +1042,25 @@ namespace FLT_HuntMarker
             }
         }
 
-        private void ApplyMapGamma()
+        private void ApplyWindowOpacity()
         {
-            // ValueChanged can fire in InitializeComponent before map is set
-            if (mapSource == null || sliderGamma == null)
+            // ValueChanged can fire in InitializeComponent before window handle exists
+            IntPtr hwnd = new WindowInteropHelper(this).Handle;
+            if (hwnd == IntPtr.Zero || sliderOpacity == null)
                 return;
 
-            imageMap.Source = Utility.ApplyGamma(mapSource, sliderGamma.Value);
+            byte alpha = (byte)Math.Round(sliderOpacity.Value * 255.0);
+            NativeMethods.SetLayeredWindowAttributes(hwnd, 0, alpha, NativeMethods.LWA_ALPHA);
         }
 
-        private void sliderGamma_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void sliderOpacity_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            ApplyMapGamma();
+            ApplyWindowOpacity();
         }
 
-        private void sliderGamma_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void sliderOpacity_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            sliderGamma.Value = 1.0;
+            sliderOpacity.Value = 1.0;
         }
 
         private void checkboxTopmost_Click(object sender, RoutedEventArgs e)

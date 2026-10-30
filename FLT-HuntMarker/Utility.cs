@@ -32,36 +32,6 @@ namespace FLT_HuntMarker
             return biImg;
         }
 
-        // Apply gamma to image (1.0 = original, higher is brighter)
-        public static BitmapSource ApplyGamma(BitmapSource source, double gamma)
-        {
-            if (source == null || Math.Abs(gamma - 1.0) < 0.01)
-                return source;
-
-            FormatConvertedBitmap bgra = new FormatConvertedBitmap(source, PixelFormats.Bgra32, null, 0);
-            int stride = bgra.PixelWidth * 4;
-            byte[] pixels = new byte[stride * bgra.PixelHeight];
-            bgra.CopyPixels(pixels, stride, 0);
-
-            byte[] lut = new byte[256];
-            for (int i = 0; i < 256; i++)
-                lut[i] = (byte)Math.Round(255.0 * Math.Pow(i / 255.0, 1.0 / gamma));
-
-            for (int i = 0; i < pixels.Length; i += 4)
-            {
-                pixels[i] = lut[pixels[i]];
-                pixels[i + 1] = lut[pixels[i + 1]];
-                pixels[i + 2] = lut[pixels[i + 2]];
-                // keep alpha
-            }
-
-            BitmapSource result = BitmapSource.Create(bgra.PixelWidth, bgra.PixelHeight,
-                source.DpiX, source.DpiY, PixelFormats.Bgra32, null, pixels, stride);
-            result.Freeze();
-
-            return result;
-        }
-
         // Make ellipse
         public static Ellipse MakeDot(double X, double Y, double dotSize, DotType type, string markType)
         {
