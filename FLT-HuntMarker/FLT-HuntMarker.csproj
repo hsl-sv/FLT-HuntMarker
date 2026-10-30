@@ -8,6 +8,9 @@
     <AssemblyName>FFXIVHuntMarker</AssemblyName>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Copyright>hsl 2022</Copyright>
+    <!-- Startup: precompile (dotnet publish -r win-x64) and use dynamic PGO -->
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <TieredPGO>true</TieredPGO>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
