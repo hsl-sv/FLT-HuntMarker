@@ -97,6 +97,8 @@
                         <ComboBoxItem Content="4" />
                         <ComboBoxItem Content="5" />
                         <ComboBoxItem Content="6" />
+                        <ComboBoxItem Content="7" />
+                        <ComboBoxItem Content="8" />
                     </ComboBox>
                 </DockPanel>
 

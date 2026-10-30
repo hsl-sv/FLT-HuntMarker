@@ -143,12 +143,12 @@ namespace FLT_HuntMarker
                 double xr = (xActual * xx / 100.0) - (CONFIG.PARAM_DOT_SIZE / 2.0);
                 double yr = (yActual * yy / 100.0) - (CONFIG.PARAM_DOT_SIZE / 2.0);
 
-                // Overlapped dots are shifted right by half dot, timestamp goes one line down
+                // Overlapped dots are shifted right by one dot, timestamp goes one line down
                 Point origin = new(xr, yr);
                 int overlapped = drawn.Count(p => (p - origin).Length < CONFIG.PARAM_DOT_SIZE);
                 drawn.Add(origin);
 
-                xr += overlapped * CONFIG.PARAM_DOT_SIZE / 2.0;
+                xr += overlapped * CONFIG.PARAM_DOT_SIZE;
                 double yText = yr + overlapped * (CONFIG.PARAM_FONT_SIZE + 4.0);
 
                 Ellipse dot = new();
@@ -449,13 +449,7 @@ namespace FLT_HuntMarker
             {
                 marktype = customize;
 
-                if (currentCanvasMap != currentMap)
-                {
-                    object mapTvi = FindName(currentMap);
-                    (mapTvi as TreeViewItem).IsSelected = true;
-                    object mapTviFormer = FindName(currentCanvasMap);
-                    (mapTviFormer as TreeViewItem).IsSelected = false;
-                }
+                SelectMap(currentMap);
 
                 currentCanvasMap = currentMap;
 
@@ -684,16 +678,43 @@ namespace FLT_HuntMarker
             }
         }
 
+        // Select map on treeview, SetCanvasMap() follows by treeview_SelectedItemChanged
+        private void SelectMap(string mapName)
+        {
+            if (FindName(mapName) is not TreeViewItem item || item.IsSelected)
+                return;
+
+            treeview_CloseAll();
+
+            for (TreeViewItem parent = item.Parent as TreeViewItem; parent != null; parent = parent.Parent as TreeViewItem)
+                parent.IsExpanded = true;
+
+            item.IsSelected = true;
+        }
+
         // Gather nearby Mobs and add to list
         public void SearchNearbyMobs(bool append)
         {
-            var actors = huntCounter.GetMobs();
-
             // Get current map
             (uint mapID, uint mapIndex, uint mapTerritory) = huntCounter.GetMap();
             string mapcur = Utility.GetCurrentFF14Map(mapTerritory, mapIndex);
             uint instance = huntCounter.GetInstance();
-            comboInstance.SelectedIndex = (int)Math.Min(instance, (uint)(comboInstance.Items.Count - 1));
+
+            // Follow game map even if no S/A/B found
+            if (mapcur != null)
+            {
+                currentMap = mapcur;
+                SelectMap(mapcur);
+                comboInstance.SelectedIndex = (int)Math.Min(instance, (uint)(comboInstance.Items.Count - 1));
+            }
+
+            // Actor list keeps previous zone mobs for a while after moving, skip until settled
+            if (!huntCounter.IsZoneSettled(mapTerritory, instance))
+            {
+                return;
+            }
+
+            var actors = huntCounter.GetMobs();
 
             if (actors == null)
             {
@@ -757,7 +778,8 @@ namespace FLT_HuntMarker
                     // Else -> List only
                     string special = Utility.CheckSpecialMob(mob.Name);
 
-                    if (special != "0")
+                    // Mark only on known field map
+                    if (special != "0" && mapcur != null)
                     {
                         bool occupied = false;
                         ListViewItem lvitem = new ListViewItem();
@@ -771,9 +793,6 @@ namespace FLT_HuntMarker
                         else if (special == "b")
                             lvitem.Foreground = CONFIG.COLOR_B_TEXT;
                         listviewHuntCounter.Items.Add(lvitem);
-
-                        currentMap = mapcur;
-                        SetCanvasMap(mapcur);
 
                         // skip if nearby Dot there (duplicate check)
                         for (int i = 0; i < objList.Count; i++)

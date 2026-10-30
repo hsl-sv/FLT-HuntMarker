@@ -224,6 +224,43 @@ namespace FLT_HuntMarker
             return 0;
         }
 
+        private const double ZONE_SETTLE_SECONDS = 3.0;
+        private (uint territory, uint instance) _lastZone;
+        private DateTime _zoneSettledAt = DateTime.MinValue;
+
+        // False while zone is loading or just changed.
+        // Sharlayan keeps previous zone actors until they expire, those would be marked on new map.
+        public bool IsZoneSettled(uint mapTerritory, uint instance)
+        {
+            (uint, uint) zone = (mapTerritory, instance);
+
+            if (zone != _lastZone)
+            {
+                // First read after hook has nothing stale
+                if (_lastZone.territory != 0)
+                    _zoneSettledAt = DateTime.Now.AddSeconds(ZONE_SETTLE_SECONDS);
+
+                _lastZone = zone;
+            }
+
+            try
+            {
+                if (_reader.CanGetGameState())
+                {
+                    var state = _reader.GetGameState();
+
+                    if (!state.IsReadyToRead || state.IsTeleporting)
+                        _zoneSettledAt = DateTime.Now.AddSeconds(ZONE_SETTLE_SECONDS);
+                }
+            }
+            catch
+            {
+                // pass
+            }
+
+            return DateTime.Now >= _zoneSettledAt;
+        }
+
         // Flag generator, test bed
         // Make echo or flag in game needs manipulates memory, i guess, cannot go further
         public void FlagGenerator()

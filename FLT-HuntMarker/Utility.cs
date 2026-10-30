@@ -260,7 +260,7 @@ namespace FLT_HuntMarker
                 case 960:
                     return "EW_UL";
                 default:
-                    return "DT_UR";
+                    return null; // Not a hunt field map (town, duty...)
             }
         }
     }
