@@ -19,6 +19,17 @@
                     MouseLeftButtonUp="canvas_MouseLeftButtonUp" 
                     MouseRightButtonUp="canvas_MouseRightButtonUp" />
 
+            <!-- Player position, kept apart from canvas which is cleared on redraw -->
+            <Canvas x:Name="canvasPlayer" Margin="0" IsHitTestVisible="False">
+                <Polygon x:Name="playerMarker" Points="8,0 15,15 1,15" Width="16" Height="16"
+                         Fill="Red" Stroke="Black" StrokeThickness="1"
+                         RenderTransformOrigin="0.5,0.5" Visibility="Collapsed">
+                    <Polygon.RenderTransform>
+                        <RotateTransform x:Name="playerRotate" Angle="0" />
+                    </Polygon.RenderTransform>
+                </Polygon>
+            </Canvas>
+
             <Border BorderThickness="1 1 1 1" CornerRadius="1" 
                     BorderBrush="Black" Background="Transparent" Height="20" Width="174" Margin="5"
                     VerticalAlignment="Top" HorizontalAlignment="Left">
@@ -130,6 +141,15 @@
                         
                     </CheckBox>
                 </Grid>
+
+                <DockPanel DockPanel.Dock="Top" Margin="5,2,5,2">
+                    <CheckBox x:Name="checkboxTopmost" DockPanel.Dock="Right" VerticalAlignment="Center"
+                              Margin="5,0,0,0" Content="Always On Top" Click="checkboxTopmost_Click" />
+                    <TextBlock Text="Gamma" VerticalAlignment="Center" Margin="0,0,5,0" />
+                    <Slider x:Name="sliderGamma" Minimum="0.3" Maximum="3.0" Value="1.0"
+                            VerticalAlignment="Center" ToolTip="Map gamma (double click to reset)"
+                            ValueChanged="sliderGamma_ValueChanged" MouseDoubleClick="sliderGamma_MouseDoubleClick" />
+                </DockPanel>
 
                 <TreeView x:Name="treeview" DockPanel.Dock="Bottom" Margin="3" FontSize="10" 
                           x:FieldModifier="public"

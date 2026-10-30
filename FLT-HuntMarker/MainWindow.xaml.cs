@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
@@ -41,12 +42,17 @@ namespace FLT_HuntMarker
         public HuntCounter huntCounter;
         private PopupDisplay DisplayWindow;
 
+        // Map image before gamma
+        private BitmapSource mapSource;
+        private DispatcherTimer playerTimer;
+
         public MainWindow()
         {
             InitializeComponent();
 
             // Default map (Urqopacha)
-            imageMap.Source = Utility.ByteToImage(Properties.Resources.Urqopacha_data);
+            mapSource = (BitmapSource)Utility.ByteToImage(Properties.Resources.Urqopacha_data);
+            ApplyMapGamma();
             imageMap.Stretch = Stretch.Fill;
 
             huntCounter = new HuntCounter();
@@ -416,7 +422,12 @@ namespace FLT_HuntMarker
 
             // Parse exist child objects from log file
             if (isHead is false)
+            {
+                mapSource = imageMap.Source as BitmapSource;
+                ApplyMapGamma();
                 UpdateCanvas();
+                UpdatePlayer();
+            }
         }
         #endregion
 
@@ -627,6 +638,14 @@ namespace FLT_HuntMarker
                     checkboxCounterDisplay.IsEnabled = false;
                     checkboxScoutMode.IsEnabled = false;
                     this.Title = "FFXIVHuntMarker";
+
+                    // Player position on map
+                    if (playerTimer == null)
+                    {
+                        playerTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(CONFIG.PARAM_PLAYER_INTERVAL_MS) };
+                        playerTimer.Tick += (s, e) => UpdatePlayer();
+                    }
+                    playerTimer.Start();
                 }));
 
                 isFF14Hooked = true;
@@ -1021,6 +1040,58 @@ namespace FLT_HuntMarker
                     lv.Items.RemoveAt(i);
                 }
             }
+        }
+
+        private void ApplyMapGamma()
+        {
+            // ValueChanged can fire in InitializeComponent before map is set
+            if (mapSource == null || sliderGamma == null)
+                return;
+
+            imageMap.Source = Utility.ApplyGamma(mapSource, sliderGamma.Value);
+        }
+
+        private void sliderGamma_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            ApplyMapGamma();
+        }
+
+        private void sliderGamma_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            sliderGamma.Value = 1.0;
+        }
+
+        private void checkboxTopmost_Click(object sender, RoutedEventArgs e)
+        {
+            Topmost = checkboxTopmost.IsChecked == true;
+        }
+
+        // Draw player ▲ on map, rotated to facing direction
+        private void UpdatePlayer()
+        {
+            if (!isFF14Hooked || playerMarker == null)
+                return;
+
+            var player = huntCounter.GetUser();
+            (uint mapID, uint mapIndex, uint mapTerritory) = huntCounter.GetMap();
+            string map = Utility.GetCurrentFF14Map(mapTerritory, mapIndex);
+
+            // Show only when viewing the map player is in
+            if (player == null || map == null || treeview.SelectedItem is not TreeViewItem tvi || tvi.Name != map)
+            {
+                playerMarker.Visibility = Visibility.Collapsed;
+                return;
+            }
+
+            double x = Utility.ConvertPos(player.X) / CONFIG.FF14_MAP_SIZE * canvasPlayer.ActualWidth;
+            double y = Utility.ConvertPos(player.Y) / CONFIG.FF14_MAP_SIZE * canvasPlayer.ActualHeight;
+
+            Canvas.SetLeft(playerMarker, x - playerMarker.Width / 2.0);
+            Canvas.SetTop(playerMarker, y - playerMarker.Height / 2.0);
+
+            // Heading is radian, 0 = south, counter-clockwise. ▲ points north at 0 degree.
+            playerRotate.Angle = 180.0 - player.Heading * 180.0 / Math.PI;
+            playerMarker.Visibility = Visibility.Visible;
         }
     }
 }

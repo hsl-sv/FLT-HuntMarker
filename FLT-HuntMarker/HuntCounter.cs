@@ -64,17 +64,14 @@ namespace FLT_HuntMarker
             return false;
         }
 
+        // Current player only, without full actor scan (GetActors is used by tracking thread)
         public ActorItem GetUser()
         {
-            if (MemoryHandler.Reader.CanGetActors())
+            try
             {
-                var actors = _reader.GetActors();
-
-                var p = _reader.GetCurrentPlayer()?.Entity ?? new ActorItem() { Name = "not found" };
-
-                return p;
+                return _reader?.GetCurrentPlayer()?.Entity;
             }
-            else
+            catch
             {
                 return null;
             }
