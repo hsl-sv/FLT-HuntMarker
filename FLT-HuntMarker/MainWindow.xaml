@@ -177,6 +177,12 @@
                 <CheckBox x:Name="checkboxTopmost" DockPanel.Dock="Top" Margin="5,2,5,2"
                           Content="Always On Top" Click="checkboxTopmost_Click" />
 
+                <CheckBox x:Name="checkboxFaloop" DockPanel.Dock="Top" Margin="5,2,5,0"
+                          Content="Track Faloop" Click="checkboxFaloop_Click"
+                          ToolTip="New S rank on current world : mark here, set in-game map flag (&lt;flag&gt;)" />
+                <TextBlock x:Name="textFaloopStatus" DockPanel.Dock="Top" Margin="22,0,5,2"
+                           FontSize="10" Foreground="Gray" TextTrimming="CharacterEllipsis" Text="Off" />
+
                 <TreeView x:Name="treeview" DockPanel.Dock="Bottom" Margin="3" FontSize="10" 
                           x:FieldModifier="public"
                           ScrollViewer.VerticalScrollBarVisibility="Hidden"

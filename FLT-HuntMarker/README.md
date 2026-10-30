@@ -1,4 +1,4 @@
-# FLT-HuntMarker
+﻿# FLT-HuntMarker
 
 FF14 Utility
 
@@ -16,6 +16,8 @@ This software looks like
 Map assets from https://github.com/RKI027/ffxiv-huntmaps
 
 FF14 hook and apis from https://github.com/FFXIVAPP/sharlayan
+
+Faloop protocol and zone / location data from https://github.com/SlashNephy/Divination (FaloopIntegration, MIT License)
 
 
 ALL FINAL FANTASY XIV CONTENT IS PROPERTY OF SQUARE ENIX CO., LTD

@@ -13,7 +13,7 @@ using System.Runtime.InteropServices;
 
 namespace FLT_HuntMarker
 {
-    public class HuntCounter
+    public partial class HuntCounter
     {
         public MemoryHandler MemoryHandler { get; set; }
         public bool CanGetProcess => _process != null;
@@ -21,6 +21,7 @@ namespace FLT_HuntMarker
 
         private Reader _reader;
         private Process _process;
+        private string _gameInstallPath;
 
         public bool Setup()
         {
@@ -36,10 +37,12 @@ namespace FLT_HuntMarker
                     Process = _process
                 };
 
+                _gameInstallPath = System.IO.Path.GetDirectoryName(_process.MainModule?.FileName);
+
                 SharlayanConfiguration configuration = new SharlayanConfiguration
                 {
                     ProcessModel = processModel,
-                    GameInstallPath = System.IO.Path.GetDirectoryName(_process.MainModule?.FileName)
+                    GameInstallPath = _gameInstallPath
                 };
 
                 try
@@ -54,7 +57,7 @@ namespace FLT_HuntMarker
                     return false;
                 }
 
-                LoadPublicInstanceSignature();
+                LoadExtraSignatures();
 
                 Console.WriteLine(processModel.ProcessID);
 
@@ -134,65 +137,75 @@ namespace FLT_HuntMarker
         private const string FCS_UISTATE = "FFXIVClientStructs.FFXIV.Client.Game.UI.UIState";
         private const string FCS_PUBLICINSTANCE = "FFXIVClientStructs.FFXIV.Client.Game.UI.PublicInstance";
 
-        // Sharlayan does not read UIState.PublicInstance.InstanceId, so scan it ourselves.
+        // Sharlayan does not read UIState.PublicInstance.InstanceId / Framework.UIModule, so scan them ourselves.
         // Signature and offsets come from the FFXIVClientStructs types merged (internalized) into Sharlayan.dll,
         // so they follow Sharlayan updates without hardcoding.
-        private void LoadPublicInstanceSignature()
+        private void LoadExtraSignatures()
         {
+            List<Signature> signatures = new();
+
             try
             {
-                Assembly asm = typeof(MemoryHandler).Assembly;
-                Type uiState = asm.GetType(FCS_UISTATE);
-                Type publicInstance = asm.GetType(FCS_PUBLICINSTANCE);
+                Type uiState = GetFcsType(FCS_UISTATE);
+                long offset = GetFieldOffset(uiState, "PublicInstance") + GetFieldOffset(GetFcsType(FCS_PUBLICINSTANCE), "InstanceId");
 
-                if (uiState == null || publicInstance == null)
-                {
-                    Trace.WriteLine("UIState / PublicInstance not found in Sharlayan");
-                    return;
-                }
-
-                // [StaticAddress(signature, relativeFollowOffset(s), isPointer)] on UIState.Instance()
-                Attribute staticAddress = uiState
-                    .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly)
-                    .SelectMany(m => m.GetCustomAttributes())
-                    .FirstOrDefault(a => a.GetType().Name == "StaticAddressAttribute");
-
-                if (staticAddress == null)
-                {
-                    Trace.WriteLine("StaticAddress of UIState not found");
-                    return;
-                }
-
-                Type attrType = staticAddress.GetType();
-                string pattern = (string)attrType.GetProperty("Signature").GetValue(staticAddress);
-                ushort[] follows = (ushort[])attrType.GetProperty("RelativeFollowOffsets").GetValue(staticAddress);
-                bool isPointer = (bool)attrType.GetProperty("IsPointer").GetValue(staticAddress);
-
-                long fieldOffset = GetFieldOffset(uiState, "PublicInstance") + GetFieldOffset(publicInstance, "InstanceId");
-
-                // Same conversion as Sharlayan's FFXIVClientStructsSignatureExtractor:
-                // scanner lands after the pattern, rewind to the RIP-relative operand, then follow it
-                string patternHex = pattern.Replace(" ", string.Empty).ToUpperInvariant();
-                List<long> path = new() { -(patternHex.Length / 2 - follows[0]) };
-                if (isPointer)
-                    path.Add(0);
-                path.Add(fieldOffset);
-
-                MemoryHandler.Scanner.LoadOffsets(new[]
-                {
-                    new Signature
-                    {
-                        Key = PUBLIC_INSTANCE_KEY,
-                        Value = patternHex,
-                        ASMSignature = true,
-                        PointerPath = path,
-                    }
-                });
+                signatures.Add(BuildFcsSignature(PUBLIC_INSTANCE_KEY, uiState, offset));
             }
             catch (Exception e)
             {
                 Trace.WriteLine("Unable to load PublicInstance signature : " + e.Message);
             }
+
+            try
+            {
+                Type framework = GetFcsType(FCS_FRAMEWORK);
+
+                signatures.Add(BuildFcsSignature(UIMODULE_KEY, framework, GetFieldOffset(framework, "UIModule")));
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine("Unable to load Framework signature : " + e.Message);
+            }
+
+            if (signatures.Count > 0)
+                MemoryHandler.Scanner.LoadOffsets(signatures.ToArray());
+        }
+
+        private static Type GetFcsType(string name)
+        {
+            return typeof(MemoryHandler).Assembly.GetType(name) ?? throw new InvalidOperationException(name + " not found in Sharlayan");
+        }
+
+        // Signature resolving to (static instance of type) + fieldOffset
+        private static Signature BuildFcsSignature(string key, Type type, long fieldOffset)
+        {
+            // [StaticAddress(signature, relativeFollowOffset(s), isPointer)] on Type.Instance()
+            Attribute staticAddress = type
+                .GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly)
+                .SelectMany(m => m.GetCustomAttributes())
+                .FirstOrDefault(a => a.GetType().Name == "StaticAddressAttribute")
+                ?? throw new InvalidOperationException("StaticAddress of " + type.Name + " not found");
+
+            Type attrType = staticAddress.GetType();
+            string pattern = (string)attrType.GetProperty("Signature").GetValue(staticAddress);
+            ushort[] follows = (ushort[])attrType.GetProperty("RelativeFollowOffsets").GetValue(staticAddress);
+            bool isPointer = (bool)attrType.GetProperty("IsPointer").GetValue(staticAddress);
+
+            // Same conversion as Sharlayan's FFXIVClientStructsSignatureExtractor:
+            // scanner lands after the pattern, rewind to the RIP-relative operand, then follow it
+            string patternHex = pattern.Replace(" ", string.Empty).ToUpperInvariant();
+            List<long> path = new() { -(patternHex.Length / 2 - follows[0]) };
+            if (isPointer)
+                path.Add(0);
+            path.Add(fieldOffset);
+
+            return new Signature
+            {
+                Key = key,
+                Value = patternHex,
+                ASMSignature = true,
+                PointerPath = path,
+            };
         }
 
         private static long GetFieldOffset(Type type, string fieldName)

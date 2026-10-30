@@ -12,6 +12,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using FLT_HuntMarker.Faloop;
 
 namespace FLT_HuntMarker
 {
@@ -42,6 +43,9 @@ namespace FLT_HuntMarker
         private PopupDisplay DisplayWindow;
 
         private DispatcherTimer playerTimer;
+
+        private FaloopClient faloop;
+        private DateTime faloopHoldUntil = DateTime.MinValue;
 
         public MainWindow()
         {
@@ -713,12 +717,14 @@ namespace FLT_HuntMarker
             string mapcur = Utility.GetCurrentFF14Map(mapTerritory, mapIndex);
             uint instance = huntCounter.GetInstance();
 
-            // Follow game map even if no S/A/B found
+            // Follow game map even if no S/A/B found, unless Faloop spawn is shown
             if (mapcur != null)
             {
                 currentMap = mapcur;
-                SelectMap(mapcur);
                 comboInstance.SelectedIndex = (int)Math.Min(instance, (uint)(comboInstance.Items.Count - 1));
+
+                if (DateTime.Now >= faloopHoldUntil)
+                    SelectMap(mapcur);
             }
 
             // Actor list keeps previous zone mobs for a while after moving, skip until settled
@@ -794,7 +800,6 @@ namespace FLT_HuntMarker
                     // Mark only on known field map
                     if (special != "0" && mapcur != null)
                     {
-                        bool occupied = false;
                         ListViewItem lvitem = new ListViewItem();
                         lvitem.Content = item;
                         lvitem.FontWeight = FontWeights.Bold;
@@ -808,31 +813,7 @@ namespace FLT_HuntMarker
                         listviewHuntCounter.Items.Add(lvitem);
 
                         // skip if nearby Dot there (duplicate check)
-                        for (int i = 0; i < objList.Count; i++)
-                        {
-                            string saves = objList[i];
-                            string[] contents = saves.Split(",");
-                            string mm = contents[1]; // Map
-
-                            if (mm != mapcur || GetLogInstance(contents) != instance)
-                                continue;
-
-                            double dtl = Math.Sqrt(
-                                Math.Pow(double.Parse(contents[2]) - (x1 * 100.0), 2) + 
-                                Math.Pow(double.Parse(contents[3]) - (y1 * 100.0), 2)
-                                );
-
-                            DateTime dt1 = DateTime.ParseExact(contents[4], CONFIG.TIMESTAMP_FORMAT, null);
-                            int dtd = Math.Abs((DateTime.Now - dt1).Hours);
-
-                            // Check distance of current mob object and xy on objList AND
-                            // difference between objList and DateTime.Now
-                            if (dtl < CONFIG.PARAM_DUPLICATE_DISTANCE && 
-                                dtd < CONFIG.PARAM_DUPLICATE_PERIOD_HOUR)
-                            {
-                                occupied = true;
-                            }
-                        }
+                        bool occupied = IsOccupied(mapcur, x1 * 100.0, y1 * 100.0, instance);
 
                         Mark(x1 * canvas.ActualWidth,
                                 y1 * canvas.ActualHeight,
@@ -855,11 +836,43 @@ namespace FLT_HuntMarker
             }));
         }
 
+        // Already marked near position (percent on map) recently
+        private bool IsOccupied(string map, double xPercent, double yPercent, uint instance)
+        {
+            foreach (string saves in objList)
+            {
+                string[] contents = saves.Split(",");
+
+                if (contents[1] != map || GetLogInstance(contents) != instance)
+                    continue;
+
+                double dtl = Math.Sqrt(
+                    Math.Pow(double.Parse(contents[2]) - xPercent, 2) +
+                    Math.Pow(double.Parse(contents[3]) - yPercent, 2)
+                    );
+
+                DateTime dt1 = DateTime.ParseExact(contents[4], CONFIG.TIMESTAMP_FORMAT, null);
+                int dtd = Math.Abs((DateTime.Now - dt1).Hours);
+
+                // Check distance of current mob object and xy on objList AND
+                // difference between objList and DateTime.Now
+                if (dtl < CONFIG.PARAM_DUPLICATE_DISTANCE &&
+                    dtd < CONFIG.PARAM_DUPLICATE_PERIOD_HOUR)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         // Exit signal
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             isClosing = true;
             isScoutMode = false;
+
+            faloop?.Dispose();
 
             if (DisplayWindow != null)
                 DisplayWindow.Close();
@@ -1093,6 +1106,91 @@ namespace FLT_HuntMarker
             // Heading is radian, 0 = south, counter-clockwise. ▲ points north at 0 degree.
             playerRotate.Angle = 180.0 - player.Heading * 180.0 / Math.PI;
             playerMarker.Visibility = Visibility.Visible;
+        }
+
+        // Track Faloop : connect with saved account or ask
+        private async void checkboxFaloop_Click(object sender, RoutedEventArgs e)
+        {
+            if (checkboxFaloop.IsChecked != true)
+            {
+                faloop?.Disconnect();
+                textFaloopStatus.Text = "Off";
+                return;
+            }
+
+            var account = FaloopLogin.Load();
+            if (account == null)
+            {
+                FaloopLogin login = new FaloopLogin(null) { Owner = this };
+                if (login.ShowDialog() != true)
+                {
+                    checkboxFaloop.IsChecked = false;
+                    return;
+                }
+                account = (login.Username, login.Password);
+            }
+
+            if (faloop == null)
+            {
+                faloop = new FaloopClient();
+                faloop.OnStatus += status => Dispatcher.BeginInvoke(new Action(() => textFaloopStatus.Text = status));
+                faloop.OnSpawn += spawn => Dispatcher.BeginInvoke(new Action(() => OnFaloopSpawn(spawn)));
+            }
+
+            checkboxFaloop.IsEnabled = false;
+            bool connected = await faloop.ConnectAsync(account.Value.username, account.Value.password);
+            checkboxFaloop.IsEnabled = true;
+
+            if (!connected)
+            {
+                // Ask again next time
+                FaloopLogin.Clear();
+                checkboxFaloop.IsChecked = false;
+            }
+        }
+
+        // New S rank from Faloop : follow map, mark, set in-game flag
+        private void OnFaloopSpawn(FaloopSpawn spawn)
+        {
+            if (checkboxFaloop.IsChecked != true)
+                return;
+
+            string mob = System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(spawn.MobId.Replace("_", " "));
+            uint instance = (uint)Math.Max(spawn.Instance, 0);
+
+            // Reports come for all worlds, need FF14 to know current world
+            uint world = isFF14Hooked ? huntCounter.GetCurrentWorld() : 0;
+            if (world == 0)
+            {
+                textFaloopStatus.Text = mob + " : waiting FF14 for world";
+                return;
+            }
+            if (spawn.WorldId != world)
+                return;
+
+            string map = Utility.GetCurrentFF14Map(spawn.TerritoryId, 0);
+            if (map == null)
+                return;
+
+            // Faloop location (2048 texture pixel) -> map coordinate -> percent, same scale as scouted mobs
+            var mapInfo = huntCounter.GetMapInfo(spawn.TerritoryId);
+            double scale = 41.0 / ((mapInfo?.sizeFactor ?? 100) / 100.0);
+            double xPercent = (spawn.LocationX / 2048.0 * scale + 1.0) / CONFIG.FF14_MAP_SIZE * 100.0;
+            double yPercent = (spawn.LocationY / 2048.0 * scale + 1.0) / CONFIG.FF14_MAP_SIZE * 100.0;
+
+            faloopHoldUntil = DateTime.Now.AddSeconds(CONFIG.PARAM_FALOOP_HOLD_SECONDS);
+            currentMap = map;
+            SelectMap(map);
+
+            if (!IsOccupied(map, xPercent, yPercent, instance))
+            {
+                Mark(xPercent / 100.0 * canvas.ActualWidth, yPercent / 100.0 * canvas.ActualHeight, "s", false, instance);
+            }
+
+            bool flagged = huntCounter.SetFlag(spawn.TerritoryId, spawn.LocationX, spawn.LocationY);
+
+            textFaloopStatus.Text = mob + (instance > 0 ? " (" + instance + ")" : "") +
+                (flagged ? " : flag set, <flag> ready" : " : flag failed") + " " + DateTime.Now.ToString("HH:mm:ss");
         }
     }
 }

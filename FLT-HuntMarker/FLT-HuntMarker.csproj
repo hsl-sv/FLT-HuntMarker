@@ -42,6 +42,7 @@
 
   <ItemGroup>
     <PackageReference Include="Sharlayan" Version="9.2.5" />
+    <PackageReference Include="SocketIOClient" Version="3.1.2" />
   </ItemGroup>
 
 </Project>
