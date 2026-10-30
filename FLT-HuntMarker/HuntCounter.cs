@@ -137,7 +137,7 @@ namespace FLT_HuntMarker
         private const string FCS_UISTATE = "FFXIVClientStructs.FFXIV.Client.Game.UI.UIState";
         private const string FCS_PUBLICINSTANCE = "FFXIVClientStructs.FFXIV.Client.Game.UI.PublicInstance";
 
-        // Sharlayan does not read UIState.PublicInstance.InstanceId / Framework.UIModule, so scan them ourselves.
+        // Sharlayan does not read UIState.PublicInstance.InstanceId, so scan it ourselves.
         // Signature and offsets come from the FFXIVClientStructs types merged (internalized) into Sharlayan.dll,
         // so they follow Sharlayan updates without hardcoding.
         private void LoadExtraSignatures()
@@ -154,17 +154,6 @@ namespace FLT_HuntMarker
             catch (Exception e)
             {
                 Trace.WriteLine("Unable to load PublicInstance signature : " + e.Message);
-            }
-
-            try
-            {
-                Type framework = GetFcsType(FCS_FRAMEWORK);
-
-                signatures.Add(BuildFcsSignature(UIMODULE_KEY, framework, GetFieldOffset(framework, "UIModule")));
-            }
-            catch (Exception e)
-            {
-                Trace.WriteLine("Unable to load Framework signature : " + e.Message);
             }
 
             if (signatures.Count > 0)

@@ -1114,7 +1114,7 @@ namespace FLT_HuntMarker
             if (checkboxFaloop.IsChecked != true)
             {
                 faloop?.Disconnect();
-                textFaloopStatus.Text = "Off";
+                SetFaloopStatus(FaloopState.Off, "Off");
                 return;
             }
 
@@ -1133,7 +1133,7 @@ namespace FLT_HuntMarker
             if (faloop == null)
             {
                 faloop = new FaloopClient();
-                faloop.OnStatus += status => Dispatcher.BeginInvoke(new Action(() => textFaloopStatus.Text = status));
+                faloop.OnStatus += (state, text) => Dispatcher.BeginInvoke(new Action(() => SetFaloopStatus(state, text)));
                 faloop.OnSpawn += spawn => Dispatcher.BeginInvoke(new Action(() => OnFaloopSpawn(spawn)));
             }
 
@@ -1149,7 +1149,31 @@ namespace FLT_HuntMarker
             }
         }
 
-        // New S rank from Faloop : follow map, mark, set in-game flag
+        // Green = connected, orange = connecting, red = disconnected, gray = off
+        private void SetFaloopStatus(FaloopState state, string text)
+        {
+            // Late disconnect event after unchecked
+            if (checkboxFaloop.IsChecked != true && state != FaloopState.Off)
+            {
+                state = FaloopState.Off;
+                text = "Off";
+            }
+
+            // World filter depends on this, check it in log
+            if (state == FaloopState.Connected)
+                FaloopClient.Log("Current world = " + (isFF14Hooked ? huntCounter.GetCurrentWorld().ToString() : "unknown (FF14 not hooked)"));
+
+            textFaloopStatus.Text = "● " + text;
+            textFaloopStatus.Foreground = state switch
+            {
+                FaloopState.Connected => Brushes.Green,
+                FaloopState.Connecting => Brushes.DarkOrange,
+                FaloopState.Disconnected => Brushes.Red,
+                _ => Brushes.Gray,
+            };
+        }
+
+        // New S rank from Faloop : switch assistant map to spawn and mark S
         private void OnFaloopSpawn(FaloopSpawn spawn)
         {
             if (checkboxFaloop.IsChecked != true)
@@ -1157,40 +1181,51 @@ namespace FLT_HuntMarker
 
             string mob = System.Globalization.CultureInfo.InvariantCulture.TextInfo.ToTitleCase(spawn.MobId.Replace("_", " "));
             uint instance = (uint)Math.Max(spawn.Instance, 0);
+            string desc = mob + " @ " + spawn.World + (instance > 0 ? " (" + instance + ")" : "") + (spawn.Scheduled ? " [early]" : "");
 
             // Reports come for all worlds, need FF14 to know current world
             uint world = isFF14Hooked ? huntCounter.GetCurrentWorld() : 0;
             if (world == 0)
             {
-                textFaloopStatus.Text = mob + " : waiting FF14 for world";
+                FaloopClient.Log("  " + desc + " : current world unknown (FF14 hooked=" + isFF14Hooked + "), skipped");
+                textFaloopLast.Text = desc + " : waiting FF14 for world";
                 return;
             }
             if (spawn.WorldId != world)
+            {
+                FaloopClient.Log("  " + desc + " : other world (spawn=" + spawn.WorldId + ", current=" + world + "), skipped");
                 return;
+            }
 
             string map = Utility.GetCurrentFF14Map(spawn.TerritoryId, 0);
             if (map == null)
+            {
+                FaloopClient.Log("  " + desc + " : territory " + spawn.TerritoryId + " not in map list, skipped");
                 return;
+            }
 
             // Faloop location (2048 texture pixel) -> map coordinate -> percent, same scale as scouted mobs
             var mapInfo = huntCounter.GetMapInfo(spawn.TerritoryId);
             double scale = 41.0 / ((mapInfo?.sizeFactor ?? 100) / 100.0);
-            double xPercent = (spawn.LocationX / 2048.0 * scale + 1.0) / CONFIG.FF14_MAP_SIZE * 100.0;
-            double yPercent = (spawn.LocationY / 2048.0 * scale + 1.0) / CONFIG.FF14_MAP_SIZE * 100.0;
+            double xCoord = spawn.LocationX / 2048.0 * scale + 1.0;
+            double yCoord = spawn.LocationY / 2048.0 * scale + 1.0;
+            double xPercent = xCoord / CONFIG.FF14_MAP_SIZE * 100.0;
+            double yPercent = yCoord / CONFIG.FF14_MAP_SIZE * 100.0;
 
             faloopHoldUntil = DateTime.Now.AddSeconds(CONFIG.PARAM_FALOOP_HOLD_SECONDS);
             currentMap = map;
             SelectMap(map);
 
-            if (!IsOccupied(map, xPercent, yPercent, instance))
+            bool occupied = IsOccupied(map, xPercent, yPercent, instance);
+            if (!occupied)
             {
                 Mark(xPercent / 100.0 * canvas.ActualWidth, yPercent / 100.0 * canvas.ActualHeight, "s", false, instance);
             }
 
-            bool flagged = huntCounter.SetFlag(spawn.TerritoryId, spawn.LocationX, spawn.LocationY);
+            FaloopClient.Log("  " + desc + " : " + map + " (" + xCoord.ToString("0.0") + ", " + yCoord.ToString("0.0") + ")" +
+                " sizeFactor=" + (mapInfo?.sizeFactor.ToString() ?? "unknown") + (occupied ? ", already marked" : ", marked"));
 
-            textFaloopStatus.Text = mob + (instance > 0 ? " (" + instance + ")" : "") +
-                (flagged ? " : flag set, <flag> ready" : " : flag failed") + " " + DateTime.Now.ToString("HH:mm:ss");
+            textFaloopLast.Text = desc + " (" + xCoord.ToString("0.0") + ", " + yCoord.ToString("0.0") + ") " + DateTime.Now.ToString("HH:mm:ss");
         }
     }
 }
