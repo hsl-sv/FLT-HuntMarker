@@ -7,7 +7,32 @@
         mc:Ignorable="d"
         Title="FFXIVHuntMarker"
         Width="900"
-        Height="500" Closing="Window_Closing" SizeChanged="Window_SizeChanged">
+        Height="500" Closing="Window_Closing" SizeChanged="Window_SizeChanged"
+        WindowStyle="None" AllowsTransparency="True" ResizeMode="CanResize"
+        Background="White" BorderBrush="Gray" BorderThickness="1">
+    <!-- Window opacity needs AllowsTransparency, so title bar is drawn here -->
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="26" ResizeBorderThickness="5"
+                      GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
+    <DockPanel>
+    <Grid x:Name="gridTitle" DockPanel.Dock="Top" Height="26" Background="#FFF0F0F0">
+        <TextBlock Text="{Binding Title, RelativeSource={RelativeSource AncestorType=Window}}"
+                   VerticalAlignment="Center" Margin="8,0,0,0" />
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <StackPanel.Resources>
+                <Style TargetType="Button">
+                    <Setter Property="Width" Value="40" />
+                    <Setter Property="Background" Value="Transparent" />
+                    <Setter Property="BorderThickness" Value="0" />
+                    <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
+                </Style>
+            </StackPanel.Resources>
+            <Button Content="―" Click="buttonMinimize_Click" />
+            <Button Content="☐" Click="buttonMaximize_Click" />
+            <Button Content="✕" Click="buttonClose_Click" />
+        </StackPanel>
+    </Grid>
     <Grid x:Name="gridMain">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="5*"/>
@@ -231,4 +256,5 @@
             </DockPanel>
         </Grid>
     </Grid>
+    </DockPanel>
 </Window>

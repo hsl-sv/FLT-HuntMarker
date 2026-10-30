@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
@@ -12,22 +11,6 @@ namespace FLT_HuntMarker
     {
         Circle,
         Flag,
-    }
-
-    static class NativeMethods
-    {
-        public const int GWL_EXSTYLE = -20;
-        public const int WS_EX_LAYERED = 0x80000;
-        public const uint LWA_ALPHA = 0x2;
-
-        [DllImport("user32.dll")]
-        public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
-
-        [DllImport("user32.dll")]
-        public static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
-
-        [DllImport("user32.dll")]
-        public static extern bool SetLayeredWindowAttributes(IntPtr hwnd, uint crKey, byte bAlpha, uint dwFlags);
     }
 
     class CONFIG

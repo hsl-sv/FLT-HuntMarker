@@ -69,14 +69,8 @@ namespace FLT_HuntMarker
 
             UpdateCanvas();
 
-            IntPtr hwnd = new WindowInteropHelper(this).Handle;
-            HwndSource source = HwndSource.FromHwnd(hwnd);
+            HwndSource source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
             source.AddHook(new HwndSourceHook(WndProc));
-
-            // Layered window keeps title bar while allowing opacity (WPF Opacity needs AllowsTransparency)
-            NativeMethods.SetWindowLong(hwnd, NativeMethods.GWL_EXSTYLE,
-                NativeMethods.GetWindowLong(hwnd, NativeMethods.GWL_EXSTYLE) | NativeMethods.WS_EX_LAYERED);
-            ApplyWindowOpacity();
 
             t = new Thread(new ThreadStart(SetupHuntCounter));
             t.Start();
@@ -434,7 +428,7 @@ namespace FLT_HuntMarker
         // Left click for Mark
         private void canvas_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            Point pos = e.GetPosition(null);
+            Point pos = e.GetPosition(canvas);
 
             Mark(pos.X, pos.Y, String.Empty, false, SelectedInstance);
 
@@ -1042,20 +1036,25 @@ namespace FLT_HuntMarker
             }
         }
 
-        private void ApplyWindowOpacity()
-        {
-            // ValueChanged can fire in InitializeComponent before window handle exists
-            IntPtr hwnd = new WindowInteropHelper(this).Handle;
-            if (hwnd == IntPtr.Zero || sliderOpacity == null)
-                return;
-
-            byte alpha = (byte)Math.Round(sliderOpacity.Value * 255.0);
-            NativeMethods.SetLayeredWindowAttributes(hwnd, 0, alpha, NativeMethods.LWA_ALPHA);
-        }
-
         private void sliderOpacity_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            ApplyWindowOpacity();
+            // Needs AllowsTransparency="True" on window, otherwise WPF ignores it
+            Opacity = e.NewValue;
+        }
+
+        private void buttonMinimize_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        private void buttonMaximize_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+        }
+
+        private void buttonClose_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
         }
 
         private void sliderOpacity_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
