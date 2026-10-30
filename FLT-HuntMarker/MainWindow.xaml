@@ -142,14 +142,15 @@
                     </CheckBox>
                 </Grid>
 
-                <DockPanel DockPanel.Dock="Top" Margin="5,2,5,2">
-                    <CheckBox x:Name="checkboxTopmost" DockPanel.Dock="Right" VerticalAlignment="Center"
-                              Margin="5,0,0,0" Content="Always On Top" Click="checkboxTopmost_Click" />
+                <DockPanel DockPanel.Dock="Top" Margin="5,2,5,0">
                     <TextBlock Text="Opacity" VerticalAlignment="Center" Margin="0,0,5,0" />
                     <Slider x:Name="sliderOpacity" Minimum="0.2" Maximum="1.0" Value="1.0"
                             VerticalAlignment="Center" ToolTip="Window opacity (double click to reset)"
                             ValueChanged="sliderOpacity_ValueChanged" MouseDoubleClick="sliderOpacity_MouseDoubleClick" />
                 </DockPanel>
+
+                <CheckBox x:Name="checkboxTopmost" DockPanel.Dock="Top" Margin="5,2,5,2"
+                          Content="Always On Top" Click="checkboxTopmost_Click" />
 
                 <TreeView x:Name="treeview" DockPanel.Dock="Bottom" Margin="3" FontSize="10" 
                           x:FieldModifier="public"
