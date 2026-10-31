@@ -19,7 +19,6 @@ namespace FLT_HuntMarker
         public const string OBJECT_PREFIX = "ID_";
         public const string LOGFILE = @"./Log.log";
         public const string TMPFILE = @"./Log.tmp";
-        public const string FALOOP_FILE = @"./Faloop.dat";
 
         public static double PARAM_DOT_SIZE = 20.0;
         public static double PARAM_FONT_SIZE = 11.0;
@@ -29,7 +28,6 @@ namespace FLT_HuntMarker
         public static double PARAM_DUPLICATE_DISTANCE = 1.0;
         public static int PARAM_DUPLICATE_PERIOD_HOUR = 1;
         public static int PARAM_PLAYER_INTERVAL_MS = 200;
-        public static int PARAM_FALOOP_HOLD_SECONDS = 60; // Scout does not move map away from Faloop spawn for a while
         public static SolidColorBrush COLOR_S = new(Colors.Orange) { Opacity = COLOR_OPACITY };
         public static SolidColorBrush COLOR_A = new(Colors.LightGreen) { Opacity = COLOR_OPACITY };
         public static SolidColorBrush COLOR_B = new(Colors.LightBlue) { Opacity = COLOR_OPACITY };
