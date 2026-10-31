@@ -72,34 +72,74 @@ namespace FLT_HuntMarker.Faloop
             OnStatus?.Invoke(state, text);
         }
 
-        public async Task<bool> ConnectAsync(string username, string password)
+        // savedSession : session id copied from Faloop app (DevTools), resumed instead of id / pw login
+        public async Task<bool> ConnectAsync(string username, string password, string savedSession)
         {
             Disconnect();
 
             SetStatus(FaloopState.Connecting, "Logging in...");
 
-            var refresh = await PostAsync("/api/auth/user/refresh", "/", null, new Dictionary<string, object> { { "sessionId", null } });
-            if (refresh == null || refresh["success"]?.GetValue<bool>() != true)
+            if (!string.IsNullOrEmpty(savedSession))
             {
-                SetStatus(FaloopState.Disconnected, "Refresh failed");
-                return false;
+                // Same as Faloop app on page load : refresh with stored session resumes it if still valid
+                var resume = await PostAsync("/api/auth/user/refresh", "/", null, new Dictionary<string, object> { { "sessionId", savedSession } });
+                string resumed = resume?["data"]?["sessionId"]?.GetValue<string>();
+                LogAuth("Refresh (saved session)", resume);
+
+                if (resume?["success"]?.GetValue<bool>() == true && resumed == savedSession)
+                {
+                    Log("Saved session resumed");
+                    sessionId = resumed;
+                }
+                else
+                {
+                    Log("Saved session expired or invalid (server returned " + (resumed == null ? "none" : "a new session") + ")");
+                }
             }
 
-            var login = await PostAsync("/api/auth/user/login", "/login", refresh["data"]?["token"]?.GetValue<string>(), new Dictionary<string, object>
+            if (sessionId == null)
             {
-                { "username", username },
-                { "password", password },
-                { "rememberMe", false },
-                { "sessionId", refresh["data"]?["sessionId"]?.GetValue<string>() },
-            });
-            if (login == null || login["success"]?.GetValue<bool>() != true)
-            {
-                SetStatus(FaloopState.Disconnected, "Login failed");
-                return false;
-            }
+                if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+                {
+                    SetStatus(FaloopState.Disconnected, "Session expired, login needed");
+                    return false;
+                }
 
-            Log("Login OK as " + username);
-            sessionId = login["data"]?["sessionId"]?.GetValue<string>();
+                var refresh = await PostAsync("/api/auth/user/refresh", "/", null, new Dictionary<string, object> { { "sessionId", null } });
+                LogAuth("Refresh (anonymous)", refresh);
+                if (refresh == null || refresh["success"]?.GetValue<bool>() != true)
+                {
+                    SetStatus(FaloopState.Disconnected, "Refresh failed");
+                    return false;
+                }
+
+                var login = await PostAsync("/api/auth/user/login", "/login", refresh["data"]?["token"]?.GetValue<string>(), new Dictionary<string, object>
+                {
+                    { "username", username },
+                    { "password", password },
+                    { "rememberMe", false },
+                    { "sessionId", refresh["data"]?["sessionId"]?.GetValue<string>() },
+                });
+                LogAuth("Login", login);
+                if (login == null || login["success"]?.GetValue<bool>() != true)
+                {
+                    SetStatus(FaloopState.Disconnected, "Login failed");
+                    return false;
+                }
+
+                Log("Login OK as " + username);
+                sessionId = login["data"]?["sessionId"]?.GetValue<string>();
+
+                // Check what server thinks of the logged in session
+                var check = await PostAsync("/api/auth/user/refresh", "/", null, new Dictionary<string, object> { { "sessionId", sessionId } });
+                LogAuth("Refresh (after login)", check);
+                string checkedSession = check?["data"]?["sessionId"]?.GetValue<string>();
+                if (checkedSession != null && checkedSession != sessionId)
+                {
+                    Log("Server returned another session after login, using it");
+                    sessionId = checkedSession;
+                }
+            }
 
             cts = new CancellationTokenSource();
             _ = Task.Run(() => ConnectLoop(cts.Token));
@@ -112,6 +152,7 @@ namespace FLT_HuntMarker.Faloop
             cts?.Cancel();
             cts = null;
             connected = false;
+            sessionId = null;
             pending.Clear();
         }
 
@@ -288,6 +329,52 @@ namespace FLT_HuntMarker.Faloop
                 Log(">> " + Truncate(packet.Replace(sessionId ?? "\0", "<session>"), 300));
 
             await ws.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes(packet)), WebSocketMessageType.Text, true, ct);
+        }
+
+        public string SessionId => sessionId;
+
+        // Log response shape and JWT claims to see if server treats session as logged in user.
+        // Values of sessionId / token are not logged.
+        private static void LogAuth(string step, JsonNode response)
+        {
+            if (response == null)
+                return;
+
+            try
+            {
+                if (response["data"] is JsonObject data)
+                {
+                    List<string> keys = new();
+                    foreach (var kv in data)
+                        keys.Add(kv.Key);
+
+                    Log(step + " : success=" + response["success"] + " data keys=[" + string.Join(", ", keys) + "]");
+
+                    if (data["token"]?.GetValue<string>() is string token)
+                        Log(step + " : token claims " + Truncate(DecodeJwt(token), 500));
+                }
+                else
+                {
+                    Log(step + " : " + Truncate(response.ToJsonString(), 300));
+                }
+            }
+            catch (Exception e)
+            {
+                Log(step + " : log failed " + e.Message);
+            }
+        }
+
+        // Payload part of JWT ("JWT xxx.yyy.zzz" or "xxx.yyy.zzz")
+        private static string DecodeJwt(string token)
+        {
+            string[] parts = token.Replace("JWT ", "").Replace("Bearer ", "").Split('.');
+            if (parts.Length < 2)
+                return "(not jwt)";
+
+            string payload = parts[1].Replace('-', '+').Replace('_', '/');
+            payload = payload.PadRight(payload.Length + (4 - payload.Length % 4) % 4, '=');
+
+            return Encoding.UTF8.GetString(Convert.FromBase64String(payload));
         }
 
         private async Task<JsonNode> PostAsync(string path, string referer, string token, Dictionary<string, object> body)

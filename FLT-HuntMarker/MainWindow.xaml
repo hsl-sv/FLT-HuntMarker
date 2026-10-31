@@ -179,7 +179,7 @@
 
                 <CheckBox x:Name="checkboxFaloop" DockPanel.Dock="Top" Margin="5,2,5,0"
                           Content="Track Faloop" Click="checkboxFaloop_Click"
-                          ToolTip="New S rank on current world : switch map and mark here (log : Trace [Faloop])" />
+                          ToolTip="New S rank on current world : switch map and mark here (log : Trace [Faloop]). Shift + click to change account / session" />
                 <TextBlock x:Name="textFaloopStatus" DockPanel.Dock="Top" Margin="22,0,5,0"
                            FontSize="10" FontWeight="Bold" Foreground="Gray" TextTrimming="CharacterEllipsis" Text="● Off" />
                 <TextBlock x:Name="textFaloopLast" DockPanel.Dock="Top" Margin="22,0,5,2"

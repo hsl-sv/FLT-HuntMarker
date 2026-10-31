@@ -13,6 +13,7 @@ namespace FLT_HuntMarker
     {
         public string Username => textUsername.Text;
         public string Password => textPassword.Password;
+        public string Session => textSession.Password.Trim().Trim('"');
 
         public FaloopLogin(string username)
         {
@@ -23,11 +24,12 @@ namespace FLT_HuntMarker
 
         private void buttonLogin_Click(object sender, RoutedEventArgs e)
         {
-            if (String.IsNullOrEmpty(Username) || String.IsNullOrEmpty(Password))
+            // id / pw or session id
+            if ((String.IsNullOrEmpty(Username) || String.IsNullOrEmpty(Password)) && String.IsNullOrEmpty(Session))
                 return;
 
             if (checkboxRemember.IsChecked == true)
-                Save(Username, Password);
+                Save(Username, Password, Session);
             else
                 Clear();
 
@@ -35,7 +37,7 @@ namespace FLT_HuntMarker
         }
 
         // Saved account, null if none
-        public static (string username, string password)? Load()
+        public static (string username, string password, string session)? Load()
         {
             try
             {
@@ -43,9 +45,8 @@ namespace FLT_HuntMarker
                     return null;
 
                 string[] lines = File.ReadAllLines(CONFIG.FALOOP_FILE);
-                byte[] password = ProtectedData.Unprotect(Convert.FromBase64String(lines[1]), null, DataProtectionScope.CurrentUser);
 
-                return (lines[0], Encoding.UTF8.GetString(password));
+                return (lines[0], Decrypt(lines[1]), lines.Length > 2 ? Decrypt(lines[2]) : string.Empty);
             }
             catch
             {
@@ -59,11 +60,24 @@ namespace FLT_HuntMarker
                 File.Delete(CONFIG.FALOOP_FILE);
         }
 
-        private static void Save(string username, string password)
+        // Session may be renewed by server, keep it up to date
+        public static void Save(string username, string password, string session)
         {
-            byte[] encrypted = ProtectedData.Protect(Encoding.UTF8.GetBytes(password), null, DataProtectionScope.CurrentUser);
+            File.WriteAllLines(CONFIG.FALOOP_FILE, new[] { username, Encrypt(password), Encrypt(session) });
+        }
 
-            File.WriteAllLines(CONFIG.FALOOP_FILE, new[] { username, Convert.ToBase64String(encrypted) });
+        private static string Encrypt(string text)
+        {
+            byte[] encrypted = ProtectedData.Protect(Encoding.UTF8.GetBytes(text ?? string.Empty), null, DataProtectionScope.CurrentUser);
+
+            return Convert.ToBase64String(encrypted);
+        }
+
+        private static string Decrypt(string text)
+        {
+            byte[] decrypted = ProtectedData.Unprotect(Convert.FromBase64String(text), null, DataProtectionScope.CurrentUser);
+
+            return Encoding.UTF8.GetString(decrypted);
         }
     }
 }

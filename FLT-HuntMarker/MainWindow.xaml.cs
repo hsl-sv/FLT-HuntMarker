@@ -1118,16 +1118,17 @@ namespace FLT_HuntMarker
                 return;
             }
 
+            // Shift + click : enter account / session again
             var account = FaloopLogin.Load();
-            if (account == null)
+            if (account == null || System.Windows.Input.Keyboard.Modifiers.HasFlag(System.Windows.Input.ModifierKeys.Shift))
             {
-                FaloopLogin login = new FaloopLogin(null) { Owner = this };
+                FaloopLogin login = new FaloopLogin(account?.username) { Owner = this };
                 if (login.ShowDialog() != true)
                 {
                     checkboxFaloop.IsChecked = false;
                     return;
                 }
-                account = (login.Username, login.Password);
+                account = (login.Username, login.Password, login.Session);
             }
 
             if (faloop == null)
@@ -1138,7 +1139,7 @@ namespace FLT_HuntMarker
             }
 
             checkboxFaloop.IsEnabled = false;
-            bool connected = await faloop.ConnectAsync(account.Value.username, account.Value.password);
+            bool connected = await faloop.ConnectAsync(account.Value.username, account.Value.password, account.Value.session);
             checkboxFaloop.IsEnabled = true;
 
             if (!connected)
@@ -1146,6 +1147,11 @@ namespace FLT_HuntMarker
                 // Ask again next time
                 FaloopLogin.Clear();
                 checkboxFaloop.IsChecked = false;
+            }
+            else if (System.IO.File.Exists(CONFIG.FALOOP_FILE))
+            {
+                // Remembered : keep current session to resume next time
+                FaloopLogin.Save(account.Value.username, account.Value.password, faloop.SessionId);
             }
         }
 
