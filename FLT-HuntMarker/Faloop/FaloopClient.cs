@@ -27,7 +27,8 @@ namespace FLT_HuntMarker.Faloop
     // SlashNephy/Divination FaloopIntegration and jshade2710/faloop-messenger
     // 1. POST /api/auth/user/refresh -> anonymous sessionId + token
     // 2. POST /api/auth/user/login with username / password -> logged in sessionId
-    // 3. socket.io over websocket wss://faloop.app/comms/socket.io/?EIO=4&transport=websocket
+    // 3. socket.io over websocket wss://faloop.app/messaging/socket.io/?EIO=4&transport=websocket
+    //    (Faloop app moved from /comms to /messaging, /comms still accepts but sends only app ping)
     //    CONNECT with auth { sessionid }, emit "ack" after connect, "message" events carry mob reports.
     //    Raw websocket like faloop-messenger, SocketIOClient polling did not receive reports.
     // Engine.IO packet : 0 = open, 2 = ping, 3 = pong, 4 = message
@@ -38,14 +39,16 @@ namespace FLT_HuntMarker.Faloop
         private const string ORIGIN = "https://faloop.app";
         private const string USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0";
 
-        private const string SOCKET_URL = "wss://faloop.app/comms/socket.io/?EIO=4&transport=websocket";
+        private const string SOCKET_URL = "wss://faloop.app/messaging/socket.io/?EIO=4&transport=websocket";
         private const int RAW_LOG_COUNT = 30; // First packets are logged raw
+        private const int ALIVE_LOG_PINGS = 12; // After raw log, log once per 12 pings (~5 min)
 
         private readonly HttpClient http = new();
         private CancellationTokenSource cts;
         private string sessionId;
         private volatile bool connected;
         private int rawLogged;
+        private int pingCount;
 
         // Spawn report without location, waiting for spawn_location / spawn_release
         private readonly Dictionary<string, (string mobId, string world, uint worldId, uint territoryId, int instance, bool scheduled)> pending = new();
@@ -176,6 +179,7 @@ namespace FLT_HuntMarker.Faloop
                     await ws.ConnectAsync(new Uri(SOCKET_URL), ct);
                     Log("WebSocket opened");
                     rawLogged = 0;
+                    pingCount = 0;
 
                     await ReceiveLoop(ws, ct);
                 }
@@ -262,6 +266,13 @@ namespace FLT_HuntMarker.Faloop
             {
                 rawLogged++;
                 Log("<< " + Truncate(packet, 300));
+
+                if (rawLogged == RAW_LOG_COUNT)
+                    Log("Raw packet log limit reached, pings are logged every " + ALIVE_LOG_PINGS + " from now");
+            }
+            else if (packet == "2" && ++pingCount % ALIVE_LOG_PINGS == 0)
+            {
+                Log("Socket alive (" + pingCount + " pings after raw log)");
             }
 
             switch (packet[0])
