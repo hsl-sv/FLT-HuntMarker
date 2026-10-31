@@ -20,19 +20,26 @@ namespace FLT_HuntMarker
             {
                 if (MemoryHandler == null ||
                     !MemoryHandler.Scanner.Locations.TryGetValue(Signatures.CHARMAP_KEY, out MemoryLocation charmap))
+                {
+                    Faloop.FaloopClient.Log("GetCurrentWorld : CHARMAP not scanned");
                     return 0;
+                }
 
                 // First entry of object table is local player
                 IntPtr player = MemoryHandler.ReadPointer(charmap);
                 if (player == IntPtr.Zero)
+                {
+                    Faloop.FaloopClient.Log("GetCurrentWorld : player pointer is null");
                     return 0;
+                }
 
                 _currentWorldOffset ??= GetFieldOffset(GetFcsType(FCS_CHARACTER), "CurrentWorld");
 
                 return MemoryHandler.GetUInt16(player, _currentWorldOffset.Value);
             }
-            catch
+            catch (Exception e)
             {
+                Faloop.FaloopClient.Log("GetCurrentWorld failed : " + e);
                 return 0;
             }
         }
