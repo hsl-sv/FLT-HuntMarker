@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace FLT_HuntMarker
 {
@@ -77,19 +78,35 @@ namespace FLT_HuntMarker
             }
         }
 
+        // Monsters of current zone, null while zone is loading
         public ConcurrentDictionary<uint, ActorItem> GetMobs()
         {
             try
             {
-                if (MemoryHandler.Reader.CanGetActors())
-                {
-                    var actors = _reader.GetActors();
-
-                    return actors.CurrentMonsters;
-                }
-                else
-                {
+                if (!MemoryHandler.Reader.CanGetActors() || IsZoneLoading())
                     return null;
+
+                // Called from tracking thread and UI thread
+                lock (_mobLock)
+                {
+                    (uint mapID, uint mapIndex, uint mapTerritory) = GetMap();
+                    (uint, uint) zone = (mapTerritory, GetInstance());
+
+                    if (zone != _lastZone)
+                    {
+                        bool first = _lastZone.territory == 0;
+                        _lastZone = zone;
+
+                        // Sharlayan keeps previous zone actors until a scan finds them missing for 0.25s.
+                        // Scan, wait for expiry and scan again, so they are dropped right away.
+                        if (!first)
+                        {
+                            _reader.GetActors();
+                            Thread.Sleep(STALE_ACTOR_MS);
+                        }
+                    }
+
+                    return _reader.GetActors().CurrentMonsters;
                 }
             }
             catch
@@ -221,33 +238,20 @@ namespace FLT_HuntMarker
             return 0;
         }
 
-        private const double ZONE_SETTLE_SECONDS = 3.0;
+        private const int STALE_ACTOR_MS = 300; // Sharlayan removes missing actor after 0.25s
+        private readonly object _mobLock = new();
         private (uint territory, uint instance) _lastZone;
-        private DateTime _zoneSettledAt = DateTime.MinValue;
 
-        // False while zone is loading or just changed.
-        // Sharlayan keeps previous zone actors until they expire, those would be marked on new map.
-        public bool IsZoneSettled(uint mapTerritory, uint instance)
+        // Loading screen or moving between areas, object table may still hold previous zone
+        private bool IsZoneLoading()
         {
-            (uint, uint) zone = (mapTerritory, instance);
-
-            if (zone != _lastZone)
-            {
-                // First read after hook has nothing stale
-                if (_lastZone.territory != 0)
-                    _zoneSettledAt = DateTime.Now.AddSeconds(ZONE_SETTLE_SECONDS);
-
-                _lastZone = zone;
-            }
-
             try
             {
                 if (_reader.CanGetGameState())
                 {
                     var state = _reader.GetGameState();
 
-                    if (!state.IsReadyToRead || state.IsTeleporting)
-                        _zoneSettledAt = DateTime.Now.AddSeconds(ZONE_SETTLE_SECONDS);
+                    return !state.IsReadyToRead || state.IsTeleporting;
                 }
             }
             catch
@@ -255,7 +259,7 @@ namespace FLT_HuntMarker
                 // pass
             }
 
-            return DateTime.Now >= _zoneSettledAt;
+            return false;
         }
 
         // Flag generator, test bed
