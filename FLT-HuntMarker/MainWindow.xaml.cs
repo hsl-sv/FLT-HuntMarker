@@ -721,12 +721,7 @@ namespace FLT_HuntMarker
                 comboInstance.SelectedIndex = (int)Math.Min(instance, (uint)(comboInstance.Items.Count - 1));
             }
 
-            // Actor list keeps previous zone mobs for a while after moving, skip until settled
-            if (!huntCounter.IsZoneSettled(mapTerritory, instance))
-            {
-                return;
-            }
-
+            // null while loading, previous zone mobs are dropped in GetMobs()
             var actors = huntCounter.GetMobs();
 
             if (actors == null)
@@ -906,14 +901,6 @@ namespace FLT_HuntMarker
                 {
                     foreach (var actor in actors)
                     {
-                        double X = Utility.ConvertPos(actor.Value.X);
-                        double Y = Utility.ConvertPos(actor.Value.Y);
-
-                        if (actor.Value.Name == "Bee Cloud")
-                        {
-                            int dddd = 0;
-                        }
-
                         // Every spawnd mob has different key
                         if (actor.Value.HPCurrent <= 0 && !diedBefore.Contains(actor.Key))
                         {
@@ -927,25 +914,6 @@ namespace FLT_HuntMarker
                                 {
                                     tc.Count++;
                                 }
-                            }
-
-                            // TODO: Currently disabled by unable to find HPCurrent info
-                            if (false)
-                            {
-                                Trace.WriteLine("dead -> " + actor.Key.ToString() + "(" + actor.Value.Name + ")");
-
-                                // Auto dequeue
-                                new Thread(() =>
-                                {
-                                    Thread.CurrentThread.IsBackground = true;
-                                    if (diedBefore.Count > 0)
-                                    {
-                                        // Disappearing time is 10s
-                                        Thread.Sleep(13000);
-                                        Trace.WriteLine("dequeue -> " + diedBefore.Peek().ToString());
-                                        diedBefore.Dequeue();
-                                    }
-                                }).Start();
                             }
                         }
                     }
