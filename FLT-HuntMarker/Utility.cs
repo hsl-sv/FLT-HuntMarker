@@ -14,10 +14,6 @@ namespace FLT_HuntMarker
     {
         private static ImageSource playerIcon;
 
-        private static readonly Lazy<HashSet<string>> mobS = new(() => ToSet(Properties.Resources.MobS));
-        private static readonly Lazy<HashSet<string>> mobA = new(() => ToSet(Properties.Resources.MobA));
-        private static readonly Lazy<HashSet<string>> mobB = new(() => ToSet(Properties.Resources.MobB));
-
         // Make jpg to imagesource
         public static ImageSource ByteToImage(byte[] imageData)
         {
@@ -134,30 +130,16 @@ namespace FLT_HuntMarker
             return Math.Floor(2.0 * Convert.ToDouble(num) + 2148.0) / 100;
         }
 
-        // Check parameter name is in S/A/B list (English only)
-        public static string CheckSpecialMob(string name)
+        // Rank of mob by BNpcName id (any client language), "s" / "a" / "b" or "0"
+        public static string CheckSpecialMob(uint nameId)
         {
-            if (mobS.Value.Contains(name))
+            if (HuntMobs.Ranks.TryGetValue(nameId, out string rank) ||
+                HuntMobs.ResolvedRanks.TryGetValue(nameId, out rank))
             {
-                return "s";
+                return rank;
             }
-            else if (mobA.Value.Contains(name))
-            {
-                return "a";
-            }
-            else if (mobB.Value.Contains(name))
-            {
-                return "b";
-            }
-            else
-            {
-                return "0";
-            }
-        }
 
-        private static HashSet<string> ToSet(string list)
-        {
-            return new HashSet<string>(list.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries));
+            return "0";
         }
 
         // Retreive map string for canvas with mapid

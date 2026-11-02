@@ -57,6 +57,9 @@ namespace FLT_HuntMarker
 
                 LoadPublicInstanceSignature();
 
+                if (HuntMobs.ResolvedRanks.IsEmpty)
+                    HuntMobs.Resolve(configuration);
+
                 Console.WriteLine(processModel.ProcessID);
 
                 return true;

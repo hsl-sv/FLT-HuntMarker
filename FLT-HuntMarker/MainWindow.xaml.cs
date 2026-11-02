@@ -748,6 +748,7 @@ namespace FLT_HuntMarker
                 {
                     Name = actor.Value.Name,
                     Key = actor.Key,
+                    NPCID2 = actor.Value.NPCID2, // BNpcName id, for rank check
                     HP = actor.Value.HPCurrent,
                     IsTracking = false,
                     Coordinates = new Coords(Utility.ConvertPos(actor.Value.X), Utility.ConvertPos(actor.Value.Y)),
@@ -784,7 +785,7 @@ namespace FLT_HuntMarker
                 {
                     // If S/A/B ranked -> List and Add Mark+Log ONCE
                     // Else -> List only
-                    string special = Utility.CheckSpecialMob(mob.Name);
+                    string special = Utility.CheckSpecialMob(mob.NPCID2);
 
                     // Mark only on known field map
                     if (special != "0" && mapcur != null)
