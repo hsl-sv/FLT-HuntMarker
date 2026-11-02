@@ -759,9 +759,8 @@ namespace FLT_HuntMarker
 
             foreach (var mob in nearbyCollection)
             {
-                string item = mob.Name;
+                string item = mob.Name + " (" + mob.Coordinates.X.ToString("0.0") + ", " + mob.Coordinates.Y.ToString("0.0") + ")";
                 bool skip = false;
-                item += "_" + mob.Coordinates.X.ToString("0.0") + "_" + mob.Coordinates.Y.ToString("0.0");
                 double percentage = mob.HPPercent;
 
                 // Percentage on map
@@ -773,7 +772,7 @@ namespace FLT_HuntMarker
                 {
                     if (listitem is not null)
                     {
-                        if (listitem.Content.ToString().Split('_')[0] == mob.Name)
+                        if (listitem.Tag as string == mob.Name)
                         {
                             skip = true;
                         }
@@ -793,6 +792,7 @@ namespace FLT_HuntMarker
                         bool occupied = false;
                         ListViewItem lvitem = new ListViewItem();
                         lvitem.Content = item;
+                        lvitem.Tag = mob.Name;
                         lvitem.FontWeight = FontWeights.Bold;
                         lvitem.Background = CONFIG.COLOR_TEXT_BG;
                         if (special == "s")
@@ -838,6 +838,7 @@ namespace FLT_HuntMarker
                     {
                         ListViewItem lvitem = new ListViewItem();
                         lvitem.Content = item;
+                        lvitem.Tag = mob.Name;
                         listviewHuntCounter.Items.Add(lvitem);
                     }
                 }
@@ -869,7 +870,7 @@ namespace FLT_HuntMarker
 
             foreach (ListViewItem item in lv.Items)
             {
-                string mobName = item.Content.ToString().Split("_")[0];
+                string mobName = item.Tag as string;
 
                 if (!trackedCollection.Any(m => m.Name == mobName))
                 {
@@ -993,11 +994,12 @@ namespace FLT_HuntMarker
                 return;
             }
 
-            string selname = item.ToString().Split('_')[0];
+            // Tag is mob name, Content is "Name (X, Y)"
+            string selname = (item as ListViewItem)?.Tag as string;
 
             for (int i = 0; i < lvc.Items.Count; i++)
             {
-                if (lv.Items[i].ToString().Split('_')[0] == selname)
+                if ((lv.Items[i] as ListViewItem)?.Tag as string == selname)
                 {
                     trackedCollection.RemoveAt(i);
                     lv.Items.RemoveAt(i);

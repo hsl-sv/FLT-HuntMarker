@@ -1,8 +1,4 @@
-﻿using Sharlayan;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 
 namespace FLT_HuntMarker
 {
@@ -241,42 +237,5 @@ namespace FLT_HuntMarker
             { 13154, "b" }, // Jewel Bearer
             { 13155, "b" }, // 13th Child
         };
-
-        // SS minions not in Faloop data, id is looked up from game data by English name at hook
-        // (see HuntCounter.Setup, resolved ids are printed to Trace so they can be moved to Ranks)
-        public static readonly Dictionary<string, string> RanksByName = new()
-        {
-            { "Forgiven Gossip", "b" }, // Shadowbringers, summons Forgiven Rebellion
-            { "Ker Shroud", "b" }, // Endwalker, summons Ker
-            { "Crystal Incarnation", "b" }, // Dawntrail, summons Arch Aethereater
-        };
-
-        // Ids of RanksByName, filled after hook
-        public static readonly ConcurrentDictionary<uint, string> ResolvedRanks = new();
-
-        // Look up RanksByName ids from game data (sqpack), names of all client languages are searched
-        public static void Resolve(SharlayanConfiguration configuration)
-        {
-            foreach (var mob in RanksByName)
-            {
-                try
-                {
-                    uint? id = LuminaLookup.BNpcNameIdFromName(configuration, mob.Key);
-                    if (id is uint nameId)
-                    {
-                        ResolvedRanks[nameId] = mob.Value;
-                        Trace.WriteLine("HuntMobs : " + mob.Key + " = " + nameId);
-                    }
-                    else
-                    {
-                        Trace.WriteLine("HuntMobs : " + mob.Key + " not found in game data");
-                    }
-                }
-                catch (Exception e)
-                {
-                    Trace.WriteLine("HuntMobs : " + mob.Key + " lookup failed : " + e.Message);
-                }
-            }
-        }
     }
 }

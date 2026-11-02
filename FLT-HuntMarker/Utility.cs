@@ -133,13 +133,7 @@ namespace FLT_HuntMarker
         // Rank of mob by BNpcName id (any client language), "s" / "a" / "b" or "0"
         public static string CheckSpecialMob(uint nameId)
         {
-            if (HuntMobs.Ranks.TryGetValue(nameId, out string rank) ||
-                HuntMobs.ResolvedRanks.TryGetValue(nameId, out rank))
-            {
-                return rank;
-            }
-
-            return "0";
+            return HuntMobs.Ranks.TryGetValue(nameId, out string rank) ? rank : "0";
         }
 
         // Retreive map string for canvas with mapid
