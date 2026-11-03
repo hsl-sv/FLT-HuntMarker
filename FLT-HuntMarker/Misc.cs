@@ -29,13 +29,24 @@ namespace FLT_HuntMarker
         public static int PARAM_DUPLICATE_PERIOD_HOUR = 1;
         public static int PARAM_PLAYER_INTERVAL_MS = 200;
         public static int PARAM_HOOK_INTERVAL_MS = 3000; // Check FF14 process start / exit
-        public static SolidColorBrush COLOR_S = new(Colors.Orange) { Opacity = COLOR_OPACITY };
-        public static SolidColorBrush COLOR_A = new(Colors.LightGreen) { Opacity = COLOR_OPACITY };
-        public static SolidColorBrush COLOR_B = new(Colors.LightBlue) { Opacity = COLOR_OPACITY };
-        public static SolidColorBrush COLOR_S_TEXT = new(Colors.Red);
-        public static SolidColorBrush COLOR_A_TEXT = new(Colors.DarkGreen);
-        public static SolidColorBrush COLOR_B_TEXT = new(Colors.Blue);
-        public static SolidColorBrush COLOR_TEXT_BG = new(Colors.Yellow);
-        public static SolidColorBrush COLOR_AETHERYTE = new(Colors.MediumPurple) { Opacity = COLOR_OPACITY };
+
+        // Brushes are frozen : CONFIG may be first touched by a background thread (HookMonitor),
+        // an unfrozen brush would belong to that thread and throw when used on UI thread
+        public static SolidColorBrush COLOR_S = FrozenBrush(Colors.Orange, COLOR_OPACITY);
+        public static SolidColorBrush COLOR_A = FrozenBrush(Colors.LightGreen, COLOR_OPACITY);
+        public static SolidColorBrush COLOR_B = FrozenBrush(Colors.LightBlue, COLOR_OPACITY);
+        public static SolidColorBrush COLOR_S_TEXT = FrozenBrush(Colors.Red);
+        public static SolidColorBrush COLOR_A_TEXT = FrozenBrush(Colors.DarkGreen);
+        public static SolidColorBrush COLOR_B_TEXT = FrozenBrush(Colors.Blue);
+        public static SolidColorBrush COLOR_TEXT_BG = FrozenBrush(Colors.Yellow);
+        public static SolidColorBrush COLOR_AETHERYTE = FrozenBrush(Colors.MediumPurple, COLOR_OPACITY);
+
+        private static SolidColorBrush FrozenBrush(Color color, double opacity = 1.0)
+        {
+            SolidColorBrush brush = new(color) { Opacity = opacity };
+            brush.Freeze();
+
+            return brush;
+        }
     }
 }
