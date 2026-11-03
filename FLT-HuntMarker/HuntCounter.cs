@@ -18,7 +18,20 @@ namespace FLT_HuntMarker
     {
         public MemoryHandler MemoryHandler { get; set; }
         public bool CanGetProcess => _process != null;
-        public bool ProcessHasExited => _process?.HasExited == null || _process.HasExited;
+        public bool ProcessHasExited
+        {
+            get
+            {
+                try
+                {
+                    return _process == null || _process.HasExited;
+                }
+                catch
+                {
+                    return true;
+                }
+            }
+        }
 
         private Reader _reader;
         private Process _process;
@@ -31,6 +44,17 @@ namespace FLT_HuntMarker
             if (processes.Length > 0)
             {
                 _process = processes[0];
+
+                // MainModule throws while the process is still starting, try again next time
+                try
+                {
+                    _ = _process.MainModule;
+                }
+                catch
+                {
+                    _process = null;
+                    return false;
+                }
 
                 ProcessModel processModel = new ProcessModel
                 {
@@ -63,6 +87,26 @@ namespace FLT_HuntMarker
             }
 
             return false;
+        }
+
+        // Game exited : drop Sharlayan handler so a new game process can be hooked
+        public void Release()
+        {
+            try
+            {
+                if (_process != null)
+                    SharlayanMemoryManager.Instance.RemoveHandler(_process.Id);
+            }
+            catch
+            {
+                // pass
+            }
+
+            MemoryHandler = null;
+            _reader = null;
+            _process?.Dispose();
+            _process = null;
+            _lastZone = default;
         }
 
         // Current player only, without full actor scan (GetActors is used by tracking thread)

@@ -25,8 +25,8 @@ namespace FLT_HuntMarker
         public string markCurrent = "b";
 
         public static bool isClosing = false;
-        public static bool isFF14Hooked = false;
-        public static bool isHuntThreadWorking = false;
+        public static volatile bool isFF14Hooked = false;
+        public static volatile bool isHuntThreadWorking = false;
         public static bool isDisplayChecked = false;
         public static bool isScoutMode = false;
         public static string currentMap = "DT_UR";
@@ -35,7 +35,7 @@ namespace FLT_HuntMarker
 
         public static Queue<uint> diedBefore = new();
 
-        Thread t;
+        Thread hookThread;
         Thread huntThread;
 
         public HuntCounter huntCounter;
@@ -72,8 +72,10 @@ namespace FLT_HuntMarker
             HwndSource source = HwndSource.FromHwnd(new WindowInteropHelper(this).Handle);
             source.AddHook(new HwndSourceHook(WndProc));
 
-            t = new Thread(new ThreadStart(SetupHuntCounter));
-            t.Start();
+            SetHookState(false);
+
+            hookThread = new Thread(new ThreadStart(HookMonitor)) { IsBackground = true };
+            hookThread.Start();
         }
 
         // Parse objList and last UID from CONFIG.LOGFILE
@@ -585,64 +587,63 @@ namespace FLT_HuntMarker
             return IntPtr.Zero;
         }
 
-        // Search process
-        // Try find FF14 5 times (15 seconds)
-        private void SetupHuntCounter()
+        // Hook FF14 whenever it runs and release it when it exits, for the whole app lifetime
+        private void HookMonitor()
         {
-            bool processExists = false;
-            short retryCounter = 0;
-
-            Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
+            while (!isClosing)
             {
-                buttonHuntCounter.IsEnabled = false;
-                buttonHuntCounterAdd.IsEnabled = false;
-                checkboxCounterDisplay.IsEnabled = false;
-                checkboxScoutMode.IsEnabled = false;
-                this.Title = "FFXIVHuntMarker (Searching FF14...)";
-            }));
-
-            while (!processExists)
-            {
-                if (isClosing)
-                    return;
-
-                if (retryCounter > 5)
-                    break;
-
-                processExists = huntCounter.Setup();
-                retryCounter++;
-
-                if (!processExists)
-                    Thread.Sleep(3000);
-            }
-
-            if (retryCounter > 5)
-            {
-                Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
+                if (!isFF14Hooked)
                 {
-                    this.Title = "FFXIVHuntMarker (Standalone Mode)";
-                }));
+                    if (huntCounter.Setup())
+                    {
+                        isFF14Hooked = true;
+                        Dispatcher.BeginInvoke(new Action(() => SetHookState(true)));
+                    }
+                }
+                else if (huntCounter.ProcessHasExited)
+                {
+                    // Hunt thread stops by isFF14Hooked
+                    isFF14Hooked = false;
+                    huntCounter.Release();
+                    Dispatcher.BeginInvoke(new Action(() => SetHookState(false)));
+                }
+
+                Thread.Sleep(CONFIG.PARAM_HOOK_INTERVAL_MS);
+            }
+        }
+
+        // Hooked : parse enabled. Standalone : only manual marks
+        private void SetHookState(bool hooked)
+        {
+            buttonHuntCounter.IsEnabled = hooked;
+            buttonHuntCounterAdd.IsEnabled = hooked;
+
+            // Enabled by Parse when tracking thread starts
+            checkboxCounterDisplay.IsEnabled = false;
+            checkboxScoutMode.IsEnabled = false;
+
+            if (hooked)
+            {
+                this.Title = "FFXIVHuntMarker";
+
+                // Player position on map
+                if (playerTimer == null)
+                {
+                    playerTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(CONFIG.PARAM_PLAYER_INTERVAL_MS) };
+                    playerTimer.Tick += (s, e) => UpdatePlayer();
+                }
+                playerTimer.Start();
             }
             else
             {
-                Dispatcher.Invoke(DispatcherPriority.Normal, new Action(delegate
-                {
-                    buttonHuntCounter.IsEnabled = true;
-                    buttonHuntCounterAdd.IsEnabled = true;
-                    checkboxCounterDisplay.IsEnabled = false;
-                    checkboxScoutMode.IsEnabled = false;
-                    this.Title = "FFXIVHuntMarker";
+                this.Title = "FFXIVHuntMarker (Standalone Mode, waiting for FF14...)";
 
-                    // Player position on map
-                    if (playerTimer == null)
-                    {
-                        playerTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(CONFIG.PARAM_PLAYER_INTERVAL_MS) };
-                        playerTimer.Tick += (s, e) => UpdatePlayer();
-                    }
-                    playerTimer.Start();
-                }));
+                checkboxScoutMode.IsChecked = false;
+                isScoutMode = false;
+                buttonHuntCounter.Content = "Parse";
 
-                isFF14Hooked = true;
+                playerTimer?.Stop();
+                playerMarker.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -675,13 +676,10 @@ namespace FLT_HuntMarker
 
                     SearchNearbyMobs(append);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    isFF14Hooked = false;
-                    isHuntThreadWorking = false;
-
-                    t = new Thread(new ThreadStart(SetupHuntCounter));
-                    t.Start();
+                    // Game exit is handled by HookMonitor
+                    Trace.WriteLine("Parse failed : " + ex.Message);
                 }
             }
             else
@@ -748,6 +746,7 @@ namespace FLT_HuntMarker
                 {
                     Name = actor.Value.Name,
                     Key = actor.Key,
+                    NPCID2 = actor.Value.NPCID2, // BNpcName id, for rank check
                     HP = actor.Value.HPCurrent,
                     IsTracking = false,
                     Coordinates = new Coords(Utility.ConvertPos(actor.Value.X), Utility.ConvertPos(actor.Value.Y)),
@@ -758,9 +757,8 @@ namespace FLT_HuntMarker
 
             foreach (var mob in nearbyCollection)
             {
-                string item = mob.Name;
+                string item = mob.Name + " (" + mob.Coordinates.X.ToString("0.0") + ", " + mob.Coordinates.Y.ToString("0.0") + ")";
                 bool skip = false;
-                item += "_" + mob.Coordinates.X.ToString("0.0") + "_" + mob.Coordinates.Y.ToString("0.0");
                 double percentage = mob.HPPercent;
 
                 // Percentage on map
@@ -772,7 +770,7 @@ namespace FLT_HuntMarker
                 {
                     if (listitem is not null)
                     {
-                        if (listitem.Content.ToString().Split('_')[0] == mob.Name)
+                        if (listitem.Tag as string == mob.Name)
                         {
                             skip = true;
                         }
@@ -784,7 +782,7 @@ namespace FLT_HuntMarker
                 {
                     // If S/A/B ranked -> List and Add Mark+Log ONCE
                     // Else -> List only
-                    string special = Utility.CheckSpecialMob(mob.Name);
+                    string special = Utility.CheckSpecialMob(mob.NPCID2);
 
                     // Mark only on known field map
                     if (special != "0" && mapcur != null)
@@ -792,6 +790,7 @@ namespace FLT_HuntMarker
                         bool occupied = false;
                         ListViewItem lvitem = new ListViewItem();
                         lvitem.Content = item;
+                        lvitem.Tag = mob.Name;
                         lvitem.FontWeight = FontWeights.Bold;
                         lvitem.Background = CONFIG.COLOR_TEXT_BG;
                         if (special == "s")
@@ -837,6 +836,7 @@ namespace FLT_HuntMarker
                     {
                         ListViewItem lvitem = new ListViewItem();
                         lvitem.Content = item;
+                        lvitem.Tag = mob.Name;
                         listviewHuntCounter.Items.Add(lvitem);
                     }
                 }
@@ -868,7 +868,7 @@ namespace FLT_HuntMarker
 
             foreach (ListViewItem item in lv.Items)
             {
-                string mobName = item.Content.ToString().Split("_")[0];
+                string mobName = item.Tag as string;
 
                 if (!trackedCollection.Any(m => m.Name == mobName))
                 {
@@ -882,7 +882,8 @@ namespace FLT_HuntMarker
         {
             diedBefore.Clear();
 
-            while (!isClosing)
+            // Ends when game exits, started again by Parse after re-hook
+            while (!isClosing && isFF14Hooked)
             {
                 var actors = huntCounter.GetMobs();
 
@@ -932,6 +933,8 @@ namespace FLT_HuntMarker
 
                 Thread.Sleep(1000);
             }
+
+            isHuntThreadWorking = false;
         }
 
         // Show Hunt Counter display
@@ -992,11 +995,12 @@ namespace FLT_HuntMarker
                 return;
             }
 
-            string selname = item.ToString().Split('_')[0];
+            // Tag is mob name, Content is "Name (X, Y)"
+            string selname = (item as ListViewItem)?.Tag as string;
 
             for (int i = 0; i < lvc.Items.Count; i++)
             {
-                if (lv.Items[i].ToString().Split('_')[0] == selname)
+                if ((lv.Items[i] as ListViewItem)?.Tag as string == selname)
                 {
                     trackedCollection.RemoveAt(i);
                     lv.Items.RemoveAt(i);

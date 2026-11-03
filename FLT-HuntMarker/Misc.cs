@@ -28,6 +28,7 @@ namespace FLT_HuntMarker
         public static double PARAM_DUPLICATE_DISTANCE = 1.0;
         public static int PARAM_DUPLICATE_PERIOD_HOUR = 1;
         public static int PARAM_PLAYER_INTERVAL_MS = 200;
+        public static int PARAM_HOOK_INTERVAL_MS = 3000; // Check FF14 process start / exit
         public static SolidColorBrush COLOR_S = new(Colors.Orange) { Opacity = COLOR_OPACITY };
         public static SolidColorBrush COLOR_A = new(Colors.LightGreen) { Opacity = COLOR_OPACITY };
         public static SolidColorBrush COLOR_B = new(Colors.LightBlue) { Opacity = COLOR_OPACITY };
